@@ -1,0 +1,124 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/npc_interact.gd" id="1_npc"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_npc"]
+albedo_color = Color(0.86, 0.58, 0.42, 1)
+
+[sub_resource type="CapsuleMesh" id="Mesh_npc"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="Shape_npc"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="SphereShape3D" id="Shape_interact"]
+radius = 4.5
+
+[node name="Npc" type="CharacterBody3D"]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_npc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("Mat_npc")
+mesh = SubResource("Mesh_npc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Shape_npc")
+
+[node name="InteractArea" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractArea"]
+shape = SubResource("Shape_interact")
+
+[node name="RequestUI" type="CanvasLayer" parent="."]
+layer = 10
+visible = false
+
+[node name="Root" type="Control" parent="RequestUI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="RequestButton" type="Button" parent="RequestUI/Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 80.0
+offset_right = 160.0
+offset_bottom = 168.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+text = "请求"
+mouse_filter = 0
+
+[node name="OpeningLine" type="Label" parent="RequestUI/Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -20.0
+offset_right = 280.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+text = "来喝一口？"
+
+[node name="ReplyRow" type="HBoxContainer" parent="RequestUI/Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = 70.0
+offset_right = 420.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 28
+alignment = 1
+
+[node name="AcceptButton" type="Button" parent="RequestUI/Root/ReplyRow"]
+custom_minimum_size = Vector2(240, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "答应"
+mouse_filter = 0
+
+[node name="RefuseButton" type="Button" parent="RequestUI/Root/ReplyRow"]
+custom_minimum_size = Vector2(240, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "拒绝"
+mouse_filter = 0
+
+[node name="WaitButton" type="Button" parent="RequestUI/Root/ReplyRow"]
+custom_minimum_size = Vector2(240, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "等一下"
+mouse_filter = 0

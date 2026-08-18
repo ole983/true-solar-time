@@ -1,0 +1,6 @@
+menbo/.godot/
+.env
+.env.*
+*.tmp
+~$*
+
