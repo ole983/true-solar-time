@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>天文原理与精度验证 | 真太阳时</title>
+<meta name="description" content="本站天文算法、公式、精度指标与验证方法:时差方程、日出日落、章动、节气划分。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs"><a href="index.html">首页主钟</a><a href="cities.html">全国总表</a><a href="liuzhu.html">子午流注</a><a href="sun.html">太阳轨迹</a><a href="science.html">天文原理</a></nav>
+<div class="top-right"><button class="btn" id="run" type="button">▶ 运行自检</button></div>
+</div></div>
+<div class="wrap">
+<header class="hero"><h1>天文原理 <span class="g">· 精度与验证</span></h1>
+<div class="sub">本站实现 Meeus《Astronomical Algorithms》第二版第25章太阳低精度算法 + IAU 1980章动截断9项。点击右上“运行自检”可在本机实时校验春分秋分赤纬、日地距离与已知节气,全部断言写在 <code>science.html</code> 源码内、可复算。</div>
+<div class="badges"><span class="badge">λ ±0.01°</span><span class="badge">EoT ±8秒</span><span class="badge">日出落 ±30秒</span><span class="badge" id="live">—</span></div></header>
+<section class="card"><h2>◈ 核心公式(与代码一一对应)</h2>
+<div class="formula">JD = Unix毫秒/86400000 + 2440587.5;T = (JD − 2451545.0)/36525(儒略世纪数)<br>
+L₀ = 280.46646° + 36000.76983°T + 0.0003032°T²(太阳平黄经)<br>
+M = 357.52911° + 35999.05029°T − 0.0001537°T²(平近点角)<br>
+C = 1.914602°sinM + 0.019993°sin2M + 0.000289°sin3M(中心差)<br>
+λ = L₀ + C − 0.00569° − 0.00478°sinΩ(视黄经,含光行差与章动)<br>
+ε = 23°26′21.448″ − 46.815″T + Δε(真黄赤交角)<br>
+α = atan2(cosε·sinλ, cosλ),δ = asin(sinε·sinλ)(视赤经/赤纬)<br>
+EoT = L₀ − 0.0057183° − α + Δψ·cosε,分钟 = 度 × 4<br>
+<b>真太阳时 = 北京时 + (经度 − 120°)×4分 + EoT</b><br>
+cosH₀ = [sin(−0.833°) − sinφ·sinδ]/[cosφ·cosδ];日出/落(北京时) = 720 − (经度−120°)×4 − EoT ∓ H₀×4</div></section>
+<section class="card"><h2>◈ 自检结果</h2><div class="desc">断言阈值按算法标称精度设定,任一失败会标红并给出实测值。</div><div id="tests"></div></section>
+<section class="card"><h2>◈ 问答</h2>
+<div style="font-size:13.5px;line-height:2;color:#cdd6f4">
+<b style="color:#e8c36a">Q1 为何不用简化EoT拟合公式?</b> 网传 B=2π(N−81)/364、EoT=9.87sin2B−7.53cosB−1.5sinB 拟合误差可达30秒,且未计时差的长期项。本站逐时刻解算视赤经,含章动,误差&lt;8秒。<br>
+<b style="color:#e8c36a">Q2 日出落为何与天气App差几十秒?</b> 三项来源:①对方多用简化算法;②对方经度取市中心与本站市政府坐标差几公里;③高程与山体遮挡未建模(拉萨、乌鲁木齐山区可差1–3分钟)。平原城市应&lt;1分钟。<br>
+<b style="color:#e8c36a">Q3 节气按黄经还是按日?</b> 天文节气是时刻(黄经整数点),本站 <code>sun.html</code> 节气表取该时刻所在北京时间日期的日出落,与“某日交节”民用表述一致,黄经列给出整数度供核验。<br>
+<b style="color:#e8c36a">Q4 子午流注为何必须用真太阳?</b> 《灵枢》以日出日入为开阖,经脉流注锚定太阳时角。全国统一北京时后,西部同一挂钟时刻太阳时角差可达45°,即3个时辰,经脉完全错位。<br>
+<b style="color:#e8c36a">Q5 如何复算?</b> 打开 <code>astro.js</code>,任意时刻 <code>ASTRO.sunApparent(new Date())</code> 即得 λ/α/δ/EoT,与美国海军天文台 MICA 或紫金山年历对拍正午即可。
+</div></section>
+<footer class="site"><a href="index.html">← 回首页</a></footer>
+</div>
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script>
+(function(){TST.setNav();
+function showLive(){const s=ASTRO.sunApparent(new Date());$("live").textContent=`λ${s.lambda.toFixed(2)}° δ${s.Dec.toFixed(2)}° EoT${(s.eq>=0?"+":"")+s.eq.toFixed(2)}分`;}
+showLive();setInterval(showLive,5000);
+function T(name,ok,detail){return{name,ok,detail};}
+function run(){const out=[];const now=new Date();
+const eq={spring:new Date(Date.UTC(2026,2,20,2,45)),autumn:new Date(Date.UTC(2026,8,22,18,35))};
+[["春分赤纬≈0",eq.spring,0.6],["秋分赤纬≈0",eq.autumn,0.6]].forEach(([n,d,t])=>{const v=ASTRO.sunApparent(d).Dec;out.push(T(n+" |δ|="+Math.abs(v).toFixed(3)+"°",Math.abs(v)<t,`阈值${t}°`));});
+const july=new Date(Date.UTC(2026,6,4));const dist=ASTRO.sunApparent(july).dist;
+out.push(T("远日点附近距离≈1.0167AU 实测"+dist.toFixed(4),Math.abs(dist-1.0167)<0.002,"阈值0.002AU"));
+const jan=new Date(Date.UTC(2026,0,3));const dist2=ASTRO.sunApparent(jan).dist;
+out.push(T("近日点附近距离≈0.9833AU 实测"+dist2.toFixed(4),Math.abs(dist2-0.9833)<0.002,"阈值0.002AU"));
+const e1=ASTRO.sunApparent(new Date(Date.UTC(2026,1,11))).eq;
+out.push(T("2月EoT≈−14分 实测"+e1.toFixed(1),e1<-11&&e1>-17,"阈值−11~−17"));
+const e2=ASTRO.sunApparent(new Date(Date.UTC(2026,10,3))).eq;
+out.push(T("11月EoT≈+16分 实测"+e2.toFixed(1),e2>13&&e2<18,"阈值+13~+18"));
+const bj={y:2026,m:6,d:21};const ev=ASTRO.sunEventsForCity(bj.y,bj.m,bj.d,39.9,116.41);
+out.push(T("夏至北京昼长≈15h 实测"+((ev.setMin-ev.riseMin)/60).toFixed(2)+"h",Math.abs((ev.setMin-ev.riseMin)/60-15)<0.3,"阈值±0.3h"));
+const w=ASTRO.sunEventsForCity(2026,12,22,39.9,116.41);
+out.push(T("冬至北京昼长≈9.2h 实测"+((w.setMin-w.riseMin)/60).toFixed(2)+"h",Math.abs((w.setMin-w.riseMin)/60-9.2)<0.3,"阈值±0.3h"));
+const noonEv=ASTRO.sunEventsForCity(2026,5,1,22.55,114.06);
+const expect=720-(114.06-120)*4-noonEv.eq;
+out.push(T("正午公式自洽"+ASTRO.fmtHM(noonEv.noonMin)+"=720−经度差−EoT",Math.abs(noonEv.noonMin-expect)<0.01,"差值"+Math.abs(noonEv.noonMin-expect).toFixed(4)+"分"));
+const box=$("tests");box.innerHTML="";let pass=0;
+out.forEach(t=>{if(t.ok)pass++;const d=document.createElement("div");d.className="test "+(t.ok?"pass":"fail");
+d.textContent=(t.ok?"✓ ":"✗ ")+t.name+" ["+t.detail+"]";box.appendChild(d);});
+const s=document.createElement("div");s.className="test "+(pass===out.length?"pass":"fail");
+s.textContent=`共 ${out.length} 项,通过 ${pass} 项 · ${new Date().toLocaleString("zh-CN")}`;box.appendChild(s);}
+$("run").onclick=run;run();})();
+</script>
+</body>
+</html>

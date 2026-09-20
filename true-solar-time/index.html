@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>真太阳时 · 子午流注 — 全中国城市天文级实时 | 首页</title>
+<meta name="description" content="天文级精度:全中国300+城市真太阳时毫秒实时显示,时差方程、日出日落、十二时辰与子午流注。Meeus太阳理论+IAU1980章动,纯前端离线可用。">
+<meta property="og:title" content="真太阳时 · 子午流注 — 天文级全中国实时">
+<meta property="og:description" content="北京时间对照真太阳时,十二时辰按太阳位置划分,附子午流注养生。">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#070b16">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs" aria-label="主导航">
+<a href="index.html">首页主钟</a><a href="cities.html">全国总表</a><a href="liuzhu.html">子午流注</a><a href="sun.html">太阳轨迹</a><a href="science.html">天文原理</a>
+</nav>
+<div class="top-right"><span class="pill" id="navCity">北京</span><button class="btn" id="shareBtn" type="button">复制分享链接</button></div>
+</div></div>
+<div class="wrap" id="main">
+<header class="hero">
+<h1>☉ 真太阳时 <span class="g">· 子午流注</span></h1>
+<div class="sub">真太阳时 = 北京时间 + (当地经度−120°)×4分钟 + 时差方程EoT。Meeus《天文算法》第25章 + IAU 1980章动9项 + 标准折射−0.833°,全中国300+地级市毫秒级推算。时辰与经脉一律按<b style="color:#f7e2a8">真太阳时</b>判定。</div>
+<div class="badges"><span class="badge">▲ 视黄经 ±0.01°</span><span class="badge">◷ 时差 ±8秒</span><span class="badge">☀ 日出落 ±30秒</span><span class="badge" id="jdBadge">JD —</span><span class="badge" id="termBadge">节气 —</span><span class="badge" id="sunBadge">太阳 —</span></div>
+</header>
+
+<div class="controls" role="search">
+<input id="q" list="cityList" placeholder="输入城市名切换主钟,如: 拉萨 / 喀什 / 三沙" autocomplete="off">
+<datalist id="cityList"></datalist>
+<select id="prov" aria-label="按省份筛选"></select>
+<button class="btn gold" id="goBtn" type="button">切换</button>
+<button class="btn" id="gpsBtn" type="button" title="用浏览器定位匹配最近城市">◎ 定位最近城市</button>
+<span class="pill" id="count"></span>
+</div>
+
+<div class="grid2">
+<section class="card" aria-label="双钟对照">
+<h2>◈ 双钟对照 <span class="pill">100ms 刷新</span></h2>
+<div class="city-title"><span class="name" id="cName">北京</span><span class="meta" id="cMeta"></span></div>
+<div class="clocks">
+<div class="clock"><div class="k">北京时间 UTC+8</div><div class="v" id="bjt">--:--:--</div><div class="s" id="bjd"></div></div>
+<div class="clock true"><div class="k">真太阳时 TRUE SOLAR</div><div class="v" id="tst">--:--:--</div><div class="s" id="tstSub"></div></div>
+</div>
+<div><span class="diff" id="diffBadge"></span></div>
+<div class="shichen-big"><div class="zi" id="scZi">午</div><div class="info" id="scInfo"></div></div>
+<div class="jing" id="jingInfo"></div>
+<div class="params" id="params"></div>
+<div class="timeline"><h2 style="margin:14px 0 10px;font-size:15px">☀ 今日太阳轨迹(北京时间轴)</h2>
+<div class="bar" id="bar"><div class="mk" id="mRise"></div><div class="mk noon" id="mNoon"></div><div class="mk" id="mSet"></div><div class="mk now" id="mNow"></div></div>
+<div class="tlbl" id="tlbl"></div></div>
+</section>
+<section class="card" aria-label="太阳罗盘与年曲线">
+<h2>◈ 此刻太阳方位 · 高度罗盘</h2>
+<div class="compassrow">
+<canvas id="compass" width="300" height="300" aria-label="太阳位置罗盘"></canvas>
+<div class="kv" id="altaz"></div>
+</div>
+<div class="desc">罗盘:北上,同心圆为30°/60°高度,中心为天顶。金点为太阳,暗侧表示地平以下(夜晚)。含Bennett大气折射修正。</div>
+<h2 style="margin-top:14px">◈ 时差方程年曲线 EoT</h2>
+<canvas class="plot" id="eot" width="600" height="170"></canvas>
+<div class="desc" id="eotTxt"></div>
+<div class="formula">真太阳时 = 北京时 + (经度−120°)×4分 + EoT &nbsp;·&nbsp; 正午(北京时) = 12:00 − (经度−120°)×4分 − EoT</div>
+<h2 style="margin-top:14px">◈ 主要城市直选</h2>
+<div class="caps" id="caps"></div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+<a class="btn" href="cities.html" style="text-decoration:none">查看全国300+城总表 →</a>
+<a class="btn" href="liuzhu.html" style="text-decoration:none">今日十二时辰对照 →</a>
+</div>
+</section>
+</div>
+
+<section class="card"><h2>◈ 今日十二时辰(本城真太阳时 → 北京时间对照)</h2>
+<div class="desc">左列为传统时辰(真太阳时),右列换算为今日在该城市挂钟上对应的北京时间区间,方便定作息。按当日时差方程换算,日内漂移&lt;1秒可忽略。</div>
+<div class="tblwrap tall"><table><thead><tr><th>时辰</th><th>真太阳时区间</th><th>对应北京时间(今日)</th><th>当令经脉</th><th>状态</th></tr></thead><tbody id="sched"></tbody></table></div>
+</section>
+
+<footer class="site">算法 Meeus Ch.25 · 章动IAU1980 · WGS84 · 折射−0.833° · 传统文化作息参考,不作医疗依据 · <a href="science.html">精度验证</a> · <a href="sitemap.xml">站点地图</a></footer>
+</div>
+<script src="cities.js"></script>
+<script src="astro.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){const{$,termOf,store,cityByName,snapshot,fmtSigned}=window.TST;
+TST.setNav();
+const q=$("q"),prov=$("prov"),list=$("cityList");
+window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];list.appendChild(o);});
+[...new Set(window.CITIES.map(c=>c[1]))].forEach(p=>{const o=document.createElement("option");o.value=p;o.textContent=p;prov.appendChild(o);});
+$("count").textContent="共 "+window.CITIES.length+" 城";
+let sel=store.sel; if(!window.CITIES.some(c=>c[0]===sel)) sel="北京";
+function setSel(n){sel=n;store.sel=n;$("navCity").textContent=n;try{history.replaceState(null,"","index.html?city="+encodeURIComponent(n));}catch(e){}}
+setSel(sel);
+q.value=sel;
+$("goBtn").onclick=()=>{const v=q.value.trim();if(cityByName(v)&&v!==sel||window.CITIES.some(c=>c[0]===v)){setSel(window.CITIES.find(c=>c[0]===v)[0]);q.value=sel;tick(true);}};
+q.onchange=$("goBtn").onclick;
+prov.onchange=()=>{const p=prov.value;const f=window.CITIES.find(c=>c[1]===p);if(f){setSel(f[0]);q.value=f[0];tick(true);}};
+$("shareBtn").onclick=async()=>{try{await navigator.clipboard.writeText(TST.shareURL(sel));$("shareBtn").textContent="已复制 ✓";setTimeout(()=>$("shareBtn").textContent="复制分享链接",1500);}catch(e){prompt("复制此链接分享:",TST.shareURL(sel));}};
+$("gpsBtn").onclick=()=>{if(!navigator.geolocation){alert("浏览器不支持定位");return;}$("gpsBtn").textContent="定位中…";
+navigator.geolocation.getCurrentPosition(pos=>{const{latitude:la,longitude:lo}=pos.coords;let best=null,bd=1e9;
+window.CITIES.forEach(c=>{const d=(c[2]-lo)**2+(c[3]-la)**2;if(d<bd){bd=d;best=c;}});
+$("gpsBtn").textContent="◎ 定位最近城市";if(best){setSel(best[0]);q.value=best[0];tick(true);}},()=>{$("gpsBtn").textContent="◎ 定位最近城市";alert("定位失败,请手动搜索城市");},{timeout:8000});};
+function fmtHM(m){return ASTRO.fmtHM(m);}
+function drawCompass(aa){const cv=$("compass"),ctx=cv.getContext("2d"),W=300,C=150,R=140;ctx.clearRect(0,0,W,W);
+ctx.fillStyle="#0a1122";ctx.beginPath();ctx.arc(C,C,R,0,7);ctx.fill();
+ctx.strokeStyle="rgba(255,255,255,.25)";[1/3,2/3,1].forEach(f=>{ctx.beginPath();ctx.arc(C,C,R*f,0,7);ctx.stroke();});
+ctx.fillStyle="#9aa6c7";ctx.font="16px sans-serif";ctx.textAlign="center";
+ctx.fillText("北",C,20);ctx.fillText("南",C,W-8);ctx.fillText("东",W-16,C+6);ctx.fillText("西",16,C+6);
+ctx.fillStyle="rgba(255,255,255,.4)";ctx.font="11px sans-serif";ctx.fillText("30°",C+4,C-R/3);ctx.fillText("60°",C+4,C-2*R/3);
+const r=Math.max(0,Math.min(1,(90-aa.alt)/90))*R, a=aa.az*Math.PI/180;
+const x=C+r*Math.sin(a), y=C-r*Math.cos(a);
+if(aa.alt>=0){ctx.fillStyle="#e8c36a";ctx.shadowColor="#e8c36a";ctx.shadowBlur=14;}else{ctx.fillStyle="#475069";ctx.shadowBlur=0;}
+ctx.beginPath();ctx.arc(x,y,11,0,7);ctx.fill();ctx.shadowBlur=0;
+ctx.fillStyle="#0a1122";ctx.font="bold 11px sans-serif";ctx.fillText(aa.alt>=0?"日":"夜",x,y+4);}
+function drawEOT(sun){const cv=$("eot"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+const y=new Date().getFullYear(),pts=[];for(let d=0;d<365;d++)pts.push(ASTRO.sunApparent(new Date(Date.UTC(y,0,1)+d*864e5)).eq);
+ctx.strokeStyle="rgba(255,255,255,.18)";ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+ctx.strokeStyle="#e8c36a";ctx.lineWidth=2;ctx.beginPath();
+pts.forEach((e,i)=>{const x=i/364*W,yy=H/2-e/17*(H/2-10);i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);});ctx.stroke();
+const now=new Date(),doy=Math.floor((Date.UTC(y,now.getMonth(),now.getDate())-Date.UTC(y,0,1))/864e5);
+const x=doy/364*W,yy=H/2-pts[doy]/17*(H/2-10);
+ctx.fillStyle="#5eead4";ctx.beginPath();ctx.arc(x,yy,5,0,7);ctx.fill();
+ctx.fillStyle="#9aa6c7";ctx.font="11px sans-serif";ctx.fillText("1月",6,H-6);ctx.fillText("7月",W/2-8,H-6);ctx.fillText("12月",W-34,H-6);
+return pts[doy];}
+function renderCaps(){const box=$("caps");box.innerHTML="";const now=new Date();
+["北京","上海","广州","深圳","成都","杭州","武汉","西安","乌鲁木齐","拉萨","哈尔滨","三亚"].forEach(n=>{
+const c=cityByName(n),s=snapshot(c,now);const d=document.createElement("div");
+d.className="cap"+(n===sel?" sel":"");
+d.innerHTML=`<div class="c">${n}</div><div class="t">${ASTRO.fmtHMS(s.tst)}</div><div class="z">${s.sc.z}时·${s.sc.m.slice(3)} · ${fmtSigned(s.diff,0)}分</div>`;
+d.onclick=()=>{setSel(n);q.value=n;renderCaps();tick(true);};box.appendChild(d);});}
+function tick(force){const now=new Date(),city=cityByName(sel),s=snapshot(city,now);
+$("navCity").textContent=sel;$("cName").textContent=city[0];
+$("cMeta").textContent=`${city[1]} · E${city[2].toFixed(2)}° N${city[3].toFixed(2)}° · ${s.diff>=0?"超前":"落后"}北京 ${Math.abs(s.diff).toFixed(1)}分`;
+const ms=String(now.getMilliseconds()).padStart(3,"0");
+$("bjt").textContent=`${String(s.bj.h).padStart(2,"0")}:${String(s.bj.mi).padStart(2,"0")}:${String(s.bj.s).padStart(2,"0")}.${ms[0]}`;
+$("bjd").textContent=`${s.bj.y}年${s.bj.m}月${s.bj.d}日 星期${"日一二三四五六"[s.bj.week]} · 北京时间`;
+$("tst").textContent=ASTRO.fmtHMS(s.tst);
+const ke=Math.floor((((s.tst%120)+120)%120)/15)+1;
+$("tstSub").textContent=`${s.sc.z}时第${ke}刻 · ${termOf(s.sun.lambda)}前后 · EoT ${fmtSigned(s.sun.eq,2)}分`;
+$("diffBadge").textContent=`真太阳${s.diff>=0?"超前":"落后"}北京 ${Math.abs(s.diff).toFixed(1)}分 = 经度差 ${fmtSigned((city[2]-120)*4,1)}分 + 时差 ${fmtSigned(s.sun.eq,2)}分`;
+$("scZi").textContent=s.sc.z;$("scInfo").innerHTML=`<b>${s.sc.z}时 ${s.sc.t}</b> · ${s.sc.m}<br>${s.sc.y}`;
+$("jingInfo").innerHTML=`<b style="color:#e8c36a">◈ ${s.sc.m}:</b>${s.sc.j} <span style="color:#9aa6c7">[按${city[0]}真太阳 ${ASTRO.fmtHMS(s.tst)}判定]</span>`;
+const ev=s.ev;
+$("params").innerHTML=[["太阳赤纬 δ",s.sun.Dec.toFixed(3)+"°"],["时差方程",fmtSigned(s.sun.eq,2)+" 分"],["视黄经 λ",s.sun.lambda.toFixed(2)+"°"],["日地距离",s.sun.dist.toFixed(4)+" AU"],["今日日出",ev.polar||fmtHM(ev.riseMin)],["正午日中",fmtHM(ev.noonMin)],["今日日落",ev.polar||fmtHM(ev.setMin)],["昼长",ev.polar||((ev.setMin-ev.riseMin)/60).toFixed(1)+" 小时"],["太阳高度",s.aa.alt.toFixed(1)+"°"]].map(p=>`<div class="p"><div class="k">${p[0]}</div><div class="v">${p[1]}</div></div>`).join("");
+$("bar").style.setProperty("--sr",(ev.riseMin/1440*100||0)+"%");$("bar").style.setProperty("--ss",(ev.setMin/1440*100||100)+"%");
+if(ev.riseMin!=null){$("mRise").style.left=ev.riseMin/1440*100+"%";$("mSet").style.left=ev.setMin/1440*100+"%";}
+$("mNoon").style.left=ev.noonMin/1440*100+"%";$("mNow").style.left=s.bmin/1440*100+"%";
+$("tlbl").innerHTML=`<span>☀出 ${ev.polar||fmtHM(ev.riseMin)}</span><span>☀中 ${fmtHM(ev.noonMin)}</span><span>☀落 ${ev.polar||fmtHM(ev.setMin)}</span><span style="color:#5eead4">▼现在 ${fmtHM(s.bmin)}</span>`;
+$("jdBadge").textContent="JD "+s.sun.jd.toFixed(5);$("termBadge").textContent="☉ "+termOf(s.sun.lambda);
+$("sunBadge").textContent=(s.aa.alt>=0?"☀ 昼 · 高":"☾ 夜 · 高")+s.aa.alt.toFixed(1)+"° 方位"+s.aa.az.toFixed(0)+"°";
+$("altaz").innerHTML=`高度 <b>${s.aa.alt.toFixed(2)}°</b>${s.aa.alt<0?"(地平以下)":""}<br>方位 <b>${s.aa.az.toFixed(1)}°</b>(北0°顺时针)<br>折射修正 +${(s.aa.refr*60).toFixed(1)}′<br>时角 ${s.aa.H.toFixed(1)}°`;
+drawCompass(s.aa);
+const eot=drawEOT(s.sun);$("eotTxt").textContent=`今日时差方程 ${fmtSigned(eot,1)} 分钟:真太阳时 = 平太阳时 + EoT。EoT每年在+16(11月初)~−14(2月中)分钟间摆动,主因是黄赤交角与轨道偏心率。`;
+const tb=$("sched");tb.innerHTML="";window.TST.LIU.forEach((L,i)=>{const r=L.range;let segs=[];
+if(r.length===4)segs=[[r[0],1440],[0,r[3]]];else segs=[[r[0],r[1]]];
+const bjt=segs.map(([a,b])=>fmtHM(a-s.diff)+"–"+fmtHM(b-s.diff)).join(" / ");
+const tr=document.createElement("tr");if(i===s.sc.i)tr.className="hl";
+tr.innerHTML=`<td><b>${L.z}</b></td><td>${L.t}</td><td style="color:#f7e2a8">${bjt}</td><td style="color:#9aa6c7">${L.m}</td><td>${i===s.sc.i?"◉ 当令":""}</td>`;tb.appendChild(tr);});
+if(force||!tick._n||Date.now()-tick._n>30000){tick._n=Date.now();renderCaps();}}
+renderCaps();tick(true);setInterval(()=>tick(false),100);
+if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+})();
+</script>
+</body>
+</html>

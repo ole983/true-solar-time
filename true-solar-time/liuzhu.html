@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>子午流注 · 十二时辰经脉实时 | 真太阳时</title>
+<meta name="description" content="按真太阳时判定的子午流注十二经脉实时当令、今日时辰与北京时间对照、养生宜忌。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs"><a href="index.html">首页主钟</a><a href="cities.html">全国总表</a><a href="liuzhu.html">子午流注</a><a href="sun.html">太阳轨迹</a><a href="science.html">天文原理</a></nav>
+<div class="top-right"><span class="pill" id="now">—</span></div>
+</div></div>
+<div class="wrap">
+<header class="hero"><h1>子午流注 <span class="g">· 按真太阳时</span></h1>
+<div class="sub">《灵枢·卫气行》:“岁有十二月,日有十二辰,子午为经,卯酉为纬。”气血随太阳位置流注十二经,<b style="color:#f7e2a8">必须按真太阳时判定</b>。西部按北京时养生可错位2–3个时辰。下表按所选城市实时换算,含北京时间对照。</div>
+<div class="badges"><span class="badge" id="city">—</span><span class="badge" id="cur">—</span><span class="badge" id="next">—</span></div></header>
+<div class="controls"><input id="q" list="cl" placeholder="切换城市,如: 成都" autocomplete="off"><datalist id="cl"></datalist><button class="btn gold" id="go" type="button">切换</button></div>
+<section class="card"><h2>◈ 当前当令</h2><div class="shichen-big"><div class="zi" id="zi">—</div><div class="info" id="info"></div></div><div class="jing" id="jing"></div></section>
+<section class="card"><h2>◈ 今日十二时辰对照</h2><div class="desc">真太阳时辰 → 今日北京时间区间,方便定闹钟作息。</div>
+<div class="tblwrap tall"><table><thead><tr><th>时辰</th><th>真太阳时</th><th>北京时(今日)</th><th>经脉</th><th>宜</th><th>忌</th><th>状态</th></tr></thead><tbody id="tb"></tbody></table></div></section>
+<section class="card"><h2>◈ 十二经脉详解</h2><div class="liu" id="liu"></div></section>
+<footer class="site"><a href="index.html">← 回首页</a> · 内容为传统文化作息参考,不作医疗诊断依据</footer>
+</div>
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script>
+(function(){const{$,store,cityByName,snapshot,fmtSigned}=window.TST;TST.setNav();
+window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];$("cl").appendChild(o);});
+let sel=store.sel;$("q").value=sel;
+$("go").onclick=()=>{const v=$("q").value.trim();const f=window.CITIES.find(c=>c[0]===v);if(f){sel=f[0];store.sel=sel;tick();}};
+function tick(){const now=new Date(),city=cityByName(sel),s=snapshot(city,now);
+$("now").textContent="北京 "+ASTRO.fmtHMS(s.bmin)+" · "+city[0]+"真太阳 "+ASTRO.fmtHMS(s.tst);
+$("city").textContent=`${city[0]} · 超前北京 ${fmtSigned(s.diff,1)}分`;
+$("cur").textContent=`◉ 当令 ${s.sc.z}时 · ${s.sc.m}`;
+const order=[...window.TST.LIU.keys()];const nx=window.TST.LIU[(s.sc.i+1)%12];
+$("next").textContent=`下一时辰 ${nx.z}时 · ${nx.m}`;
+$("zi").textContent=s.sc.z;
+$("info").innerHTML=`<b>${s.sc.z}时 ${s.sc.t}(真太阳)</b> · ${s.sc.m}<br>${s.sc.y}`;
+$("jing").innerHTML=`<b style="color:#e8c36a">◈ 机理:</b>${s.sc.j}`;
+const tb=$("tb");tb.innerHTML="";
+window.TST.LIU.forEach((L,i)=>{const r=L.range;let segs=r.length===4?[[r[0],1440],[0,r[3]]]:[[r[0],r[1]]];
+const bjt=segs.map(([a,b])=>ASTRO.fmtHM(a-s.diff)+"–"+ASTRO.fmtHM(b-s.diff)).join(" / ");
+const[yin,ji]=(L.y.split(/[。；]/).filter(Boolean));
+const tr=document.createElement("tr");if(i===s.sc.i)tr.className="hl";
+tr.innerHTML=`<td><b>${L.z}</b></td><td>${L.t}</td><td style="color:#f7e2a8">${bjt}</td><td style="color:#9aa6c7">${L.m}</td><td>${L.y.split("忌")[0].replace(/^.*?[.。]/,"")||L.y}</td><td>${(L.y.split("忌")[1]||"—").slice(0,18)}</td><td>${i===s.sc.i?"◉ 当令":""}</td>`;
+tb.appendChild(tr);});
+const box=$("liu");box.innerHTML="";
+window.TST.LIU.forEach((L,i)=>{const d=document.createElement("div");d.className="it"+(i===s.sc.i?" on":"");
+d.innerHTML=`<div class="t">${L.z}时 · ${L.t} ${i===s.sc.i?"◉":""}</div><div style="color:#5eead4">${L.m}</div><div>${L.y}</div><div style="color:#9aa6c7">${L.j}</div>`;box.appendChild(d);});}
+tick();setInterval(tick,1000);})();
+</script>
+</body>
+</html>

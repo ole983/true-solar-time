@@ -1,0 +1,1 @@
+{"cleanUrls":true,"trailingSlash":false,"headers":[{"source":"/(astro|app|cities).js","headers":[{"key":"Cache-Control","value":"public, max-age=3600"}]},{"source":"/sw.js","headers":[{"key":"Cache-Control","value":"no-cache"}]}]}
