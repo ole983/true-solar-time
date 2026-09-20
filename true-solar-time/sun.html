@@ -71,9 +71,10 @@ const tb=$("tb");tb.innerHTML="";
 const names=["春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至","小寒","大寒","立春","雨水","惊蛰"];
 let rows=[];
 for(let k=0;k<24;k++){const target=(k*15)%360;
-for(let d=0;d<370;d++){const dt=new Date(Date.UTC(y,0,1)+d*432e5);const lam=ASTRO.sunApparent(dt).lambda;
+for(let d=0;d<750;d++){const dt=new Date(Date.UTC(y,0,1)+d*432e5);const lam=ASTRO.sunApparent(dt).lambda;
 const prev=ASTRO.sunApparent(new Date(dt.getTime()-432e5)).lambda;
-const crossed=((prev-target+540)%360)>((lam-target+540)%360)&&Math.abs(((lam-prev+540)%360)-180)>90?false:(((target-prev+360)%360)<((lam-prev+360)%360));
+const step=((lam-prev+360)%360), ahead=((target-prev+360)%360);
+const crossed=step>0&&step<2&&ahead<step;
 if(crossed){const bj=new Date(dt.getTime()+8*36e5);
 const ev=ASTRO.sunEventsForCity(bj.getUTCFullYear(),bj.getUTCMonth()+1,bj.getUTCDate(),city[3],city[2]);
 rows.push({k,target,date:`${bj.getUTCMonth()+1}月${bj.getUTCDate()}日`,ev});break;}}}
