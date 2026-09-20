@@ -20,7 +20,8 @@
 .hou .h{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.7;background:rgba(0,0,0,.28)}
 .hou .h b{color:var(--gold2)}
 .yearsel{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.yearsel button{width:34px}
+.yearsel button.nav{width:38px;text-align:center}
+#errbox{display:none;margin-top:10px;border:1px solid rgba(251,113,133,.7);background:rgba(251,113,133,.1);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -35,14 +36,15 @@
 <div class="badges"><span class="badge" id="bCur">—</span><span class="badge" id="bNext">—</span><span class="badge" id="bYear">—</span></div></header>
 
 <section class="card"><h2>◈ 当前节气 · 下一节气倒计时 <span class="pill">每秒刷新</span></h2>
-<div class="term-big"><div class="zi" id="curZi">—</div><div style="flex:1"><div id="curInfo" style="font-size:14px;line-height:1.8"></div><div class="progress"><i id="prog"></i></div><div class="desc" id="progTxt" style="margin:6px 0 0"></div></div></div>
+<div id="errbox"></div>
+<div class="term-big"><div class="zi" id="curZi">—</div><div style="flex:1"><div id="curInfo" style="font-size:14px;line-height:1.8">推算中…</div><div class="progress"><i id="prog"></i></div><div class="desc" id="progTxt" style="margin:6px 0 0"></div></div></div>
 <div style="margin-top:12px">距离 <b id="nextName" style="color:#f7e2a8">—</b> <span class="count" id="count">—</span></div>
 <div class="desc" id="nextInfo"></div>
 </section>
 
 <section class="card"><h2>◈ <span id="ytitle">今年</span>二十四节气精确时刻表(北京时间)</h2>
 <div class="desc">按一年实际发生顺序排列。黄经列为定义度数,时差列为交节瞬间 EoT,星期与分钟均为北京时间。点击“下载CSV”可存表。</div>
-<div class="controls" style="margin-top:0"><div class="yearsel"><button class="btn" id="yPrev" type="button">‹</button><b id="yLab" style="font-size:16px"></b><button class="btn" id="yNext" type="button">›</button><button class="btn" id="yNow" type="button">回今年</button><button class="btn" id="dl" type="button">下载CSV</button></div></div>
+<div class="controls" style="margin-top:0"><div class="yearsel"><button class="btn nav" id="yPrev" type="button">‹</button><b id="yLab" style="font-size:16px"></b><button class="btn nav" id="yNext" type="button">›</button><button class="btn" id="yNow" type="button">回今年</button><button class="btn" id="dl" type="button">下载CSV</button></div></div>
 <div class="tblwrap tall"><table><thead><tr><th>节气</th><th>交节时刻(北京)</th><th>星期</th><th>黄经</th><th>时差</th><th>距今</th><th>三候</th></tr></thead><tbody id="tb"></tbody></table></div>
 </section>
 
@@ -59,11 +61,18 @@
 </div>
 <script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
 <script>
-(function(){const{$,fmtSigned,termOf}=window.TST;TST.setNav();
-const NAMES=["春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至","小寒","大寒","立春","雨水","惊蛰"];
-const LAM=[0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300,315,330,345];
-const ORDER=[19,20,21,22,23,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
-const HOU={
+(function(){
+var errbox=document.getElementById("errbox");
+function showErr(msg){ if(errbox){errbox.style.display="block";errbox.textContent="⚠ "+msg;} }
+window.addEventListener("error",function(ev){ showErr("脚本错误:"+(ev.message||ev.type)+"。请先强制刷新(Ctrl+F5),若仍有问题请截图此条。"); });
+try{
+if(!window.ASTRO||!window.TST){ showErr("基础库(astro/app)未加载。请确认地址栏是 http://localhost:8000/jieqi.html(带 .html),用 http 服务打开,不要直接双击文件。"); return; }
+var TST=window.TST, $=TST.$, fmtSigned=TST.fmtSigned;
+TST.setNav();
+var NAMES=["春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至","小寒","大寒","立春","雨水","惊蛰"];
+var LAM=[0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300,315,330,345];
+var ORDER=[19,20,21,22,23,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+var HOU={
 "立春":["东风解冻","蛰虫始振","鱼陟负冰"],"雨水":["獭祭鱼","候雁北","草木萌动"],
 "惊蛰":["桃始华","仓庚鸣","鹰化为鸠"],"春分":["玄鸟至","雷乃发声","始电"],
 "清明":["桐始华","田鼠化为鴽","虹始见"],"谷雨":["萍始生","鸣鸠拂羽","戴胜降桑"],
@@ -76,7 +85,7 @@ const HOU={
 "立冬":["水始冰","地始冻","雉入大水为蜃"],"小雪":["虹藏不见","天气上升地气下降","闭塞成冬"],
 "大雪":["鹖鴠不鸣","虎始交","荔挺出"],"冬至":["蚯蚓结","麋角解","水泉动"],
 "小寒":["雁北乡","鹊始巢","雉始雊"],"大寒":["鸡乳","征鸟厉疾","水泽腹坚"]};
-const YANG={
+var YANG={
 "立春":"阳气初生,宜早睡早起、疏肝。少熬夜,宜韭菜菠菜;午间散步养少阳。流注:寅卯之交多呵欠宜吐纳。",
 "雨水":"湿气渐盛,宜健脾祛湿。少油腻生冷,宜薏米山药;戌时泡脚胜过补药。",
 "惊蛰":"阳气动,肝火易旺。忌动怒熬夜,宜梨水菊花;卯时排便、辰时好好吃早餐。",
@@ -103,76 +112,87 @@ const YANG={
 "大寒":"冬末春始,宜减咸增苦、调心肾。宜睡足,立春前不减衣。"};
 /* 精确交节:全年12h步进找穿越 + 二分到分钟 */
 function termMoments(year){
-  const t0=Date.UTC(year,0,1,0,0), t1=Date.UTC(year+1,0,1,0,0), step=12*36e5;
-  const N=Math.ceil((t1-t0)/step); let prevT=t0, prevL=ASTRO.sunApparent(new Date(t0)).lambda;
-  const found={};
-  for(let i=1;i<=N;i++){const curT=Math.min(t1,t0+i*step); const curL=ASTRO.sunApparent(new Date(curT)).lambda;
-    const mv=((curL-prevL+360)%360);
-    for(let k=0;k<24;k++){if(found[k]!=null)continue; const tgt=LAM[k];
-      const ahead=((tgt-prevL+360)%360);
-      if(mv>0&&mv<2&&ahead<mv){let lo=prevT,hi=curT;
-        for(let j=0;j<30;j++){const mid=(lo+hi)/2, lm=ASTRO.sunApparent(new Date(mid)).lambda;
-          const m2=((lm-prevL+360)%360);
+  var t0=Date.UTC(year,0,1,0,0), t1=Date.UTC(year+1,0,1,0,0), step=12*36e5;
+  var N=Math.ceil((t1-t0)/step), prevT=t0, prevL=ASTRO.sunApparent(new Date(t0)).lambda;
+  var found={};
+  for(var i=1;i<=N;i++){var curT=Math.min(t1,t0+i*step); var curL=ASTRO.sunApparent(new Date(curT)).lambda;
+    var mv=((curL-prevL+360)%360);
+    for(var k=0;k<24;k++){if(found[k]!=null)continue; var tgt=LAM[k];
+      var ahead=((tgt-prevL+360)%360);
+      if(mv>0&&mv<2&&ahead<mv){var lo=prevT,hi=curT;
+        for(var j=0;j<30;j++){var mid=(lo+hi)/2, lm=ASTRO.sunApparent(new Date(mid)).lambda;
+          var m2=((lm-prevL+360)%360);
           if(m2>=ahead){hi=mid;} else {lo=mid;}}
         found[k]=new Date((lo+hi)/2);}}
     prevT=curT;prevL=curL;}
   return found;}
-const cache={};
+var cache={};
 function momentsOf(y){if(!cache[y])cache[y]=termMoments(y);return cache[y];}
-function bjStr(d){const b=new Date(d.getTime()+8*36e5);const p=n=>String(n).padStart(2,"0");
-  return `${b.getUTCFullYear()}-${p(b.getUTCMonth()+1)}-${p(b.getUTCDate())} ${p(b.getUTCHours())}:${p(b.getUTCMinutes())}`;}
-function bjMD(d){const b=new Date(d.getTime()+8*36e5);return `${b.getUTCMonth()+1}月${b.getUTCDate()}日`;}
-function weekStr(d){const b=new Date(d.getTime()+8*36e5);return "日一二三四五六"[b.getUTCDay()];}
-function relStr(ms){const f=ms<0;ms=Math.abs(ms);const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);
+function p2(n){return String(n).padStart(2,"0");}
+function bjStr(d){var b=new Date(d.getTime()+8*36e5);
+  return b.getUTCFullYear()+"-"+p2(b.getUTCMonth()+1)+"-"+p2(b.getUTCDate())+" "+p2(b.getUTCHours())+":"+p2(b.getUTCMinutes());}
+function bjMD(d){var b=new Date(d.getTime()+8*36e5);return (b.getUTCMonth()+1)+"月"+b.getUTCDate()+"日";}
+function weekStr(d){var b=new Date(d.getTime()+8*36e5);return "日一二三四五六"[b.getUTCDay()];}
+function relStr(ms){var f=ms<0;ms=Math.abs(ms);var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);
   return (f?"−":"+")+(d?d+"天":"")+h+"时"+m+"分";}
-let year=new Date(new Date().getTime()+8*36e5).getUTCFullYear();
-$("yPrev").onclick=()=>{year--;render();};$("yNext").onclick=()=>{year++;render();};
-$("yNow").onclick=()=>{year=new Date(new Date().getTime()+8*36e5).getUTCFullYear();render();};
-$("dl").onclick=()=>{const M=momentsOf(year);let s="节气,交节时刻(北京),星期,黄经,时差分,三候\n";
-  ORDER.forEach(k=>{const d=M[k];const eq=ASTRO.sunApparent(d).eq;
-    s+=`${NAMES[k]},${bjStr(d)},周${weekStr(d)},${LAM[k]},${eq.toFixed(1)},${HOU[NAMES[k]].join("|")}\n`;});
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+s],{type:"text/csv"}));a.download=`${year}年二十四节气时刻表.csv`;a.click();};
-function render(){const now=new Date();const M=momentsOf(year);
+var now0=new Date();
+var year=new Date(now0.getTime()+8*36e5).getUTCFullYear();
+$("yPrev").onclick=function(){year--;render();};$("yNext").onclick=function(){year++;render();};
+$("yNow").onclick=function(){year=new Date(new Date().getTime()+8*36e5).getUTCFullYear();render();};
+$("dl").onclick=function(){var M=momentsOf(year);var s="节气,交节时刻(北京),星期,黄经,时差分,三候\n";
+  ORDER.forEach(function(k){var d=M[k]; if(!d)return; var eq=ASTRO.sunApparent(d).eq;
+    s+=NAMES[k]+","+bjStr(d)+",周"+weekStr(d)+","+LAM[k]+","+eq.toFixed(1)+","+HOU[NAMES[k]].join("|")+"\n";});
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+s],{type:"text/csv"}));a.download=year+"年二十四节气时刻表.csv";a.click();};
+function render(){
+  var now=new Date();var M=momentsOf(year);
   $("yLab").textContent=year+" 年";$("ytitle").textContent=year+"年";
-  $("bYear").textContent=`共24节气 · ${year}`;
-  /* 当前/下一(按真实now跨年查找) */
-  const y0=new Date(new Date().getTime()+8*36e5).getUTCFullYear();
-  const mall={};[y0-1,y0,y0+1].forEach(y=>{const m=momentsOf(y);Object.keys(m).forEach(k=>{mall[y+"-"+k]=m[k];});});
-  const arr=Object.entries(mall).map(([kk,d])=>({kk,d,k:+kk.split("-")[1]})).sort((a,b)=>a.d-b.d);
-  let cur=arr[0],next=arr[1];
-  for(let i=0;i<arr.length-1;i++){if(arr[i].d<=now&&arr[i+1].d>now){cur=arr[i];next=arr[i+1];break;}}
-  const curN=NAMES[cur.k],nextN=NAMES[next.k];
-  const lam=ASTRO.sunApparent(now).lambda;
-  const houIdx=Math.min(2,Math.floor((((lam-LAM[cur.k]+360)%360)/5)));
-  $("bCur").textContent=`当令 ${curN} · ${HOU[curN][houIdx]}`;
-  $("bNext").textContent=`下节 ${nextN} ${bjMD(next.d)}`;
+  $("bYear").textContent="共24节气 · "+year+" · 已算出"+Object.keys(M).length+"个";
+  var y0=new Date(new Date().getTime()+8*36e5).getUTCFullYear();
+  var mall={};[y0-1,y0,y0+1].forEach(function(y){var m=momentsOf(y);Object.keys(m).forEach(function(k){mall[y+"-"+k]=m[k];});});
+  var arr=Object.entries(mall).map(function(en){return {kk:en[0],d:en[1],k:+en[0].split("-")[1]};}).sort(function(a,b){return a.d-b.d;});
+  var cur=arr[0],next=arr[arr.length-1];
+  for(var i=0;i<arr.length-1;i++){if(arr[i].d<=now&&arr[i+1].d>now){cur=arr[i];next=arr[i+1];break;}}
+  var curN=NAMES[cur.k],nextN=NAMES[next.k];
+  var lam=ASTRO.sunApparent(now).lambda;
+  var houIdx=Math.min(2,Math.floor((((lam-LAM[cur.k]+360)%360)/5)));
+  if(houIdx<0||!isFinite(houIdx))houIdx=0;
+  $("bCur").textContent="当令 "+curN+" · "+HOU[curN][houIdx];
+  $("bNext").textContent="下节 "+nextN+" "+bjMD(next.d);
   $("curZi").textContent=curN[0];
-  $("curInfo").innerHTML=`<b style="color:#f7e2a8;font-size:17px">${curN}</b> · 交节 ${bjStr(cur.d)} 周${weekStr(cur.d)}<br>当前处 <b>${HOU[curN][houIdx]}</b>(第${houIdx+1}候) · ${YANG[curN]}`;
-  const total=next.d-cur.d, past=now-cur.d;
+  $("curInfo").innerHTML='<b style="color:#f7e2a8;font-size:17px">'+curN+'</b> · 交节 '+bjStr(cur.d)+' 周'+weekStr(cur.d)+'<br>当前处 <b>'+HOU[curN][houIdx]+'</b>(第'+(houIdx+1)+'候) · '+YANG[curN];
+  var total=next.d-cur.d, past=now-cur.d;
   $("prog").style.width=Math.max(0,Math.min(100,past/total*100))+"%";
-  $("progTxt").textContent=`本节气已过 ${Math.floor(past/864e5)} 天 · 进度 ${(past/total*100).toFixed(1)}%`;
+  $("progTxt").textContent="本节气已过 "+Math.floor(past/864e5)+" 天 · 进度 "+(past/total*100).toFixed(1)+"%";
   $("nextName").textContent=nextN;
-  window._tickLive=function(){const t=new Date();const ms=next.d-t;
-    const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
-    $("count").textContent=`${d}天 ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-    $("nextInfo").textContent=`${nextN}交节 ${bjStr(next.d)} 周${weekStr(next.d)} · ${HOU[nextN].join(" / ")} · ${YANG[nextN]}`;
-    $("clock").textContent=`${curN} · 距${nextN} ${d}天${h}时${m}分`;};
+  window._tickLive=function(){var t=new Date();var ms=next.d-t;
+    if(ms<0){render();return;}
+    var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+    $("count").textContent=d+"天 "+p2(h)+":"+p2(m)+":"+p2(s);
+    $("nextInfo").textContent=nextN+"交节 "+bjStr(next.d)+" 周"+weekStr(next.d)+" · "+HOU[nextN].join(" / ")+" · "+YANG[nextN];
+    $("clock").textContent=curN+" · 距"+nextN+" "+d+"天"+h+"时"+m+"分";};
   window._tickLive();
-  const tb=$("tb");tb.innerHTML="";
-  ORDER.forEach(k=>{const d=M[k];const eq=ASTRO.sunApparent(d).eq;
-    const isCur=(NAMES[k]===curN&&year===y0), isNext=(NAMES[k]===nextN&&(d.getTime()===next.d.getTime()));
-    const tr=document.createElement("tr");if(isCur)tr.className="hl";
-    tr.innerHTML=`<td><b>${NAMES[k]}</b>${isCur?" ◉":""}${isNext?" ▸下一":""}</td><td style="color:#f7e2a8">${bjStr(d)}</td><td>周${weekStr(d)}</td><td>${LAM[k]}°</td><td>${fmtSigned(eq,1)}分</td><td style="color:#9aa6c7">${relStr(d-now)}</td><td style="white-space:normal;min-width:180px">${HOU[NAMES[k]].join(" · ")}</td>`;
+  var tb=$("tb");tb.innerHTML="";
+  ORDER.forEach(function(k){
+    var tr=document.createElement("tr");var d=M[k];
+    if(!d){tr.innerHTML="<td><b>"+NAMES[k]+"</b></td><td colspan='6' style='color:#fb7185'>本年该节气推算缺失,请截图反馈</td>";tb.appendChild(tr);return;}
+    var eq=ASTRO.sunApparent(d).eq;
+    var isCur=(NAMES[k]===curN&&year===y0), isNext=(NAMES[k]===nextN&&(d.getTime()===next.d.getTime()));
+    if(isCur)tr.className="hl";
+    tr.innerHTML="<td><b>"+NAMES[k]+"</b>"+(isCur?" ◉":"")+(isNext?" ▸下一":"")+"</td><td style='color:#f7e2a8'>"+bjStr(d)+"</td><td>周"+weekStr(d)+"</td><td>"+LAM[k]+"°</td><td>"+fmtSigned(eq,1)+"分</td><td style='color:#9aa6c7'>"+relStr(d-now)+"</td><td style='white-space:normal;min-width:180px'>"+HOU[NAMES[k]].join(" · ")+"</td>";
     tb.appendChild(tr);});
-  const hb=$("hou");hb.innerHTML="";
-  ORDER.forEach(k=>{NAMES[k]===curN;const div=document.createElement("div");div.className="h";
+  var hb=$("hou");hb.innerHTML="";
+  ORDER.forEach(function(k){var div=document.createElement("div");div.className="h";
     if(NAMES[k]===curN){div.style.borderColor="var(--gold)";div.style.background="rgba(232,195,106,.12)";}
-    div.innerHTML=`<b>${NAMES[k]}</b> · ${bjMD(M[k])}<br>${HOU[NAMES[k]].map((h,i)=>(NAMES[k]===curN&&i===houIdx?`◉${h}`:h)).join("<br>")}`;hb.appendChild(div);});
-  const yb=$("yang");yb.innerHTML="";
-  ORDER.forEach(k=>{const div=document.createElement("div");div.className="it"+(NAMES[k]===curN?" cur":"");
-    div.innerHTML=`<div class="t">${NAMES[k]} ${NAMES[k]===curN?"◉":""}</div><div style="color:#9aa6c7">${bjMD(M[k])}交节 · ${HOU[NAMES[k]][0]}</div><div>${YANG[NAMES[k]]}</div>`;yb.appendChild(div);});}
-render();setInterval(()=>{window._tickLive&&window._tickLive();},1000);
+    var md=M[k]?bjMD(M[k]):"—";
+    div.innerHTML="<b>"+NAMES[k]+"</b> · "+md+"<br>"+HOU[NAMES[k]].map(function(h,ii){return (NAMES[k]===curN&&ii===houIdx?"◉"+h:h);}).join("<br>");hb.appendChild(div);});
+  var yb=$("yang");yb.innerHTML="";
+  ORDER.forEach(function(k){var div=document.createElement("div");div.className="it"+(NAMES[k]===curN?" cur":"");
+    var md=M[k]?bjMD(M[k]):"—";
+    div.innerHTML="<div class='t'>"+NAMES[k]+" "+(NAMES[k]===curN?"◉":"")+"</div><div style='color:#9aa6c7'>"+md+"交节 · "+HOU[NAMES[k]][0]+"</div><div>"+YANG[NAMES[k]]+"</div>";yb.appendChild(div);});}
+render();setInterval(function(){if(window._tickLive)window._tickLive();},1000);
 setInterval(render,60000);
+}catch(e){ console.error(e); showErr("页面计算出错:"+(e&&e.message||e)+"。请强制刷新(Ctrl+F5)后重试。"); }
+})();
 </script>
 </body>
 </html>
