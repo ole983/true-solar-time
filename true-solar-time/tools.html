@@ -159,7 +159,7 @@ if(line)ctx.fillText(line,x,yy);}
 $("dlPoster").onclick=()=>{drawPoster(cityByName(sel),snapshot(cityByName(sel),new Date()));
 const a=document.createElement("a");a.href=$("poster").toDataURL("image/png");a.download=sel+"_"+termOf(snapshot(cityByName(sel),new Date()).sun.lambda)+"_节气海报.png";a.click();};
 $("posterText").oninput=()=>drawPoster(cityByName(sel),snapshot(cityByName(sel),new Date()));
-render();setInterval(render,30000);
+render();doConv1();doConv2();setInterval(render,30000);
 })();
 </script>
 </body>
