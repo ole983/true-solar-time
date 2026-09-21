@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>全国城市真太阳时总表 · 天文级实时</title>
-<meta name="description" content="全中国300+城市真太阳时、时辰、经脉、日出正午日落实时总表,每秒刷新。">
+<title>全国城市真太阳时总表 · 省会优先 · 天文级实时</title>
+<meta name="description" content="全中国300+城市真太阳时、时辰、经脉、日出正午日落实时总表,默认省会视图秒开,支持搜索排序与CSV导出。">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css">
 </head>
@@ -11,55 +11,79 @@
 <a class="skip" href="#main">跳到正文</a>
 <div class="topbar"><div class="topbar-in">
 <div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
-<nav class="tabs"><a href="index.html">首页主钟</a><a href="cities.html">全国总表</a><a href="jieqi.html">二十四节气</a><a href="liuzhu.html">子午流注</a><a href="sun.html">太阳轨迹</a><a href="science.html">天文原理</a></nav>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="science.html">天文原理</a></nav>
 <div class="top-right"><span class="pill" id="clock">—</span></div>
 </div></div>
 <div class="wrap" id="main">
-<header class="hero"><h1>全国总表 <span class="g">· 300+城实时</span></h1>
-<div class="sub">每秒刷新。真太阳时精确到秒,时辰与经脉按真太阳判定。点击任意行进入该城市主钟。日出/正午/日落为该城市今日北京时间。</div>
+<header class="hero"><h1>全国总表 <span class="g">· 省会优先</span></h1>
+<div class="sub">默认显示 34 个省会/直辖市/特别行政区,秒开不卡。需要更多城市请点“展开全部340城”或直接搜索。点击任意行进入该城市今日行动。日出/正午/日落为该城市今日北京时间。</div>
 <div class="badges"><span class="badge" id="jd">—</span><span class="badge" id="eot">—</span><span class="badge" id="cnt">—</span></div></header>
 <div class="controls" role="search">
-<input id="q" list="cl" placeholder="搜索城市,如: 喀什 / 大理 / 漠河…(已并入邻近地级市)" autocomplete="off"><datalist id="cl"></datalist>
+<input id="q" list="cl" placeholder="搜索城市,如: 喀什 / 大理 / 漠河" autocomplete="off"><datalist id="cl"></datalist>
 <select id="prov"><option value="">全部省份</option></select>
 <select id="sort"><option value="default">按省份排序</option><option value="lon">按经度 西→东</option><option value="diff">按超前北京排序</option><option value="rise">按今日日出排序</option></select>
+<button class="btn gold" id="toggleAll" type="button">展开全部340城</button>
 <button class="btn" id="csv" type="button">导出 CSV</button>
 </div>
-<section class="card"><h2>◈ 实时总表 <span class="pill">点击行 → 主钟</span></h2>
+<section class="card"><h2>◈ 实时总表 <span class="pill">点击行 → 今日行动</span></h2>
 <div class="desc" id="hint"></div>
 <div class="tblwrap"><table><thead><tr><th>城市</th><th>省份</th><th>经度</th><th>纬度</th><th>真太阳时</th><th>时辰</th><th>经脉</th><th>超前北京</th><th>日出</th><th>日中</th><th>日落</th><th>昼长</th></tr></thead><tbody id="tb"></tbody></table></div>
 </section>
-<footer class="site"><a href="index.html">← 回首页主钟</a> · 县乡请按经度每度±4分钟自行修正 · <a href="science.html">精度说明</a></footer>
+<footer class="site"><a href="index.html">← 回今日行动</a> · 县乡请按经度每度±4分钟自行修正 · <a href="science.html">精度说明</a></footer>
 </div>
 <script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
 <script>
 (function(){const{$,store,snapshot,fmtSigned}=window.TST;TST.setNav();
 const q=$("q"),prov=$("prov"),sort=$("sort"),tb=$("tb");
+const CAPITALS=["北京","天津","石家庄","太原","呼和浩特","沈阳","长春","哈尔滨","上海","南京","杭州","合肥","福州","南昌","济南","郑州","武汉","长沙","广州","南宁","海口","重庆","成都","贵阳","昆明","拉萨","西安","兰州","西宁","银川","乌鲁木齐","香港","澳门","台北"];
+let showAll=false;
 window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];$("cl").appendChild(o);});
 [...new Set(window.CITIES.map(c=>c[1]))].forEach(p=>{const o=document.createElement("option");o.value=p;o.textContent=p;prov.appendChild(o);});
-let rows=[];
-function tick(){const now=new Date(),sun=ASTRO.sunApparent(now);
-$("clock").textContent="北京 "+ASTRO.fmtHMS(ASTRO.bjtMinutesFloat(now))+" · EoT "+fmtSigned(sun.eq,1)+"分";
-$("jd").textContent="JD "+sun.jd.toFixed(4);$("eot").textContent="EoT "+fmtSigned(sun.eq,2)+"分 · "+TST.termOf(sun.lambda);
-const f=q.value.trim(),pv=prov.value;let list=window.CITIES.filter(c=>(!pv||c[1]===pv)&&(!f||c[0].includes(f)));
-const data=list.map(c=>({c,s:snapshot(c,now)}));
-if(sort.value==="lon")data.sort((a,b)=>a.c[2]-b.c[2]);
-else if(sort.value==="diff")data.sort((a,b)=>b.s.diff-a.s.diff);
-else if(sort.value==="rise")data.sort((a,b)=>(a.s.ev.riseMin??9999)-(b.s.ev.riseMin??9999));
-$("cnt").textContent="共 "+data.length+" 城 · "+new Date().toLocaleTimeString("zh-CN");
-$("hint").textContent=`当前 ${data.length} 城 · 时差方程 ${fmtSigned(sun.eq,2)}分已计入真太阳时。`;
+let rows=[],cells=[],lastKey="",lastSec=-1;
+function visibleList(){const f=q.value.trim(),pv=prov.value;
+let list=window.CITIES.filter(c=>(!pv||c[1]===pv)&&(!f||c[0].includes(f)));
+if(!f&&!pv&&!showAll)list=list.filter(c=>CAPITALS.includes(c[0]));
+if(sort.value==="lon")list=[...list].sort((a,b)=>a[2]-b[2]);
+else if(sort.value==="diff")list=[...list].sort((a,b)=>(b[2]-a[2]));
+else if(sort.value==="rise")list=[...list].sort((a,b)=>a[3]-b[3]);
+return list;}
+function buildRows(list,now){tb.innerHTML="";cells=[];
 const frag=document.createDocumentFragment();
-data.forEach(({c,s})=>{const tr=document.createElement("tr");if(c[0]===store.sel)tr.className="hl";
-const day=s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+"h";
-tr.innerHTML=`<td><b>${c[0]}</b></td><td style="color:#9aa6c7">${c[1]}</td><td>${c[2].toFixed(2)}°</td><td>${c[3].toFixed(2)}°</td><td style="color:#f7e2a8;font-weight:700">${ASTRO.fmtHMS(s.tst)}</td><td>${s.sc.z}时</td><td style="color:#9aa6c7">${s.sc.m.slice(3)}</td><td>${fmtSigned(s.diff,1)}分</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.riseMin)}</td><td>${ASTRO.fmtHM(s.ev.noonMin)}</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.setMin)}</td><td>${day}</td>`;
-tr.style.cursor="pointer";tr.title="进入"+c[0]+"主钟";
+list.forEach(c=>{const s=snapshot(c,now);const tr=document.createElement("tr");
+if(c[0]===store.sel)tr.className="hl";
+tr.style.cursor="pointer";tr.title="进入"+c[0]+"今日行动";
 tr.onclick=()=>{store.sel=c[0];location.href="index.html?city="+encodeURIComponent(c[0]);};
-frag.appendChild(tr);});
-tb.innerHTML="";tb.appendChild(frag);rows=data;}
-[q,prov,sort].forEach(el=>el.addEventListener("input",tick));
+const day=s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+"h";
+tr.innerHTML=`<td><b>${c[0]}</b></td><td style="color:#b6c1dd">${c[1]}</td><td>${c[2].toFixed(2)}°</td><td>${c[3].toFixed(2)}°</td><td class="tst" style="color:#f7e2a8;font-weight:700">${ASTRO.fmtHMS(s.tst)}</td><td class="zc">${s.sc.z}时</td><td style="color:#b6c1dd">${s.sc.m.slice(3)}</td><td>${fmtSigned(s.diff,1)}分</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.riseMin)}</td><td>${ASTRO.fmtHM(s.ev.noonMin)}</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.setMin)}</td><td>${day}</td>`;
+frag.appendChild(tr);
+cells.push({c,tr,tst:tr.querySelector(".tst"),zc:tr.querySelector(".zc")});});
+tb.appendChild(frag);}
+function updateCells(now){const sun=ASTRO.sunApparent(now);
+cells.forEach(o=>{const s=snapshot(o.c,now);
+o.tst.textContent=ASTRO.fmtHMS(s.tst);
+if(o.zc.textContent!==s.sc.z+"时")o.zc.textContent=s.sc.z+"时";});
+$("clock").textContent="北京 "+ASTRO.fmtHMS(ASTRO.bjtMinutesFloat(now))+" · EoT "+fmtSigned(sun.eq,1)+"分";
+$("jd").textContent="JD "+sun.jd.toFixed(4);
+$("eot").textContent="EoT "+fmtSigned(sun.eq,2)+"分 · "+TST.termOf(sun.lambda);}
+function render(force){const now=new Date();const list=visibleList();
+const key=list.length+"|"+(list[0]&&list[0][0])+"|"+list[list.length-1][0]+"|"+sort.value+"|"+showAll+"|"+store.sel;
+if(force||key!==lastKey){lastKey=key;buildRows(list,now);}
+$("cnt").textContent="共 "+list.length+" 城 · "+new Date().toLocaleTimeString("zh-CN");
+$("hint").textContent=`当前 ${list.length} 城 · 时差方程 ${fmtSigned(ASTRO.sunApparent(now).eq,2)}分已计入真太阳时 · ${showAll?"全部城市":"省会视图"}`;
+updateCells(now);rows=list;}
+$("toggleAll").onclick=()=>{showAll=!showAll;$("toggleAll").textContent=showAll?"只看省会":"展开全部340城";render(true);};
+[q,prov,sort].forEach(el=>el.addEventListener("input",()=>render(true)));
+prov.addEventListener("change",()=>render(true));
 $("csv").onclick=()=>{let s="城市,省份,经度,纬度,真太阳时,时辰,经脉,超前北京(分),日出,日中,日落\n";
-rows.forEach(({c,s:sn})=>{s+=`${c[0]},${c[1]},${c[2]},${c[3]},${ASTRO.fmtHMS(sn.tst)},${sn.sc.z},${sn.sc.m},${sn.diff.toFixed(1)},${sn.ev.polar||ASTRO.fmtHM(sn.ev.riseMin)},${ASTRO.fmtHM(sn.ev.noonMin)},${sn.ev.polar||ASTRO.fmtHM(sn.ev.setMin)}\n`;});
+const now=new Date();
+rows.forEach(c=>{const sn=snapshot(c,now);
+s+=`${c[0]},${c[1]},${c[2]},${c[3]},${ASTRO.fmtHMS(sn.tst)},${sn.sc.z},${sn.sc.m},${sn.diff.toFixed(1)},${sn.ev.polar||ASTRO.fmtHM(sn.ev.riseMin)},${ASTRO.fmtHM(sn.ev.noonMin)},${sn.ev.polar||ASTRO.fmtHM(sn.ev.setMin)}\n`;});
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+s],{type:"text/csv"}));a.download="真太阳时总表.csv";a.click();};
-tick();setInterval(tick,1000);})();
+render(true);
+/* 脏检查:每200ms只更新秒级变化,整分才重建时不再重建行 */
+setInterval(()=>{const now=new Date();const sec=now.getSeconds();
+if(sec!==lastSec){lastSec=sec;updateCells(now);}},200);
+})();
 </script>
 </body>
 </html>

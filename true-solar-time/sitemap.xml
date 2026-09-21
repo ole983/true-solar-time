@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>index.html</loc></url>
-<url><loc>cities.html</loc></url>
-<url><loc>jieqi.html</loc></url>
-<url><loc>liuzhu.html</loc></url>
-<url><loc>sun.html</loc></url>
-<url><loc>science.html</loc></url>
+<url><loc>https://ole983.github.io/true-solar-time/index.html</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>https://ole983.github.io/true-solar-time/cities.html</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+<url><loc>https://ole983.github.io/true-solar-time/jieqi.html</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+<url><loc>https://ole983.github.io/true-solar-time/tools.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<url><loc>https://ole983.github.io/true-solar-time/liuzhu.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://ole983.github.io/true-solar-time/sun.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://ole983.github.io/true-solar-time/science.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>

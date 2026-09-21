@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>实用工具 · 真太阳时换算 / 黄金时刻 / 晒太阳 / 节气海报</title>
+<meta name="description" content="真太阳时与北京时间互转、摄影黄金蓝调时刻、宝宝晒太阳最佳时段、节气海报生成,全国城市天文级计算。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css">
+<style>
+.toolbox{border:1px solid var(--line);border-radius:16px;padding:16px;background:rgba(0,0,0,.3);margin-top:12px}
+.toolbox h3{margin:0 0 10px;font-size:15px;color:var(--gold2);letter-spacing:.06em}
+.inrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.inrow input,.inrow select{background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;outline:none;font-variant-numeric:tabular-nums}
+.inrow input:focus,.inrow select:focus{border-color:var(--gold)}
+.inrow input[type=text]{width:110px}
+.res{margin-top:12px;display:grid;gap:8px}
+.res .r{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:rgba(0,0,0,.28);font-size:13.5px;font-variant-numeric:tabular-nums}
+.res .r b{color:var(--gold2)}
+.res .big{font-size:22px;font-weight:800;color:var(--gold)}
+.tag{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--mut)}
+canvas#poster{width:100%;max-width:320px;border:1px solid var(--line);border-radius:12px;background:#0a1122}
+.hint{color:var(--mut);font-size:12.5px;line-height:1.8;margin-top:8px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="science.html">天文原理</a></nav>
+<div class="top-right"><input id="q" list="cityList" placeholder="切换城市…" autocomplete="off" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;width:140px"><datalist id="cityList"></datalist><span class="pill" id="navCity">北京</span></div>
+</div></div>
+<div class="wrap" id="main">
+<header class="hero"><h1>实用工具 <span class="g">· 换算 / 黄金时刻 / 晒娃</span></h1>
+<div class="sub">四类人群刚需工具,全部本地计算,输入即出结果。当前城市:<b id="curCity" style="color:#f7e2a8">北京</b> <span class="pill" id="curTST">—</span></div></header>
+
+<div class="grid3">
+<section class="card" style="margin-top:16px">
+<h2>◈ 真太阳时 ⇄ 北京时间</h2>
+<div class="desc">命理择时刚需:把挂钟时间换成真太阳时辰,或反向查挂钟几点。</div>
+<div class="toolbox"><h3>北京时间 → 真太阳时</h3>
+<div class="inrow"><input id="bjIn" type="text" value="12:00" placeholder="12:00"><span class="tag">时:分</span><button class="btn gold" id="conv1" type="button">换算</button></div>
+<div class="res" id="res1"></div></div>
+<div class="toolbox"><h3>真太阳时 → 北京时间</h3>
+<div class="inrow"><input id="tsIn" type="text" value="12:00" placeholder="12:00"><span class="tag">时:分</span><button class="btn gold" id="conv2" type="button">换算</button></div>
+<div class="res" id="res2"></div></div>
+<div class="hint">公式:真太阳时 = 北京时 + (经度−120°)×4分 + EoT。用于起八字时,请以真太阳时落定时辰,再按节气交节定月柱。</div>
+</section>
+
+<section class="card" style="margin-top:16px">
+<h2>◈ 摄影黄金 · 蓝调时刻</h2>
+<div class="desc">日出日落前后光线最佳时段,户外/摄影/钓鱼用。</div>
+<div class="toolbox"><div class="res" id="golden"></div></div>
+<div class="hint">黄金时刻:太阳高度 −4°~+6°,暖调柔和;蓝调时刻:−6°~−4°,冷蓝天空。日落线在轨迹条中以橙色标注,红色仅用于警告。</div>
+</section>
+
+<section class="card" style="margin-top:16px">
+<h2>◈ 宝宝晒太阳计算器</h2>
+<div class="desc">按太阳高度角推荐时段,避免晒伤又保证补钙效率。</div>
+<div class="toolbox"><div class="res" id="sunbath"></div></div>
+<div class="hint">太阳高度 20°–50° 为最佳(紫外线合成维D效率高、晒伤风险低);&lt;20° 效率低,&gt;50° 易晒伤。以上为天文时段,云量与空气质量请另查天气。</div>
+</section>
+</div>
+
+<section class="card" style="margin-top:16px">
+<h2>◈ 节气海报生成 <span class="pill">一键发朋友圈</span></h2>
+<div class="desc">按当前城市与节气生成竖版海报,下载后可直接分享。文案取二十四节气物候与金句,实用不失文化之魂。</div>
+<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+<canvas id="poster" width="720" height="1280"></canvas>
+<div style="flex:1;min-width:240px">
+<div class="inrow"><input id="posterText" type="text" placeholder="自定义一句祝福(可空)" style="width:auto;flex:1;min-width:200px">
+<button class="btn gold" id="dlPoster" type="button">下载海报</button></div>
+<div class="hint">海报含:城市、节气与物候、真太阳时、日出日落、昼长、当日金句。<br>建议在手机上打开并下载,竖屏 9:16 适配朋友圈与小红书。</div>
+</div>
+</div>
+</section>
+
+<footer class="site"><a href="index.html">← 回今日行动</a> · <a href="jieqi.html">节气养生</a> · <a href="sun.html">太阳轨迹</a> · <a href="science.html">精度验证</a></footer>
+</div>
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script>
+(function(){const{$,store,cityByName,snapshot,fmtSigned,termOf,goldenOf,sunbathOf,JINJU,LIU,toTrue,toBeijing,parseHM}=window.TST;
+TST.setNav();
+const q=$("q");window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];$("cityList").appendChild(o);});
+let sel=store.sel;if(!window.CITIES.some(c=>c[0]===sel))sel="北京";
+q.value=sel;
+q.onchange=()=>{const f=window.CITIES.find(c=>c[0]===q.value.trim());if(f){sel=f[0];store.sel=sel;q.value=sel;render();}};
+function hm(m){return ASTRO.fmtHM(m);}
+function shichenName(tstMin){const m=((tstMin%1440)+1440)%1440;for(const L of LIU){const r=L.range;
+if(r.length===4){if(m>=r[0]||m<r[3])return L;}else if(m>=r[0]&&m<r[1])return L;}return LIU[0];}
+function render(){const now=new Date(),city=cityByName(sel),s=snapshot(city,now);
+$("navCity").textContent=sel;$("curCity").textContent=city[0];
+$("curTST").textContent=`真太阳 ${ASTRO.fmtHMS(s.tst)} · 超前北京 ${fmtSigned(s.diff,1)}分`;
+/* 换算 */
+function doConv1(){const m=parseHM($("bjIn").value);if(m==null){$("res1").innerHTML='<div class="r">请输入如 12:00 或 12时30分</div>';return;}
+const tst=toTrue(m,city[2],s.sun.eq);const L=shichenName(tst);
+$("res1").innerHTML=`<div class="r"><span>真太阳时</span><b class="big">${ASTRO.fmtHMS(tst)}</b></div>
+<div class="r"><span>时辰 / 经脉</span><b>${L.z}时 · ${L.m}</b></div>
+<div class="r"><span>换算明细</span><span>经度差 ${fmtSigned((city[2]-120)*4,1)}分 + EoT ${fmtSigned(s.sun.eq,2)}分</span></div>
+<div class="r"><span>宜</span><span>${L.y}</span></div>`;}
+function doConv2(){const m=parseHM($("tsIn").value);if(m==null){$("res2").innerHTML='<div class="r">请输入如 12:00</div>';return;}
+const bj=toBeijing(m,city[2],s.sun.eq);const L=shichenName(m);
+$("res2").innerHTML=`<div class="r"><span>北京时间(挂钟)</span><b class="big">${hm(bj)}</b></div>
+<div class="r"><span>该真太阳时时辰</span><b>${L.z}时 · ${L.m}</b></div>
+<div class="r"><span>说明</span><span>真太阳 ${hm(m)} 对应挂钟 ${hm(bj)}</span></div>`;}
+$("conv1").onclick=doConv1;$("conv2").onclick=doConv2;
+$("bjIn").oninput=doConv1;$("tsIn").oninput=doConv2;
+/* 黄金时刻 */
+const g=goldenOf(city,s);
+if(s.ev.polar){$("golden").innerHTML=`<div class="r"><span>今日</span><b>${s.ev.polar}</b></div>`;}
+else{$("golden").innerHTML=`
+<div class="r"><span>晨 · 蓝调</span><b>${hm(g.dawnBlue[0])} – ${hm(g.dawnBlue[1])}</b></div>
+<div class="r"><span>晨 · 黄金</span><b class="big">${hm(g.dawnGold[0])} – ${hm(g.dawnGold[1])}</b></div>
+<div class="r"><span>昏 · 黄金</span><b class="big">${hm(g.duskGold[0])} – ${hm(g.duskGold[1])}</b></div>
+<div class="r"><span>昏 · 蓝调</span><b>${hm(g.duskBlue[0])} – ${hm(g.duskBlue[1])}</b></div>
+<div class="r"><span>日出 / 日中 / 日落</span><span>${hm(s.ev.riseMin)} / ${hm(s.ev.noonMin)} / ${hm(s.ev.setMin)}</span></div>
+<div class="r"><span>昼长</span><span>${g.dayLen.toFixed(1)} 小时</span></div>`;}
+/* 晒太阳 */
+const sb=sunbathOf(city,s);
+const fseg=arr=>arr.map(([a,b])=>hm(a)+"–"+hm(b)).join("、")||"今日无";
+$("sunbath").innerHTML=`<div class="r"><span>☀ 最佳(20°–50°)</span><b class="big">${fseg(sb.best)}</b></div>
+<div class="r"><span>弱光(&lt;20°)</span><span>${fseg(sb.safe)}</span></div>
+<div class="r"><span>今日昼长</span><span>${s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+" 小时"}</span></div>
+<div class="r"><span>建议</span><span>每次10–20分钟,露手臂小腿,避开10–16点强紫外线</span></div>`;
+/* 海报 */
+drawPoster(city,s);}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawPoster(city,s){const cv=$("poster"),ctx=cv.getContext("2d"),W=720,H=1280;
+const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,"#0d1832");grd.addColorStop(.55,"#0a1122");grd.addColorStop(1,"#140b22");
+ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+ctx.strokeStyle="rgba(232,195,106,.35)";ctx.lineWidth=3;roundRect(ctx,28,28,W-56,H-56,28);ctx.stroke();
+const cur=termOf(s.sun.lambda);
+/* 星点 */
+for(let i=0;i<70;i++){ctx.fillStyle="rgba(255,255,255,"+(Math.random()*.5+.15)+")";ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H,Math.random()*1.6+.3,0,7);ctx.fill();}
+/* 太阳 */
+ctx.fillStyle="#e8c36a";ctx.shadowColor="#e8c36a";ctx.shadowBlur=40;ctx.beginPath();ctx.arc(W-120,150,34,0,7);ctx.fill();ctx.shadowBlur=0;
+ctx.fillStyle="#0d1832";ctx.font="bold 30px sans-serif";ctx.textAlign="center";ctx.fillText("☉",W-120,161);
+ctx.textAlign="left";
+ctx.fillStyle="#9aa6c7";ctx.font="22px sans-serif";ctx.fillText("真太阳时 · 子午流注",64,96);
+ctx.fillStyle="#f7e2a8";ctx.font="bold 34px sans-serif";ctx.fillText(city[0]+" · "+city[1],64,150);
+/* 节气大字 */
+ctx.fillStyle="#e8c36a";ctx.font="bold 130px serif";ctx.fillText(cur[0],64,330);
+ctx.fillStyle="#f7e2a8";ctx.font="bold 72px serif";ctx.fillText(cur.slice(1),64,410);
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";ctx.fillText("物候 · "+(JINJU[cur]?JINJU[cur].split(",").slice(0,2).join("、"):""),64,460);
+/* 数据 */
+const rows=[["真太阳时",ASTRO.fmtHMS(s.tst)],["当令时辰",s.sc.z+"时 · "+s.sc.m],["日出 / 日落",(s.ev.polar||hm(s.ev.riseMin))+" / "+(s.ev.polar||hm(s.ev.setMin))],["正午日中",hm(s.ev.noonMin)],["昼长",(s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+" 小时")],["超前北京",fmtSigned(s.diff,1)+" 分"]];
+let y=560;ctx.font="26px sans-serif";
+rows.forEach(([k,v],i)=>{ctx.fillStyle=i%2?"rgba(255,255,255,.04)":"rgba(232,195,106,.08)";roundRect(ctx,64,y-32,W-128,62,12);ctx.fill();
+ctx.fillStyle="#b6c1dd";ctx.fillText(k,88,y+8);ctx.fillStyle="#f7e2a8";ctx.font="bold 30px sans-serif";ctx.textAlign="right";ctx.fillText(v,W-88,y+8);ctx.textAlign="left";ctx.font="26px sans-serif";y+=78;});
+/* 金句 */
+ctx.fillStyle="#e8c36a";ctx.font="italic 30px serif";const jj=JINJU[cur]||"顺天时,养正气。";
+wrap(ctx,jj,64,H-190,W-128,40);
+const custom=$("posterText")&&$("posterText").value.trim();
+if(custom){ctx.fillStyle="#5eead4";ctx.font="bold 30px serif";wrap(ctx,"「"+custom+"」",64,H-120,W-128,40);}
+ctx.fillStyle="#9aa6c7";ctx.font="20px sans-serif";ctx.fillText("按太阳位置判定时辰 · ole983.github.io/true-solar-time",64,H-56);}
+function wrap(ctx,text,x,y,maxW,lh){const chars=[...text];let line="",yy=y;
+chars.forEach(ch=>{if(ctx.measureText(line+ch).width>maxW){ctx.fillText(line,x,yy);line=ch;yy+=lh;}else line+=ch;});
+if(line)ctx.fillText(line,x,yy);}
+$("dlPoster").onclick=()=>{drawPoster(cityByName(sel),snapshot(cityByName(sel),new Date()));
+const a=document.createElement("a");a.href=$("poster").toDataURL("image/png");a.download=sel+"_"+termOf(snapshot(cityByName(sel),new Date()).sun.lambda)+"_节气海报.png";a.click();};
+$("posterText").oninput=()=>drawPoster(cityByName(sel),snapshot(cityByName(sel),new Date()));
+render();setInterval(render,30000);
+})();
+</script>
+</body>
+</html>
