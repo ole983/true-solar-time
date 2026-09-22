@@ -64,6 +64,18 @@
 </section>
 
 <section class="card">
+<h2>◈ 大运 · 流年 <span class="pill" id="lockTag3">会员功能</span></h2>
+<div class="desc">以月柱起运,<b>阳男阴女顺排、阴男阳女逆排</b>;出生到相邻节气的天数,三天折一年定起运岁。</div>
+<div class="inrow" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px">
+<label style="font-size:13px;color:var(--mut)">性别</label>
+<select id="gender" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px"><option value="m">男</option><option value="f">女</option></select>
+<span class="pill" id="dayunInfo">排盘后显示</span>
+</div>
+<div class="tblwrap" style="margin-top:12px;max-height:360px"><table><thead><tr><th>大运</th><th>起运岁</th><th>起始年份</th><th>流年区间</th></tr></thead><tbody id="dayunBody"><tr><td colspan="4" style="color:var(--mut)">请输入信息后点「排盘」</td></tr></tbody></table></div>
+<div class="desc" id="liunianNote" style="margin-top:10px"></div>
+</section>
+
+<section class="card">
 <h2>◈ 说明</h2>
 <div class="kv">
 <p><b>为什么必须用真太阳时?</b><br>时辰按太阳时角划分。拉萨比北京慢约 1 小时 55 分,若按北京时间定时辰,常会错一个时辰。排盘前先换算真太阳时,是本页与普通排盘的区别。</p>
@@ -165,6 +177,40 @@ function startShen(dayZhi){
 }
 function hourShen(dayZhi,hourZhi){const s=startShen(dayZhi);const i=((hourZhi-s)%12+12)%12;return SHEN[i];}
 
+/* ---- 大运 / 流年 ---- */
+function gzIndex(g,z){for(let i=0;i<60;i++)if(GAN[i%10]===g&&ZHI[i%12]===z)return i;return -1;}
+function jieList(y){const all=[];[y-1,y,y+1].forEach(yy=>{const M=termMoments(yy);JIE_LAM.forEach(L=>{const k=LAM.indexOf(L);if(M[k])all.push({t:M[k],L});});});return all.sort((a,b)=>a.t-b.t);}
+function computeDayun(r,dateBJ,gender){
+  const gyang=(GAN.indexOf(r.yearGZ.g)%2===0);
+  const forward=(gyang&&gender==="m")||(!gyang&&gender==="f");
+  const arr=jieList(dateBJ.getUTCFullYear());
+  let prev=arr[0],next=arr[arr.length-1];
+  for(const a of arr){if(a.t<=dateBJ)prev=a;}
+  for(let i=arr.length-1;i>=0;i--){if(arr[i].t>dateBJ){next=arr[i];}}
+  const days=forward?(next.t-dateBJ)/864e5:(dateBJ-prev.t)/864e5;
+  const startYears=days/3;
+  const mIdx=gzIndex(r.monthGZ.g,r.monthGZ.z);
+  const birthYear=dateBJ.getUTCFullYear();
+  const out=[];
+  for(let i=0;i<9;i++){
+    const idx=((mIdx+(forward?(i+1):-(i+1)))%60+60)%60;
+    const startAge=startYears+i*10;
+    const sy=birthYear+Math.floor(startAge);
+    out.push({g:GAN[idx%10],z:ZHI[idx%12],startAge,sy,ey:sy+9});
+  }
+  return {forward,startYears,out};
+}
+function renderDayun(r,dateBJ,gender){
+  const d=computeDayun(r,dateBJ,gender);
+  const yy=Math.floor(d.startYears),mm=Math.round((d.startYears-yy)*12);
+  $("dayunInfo").textContent=(d.forward?"顺排":"逆排")+" · 起运约 "+yy+"岁"+mm+"个月";
+  $("dayunBody").innerHTML=d.out.map(o=>'<tr><td><b style="color:var(--gold2)">'+o.g+o.z+'</b></td><td>'+o.startAge.toFixed(1)+' 岁</td><td>'+o.sy+'</td><td>'+o.sy+'–'+o.ey+'</td></tr>').join("");
+  const nowY=new Date().getUTCFullYear();
+  const lnIdx=((nowY-4)%60+60)%60,lg=GAN[lnIdx%10],lz=ZHI[lnIdx%12];
+  const cur=d.out.find(o=>nowY>=o.sy&&nowY<=o.ey);
+  $("liunianNote").innerHTML='今年 '+nowY+' 年流年 <b style="color:var(--gold2)">'+lg+lz+'</b>'+(cur?' · 行 <b>'+cur.g+cur.z+'</b> 大运('+cur.sy+'–'+cur.ey+')':'')+'。';
+}
+
 /* ---- UI ---- */
 const cityList=$("cityList");
 window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];cityList.appendChild(o);});
@@ -174,7 +220,7 @@ const now=new Date();
 $("bDate").value=now.getUTCFullYear()+"-"+String(now.getUTCMonth()+1).padStart(2,"0")+"-"+String(now.getUTCDate()).padStart(2,"0");
 
 function setLocks(){const on=VIP.isActive();
-  ["lockTag","lockTag2"].forEach(id=>{const e=$(id);if(on){e.textContent="已解锁";e.style.color="var(--green)";e.style.borderColor="rgba(52,211,153,.5)";}});
+  ["lockTag","lockTag2","lockTag3"].forEach(id=>{const e=$(id);if(e&&on){e.textContent="已解锁";e.style.color="var(--green)";e.style.borderColor="rgba(52,211,153,.5)";}});
   const p=$("vipPill");if(on)p.innerHTML='<span class="badge-vip">✦ 会员</span>';else p.textContent="未开通会员";}
 
 function renderPillars(r,dateBJ){
@@ -215,6 +261,7 @@ function calc(){
   const r=buildPillars(dateBJ,c[2],sun.eq);
   renderPillars(r,dateBJ);
   renderHours(r);
+  renderDayun(r,dateBJ,$("gender").value);
 }
 $("calcBtn").onclick=calc;
 setLocks();

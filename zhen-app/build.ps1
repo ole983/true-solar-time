@@ -67,7 +67,7 @@ function Run-Build($mode){
   Push-Location $ANDROID
   $gradle = Find-GradleBin
   Write-Host "    Gradle → $gradle"
-  cmd /c "\"$gradle\" assembleRelease bundleRelease --no-daemon"
+  & $gradle assembleRelease bundleRelease --no-daemon
   if($LASTEXITCODE -ne 0){ Pop-Location; Die "Gradle 构建失败" }
   Pop-Location
 }
