@@ -36,9 +36,9 @@ cosH₀ = [sin(−0.833°) − sinφ·sinδ]/[cosφ·cosδ];日出/落(北京时
 <b style="color:#e8c36a">Q4 子午流注为何必须用真太阳?</b> 《灵枢》以日出日入为开阖,经脉流注锚定太阳时角。全国统一北京时后,西部同一挂钟时刻太阳时角差可达45°,即3个时辰,经脉完全错位。<br>
 <b style="color:#e8c36a">Q5 如何复算?</b> 打开 <code>astro.js</code>,任意时刻 <code>ASTRO.sunApparent(new Date())</code> 即得 λ/α/δ/EoT,与美国海军天文台 MICA 或紫金山年历对拍正午即可。
 </div></section>
-<footer class="site"><a href="index.html">← 回首页</a></footer>
+<footer class="site"><a href="index.html">← 回首页</a> · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a></footer>
 </div>
-<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script><script src="bridge.js"></script>
 <script>
 (function(){TST.setNav();
 function showLive(){const s=ASTRO.sunApparent(new Date());$("live").textContent=`λ${s.lambda.toFixed(2)}° δ${s.Dec.toFixed(2)}° EoT${(s.eq>=0?"+":"")+s.eq.toFixed(2)}分`;}

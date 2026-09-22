@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>上架截图生成器 | 真太阳时</title>
+<style>
+:root{--bg:#070b16;--gold:#e8c36a;--gold2:#f7e2a8;--teal:#5eead4;--line:rgba(255,255,255,.14);--mut:#b6c1dd;--txt:#eef2ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;padding:20px}
+h1{font-size:20px;letter-spacing:.06em}
+h1 b{color:var(--gold)}
+.sub{color:var(--mut);font-size:13px;line-height:1.9;max-width:900px}
+.wrap{max-width:1280px;margin:0 auto}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.btn{background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn:hover{border-color:var(--gold)}
+.btn.gold{background:var(--gold);color:#0a1122;font-weight:800;border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.cell{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px}
+.cell .cap{font-size:13px;color:var(--gold2);margin-bottom:8px;font-weight:700}
+canvas{width:100%;border:1px solid var(--line);border-radius:10px;display:block}
+.hint{color:var(--mut);font-size:12.5px;line-height:1.9;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>上架截图生成器 <b>· 1080×1920</b></h1>
+<div class="sub">为华为/小米/OPPO/vivo/应用宝生成 5 张竖版营销截图,尺寸 1080×1920(9:16),各市场通用。数据取自本站实时算法(当前城市与今日真实日出日落)。点击单张下载,或“全部下载”。建议用桌面浏览器打开。</div>
+<div class="bar">
+<select id="city" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px"></select>
+<button class="btn gold" id="all" type="button">全部下载</button>
+<button class="btn" id="refresh" type="button">用当前时间刷新</button>
+</div>
+<div class="grid" id="grid"></div>
+<div class="hint">说明:① 各市场截图要求 4–8 张,本页给 5 张可直接用;② 截图内不出现“治疗/诊断/疗效”等词,符合工具类目;③ 如需真机截图,请在 App 内同屏截取,本页为营销版排版。④ 提交时状态栏留电量信号更自然,营销版无需状态栏。</div>
+</div>
+<script src="../true-solar-time/cities.js"></script><script src="../true-solar-time/astro.js"></script><script src="../true-solar-time/app.js"></script>
+<script>
+(function(){
+const {$,cityByName,snapshot,termOf,JINJU,LIU}=window.TST;
+const W=1080,H=1920;
+const citySel=$("city");
+window.CITIES.filter(c=>["北京","上海","广州","成都","拉萨","乌鲁木齐","哈尔滨","三亚"].includes(c[0])).forEach(c=>{
+const o=document.createElement("option");o.value=c[0];o.textContent=c[0];citySel.appendChild(o);});
+citySel.value="北京";
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function wrap(ctx,text,x,y,maxW,lh,center){const chars=[...text];let line="",yy=y,lines=[];
+chars.forEach(ch=>{if(ctx.measureText(line+ch).width>maxW){lines.push(line);line=ch;}else line+=ch;});if(line)lines.push(line);
+lines.forEach((l,i)=>{if(center){const w=ctx.measureText(l).width;ctx.fillText(l,x-w/2,yy+i*lh);}else ctx.fillText(l,x,yy+i*lh);});return lines.length;}
+function bg(ctx){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#0d1832");g.addColorStop(.5,"#0a1122");g.addColorStop(1,"#140b22");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+for(let i=0;i<90;i++){ctx.fillStyle="rgba(255,255,255,"+(Math.random()*.45+.12)+")";ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H,Math.random()*1.8+.3,0,7);ctx.fill();}}
+function brand(ctx,title,sub){ctx.textAlign="center";ctx.fillStyle="#f7e2a8";ctx.font="bold 62px 'PingFang SC',serif";
+wrap(ctx,title,W/2,210,W-160,78,true);
+ctx.fillStyle="#b6c1dd";ctx.font="30px sans-serif";wrap(ctx,sub,W/2,430,W-180,46,true);
+ctx.textAlign="left";}
+function phone(ctx,y,draw){const pw=760,ph=1080,px=(W-pw)/2;
+ctx.save();ctx.shadowColor="rgba(232,195,106,.25)";ctx.shadowBlur=60;
+ctx.fillStyle="#0a1122";rr(ctx,px,y,pw,ph,54);ctx.fill();ctx.restore();
+ctx.strokeStyle="rgba(232,195,106,.5)";ctx.lineWidth=3;rr(ctx,px,y,pw,ph,54);ctx.stroke();
+ctx.save();rr(ctx,px+10,y+10,pw-20,ph-20,44);ctx.clip();draw(px+34,y+34,pw-68,ph-68);ctx.restore();
+ctx.fillStyle="rgba(255,255,255,.25)";rr(ctx,W/2-60,y+18,120,10,5);ctx.fill();}
+function foot(ctx){ctx.textAlign="center";ctx.fillStyle="#9aa6c7";ctx.font="26px sans-serif";ctx.fillText("真太阳时 · 子午流注   |   按太阳位置判定时辰",W/2,H-70);ctx.textAlign="left";}
+function row(ctx,x,y,w,label,value,hl){ctx.fillStyle=hl?"rgba(232,195,106,.14)":"rgba(255,255,255,.05)";rr(ctx,x,y,w,84,16);ctx.fill();
+ctx.fillStyle="#b6c1dd";ctx.font="28px sans-serif";ctx.fillText(label,x+26,y+52);
+ctx.fillStyle=hl?"#f7e2a8":"#eef2ff";ctx.font="bold 32px sans-serif";ctx.textAlign="right";ctx.fillText(value,x+w-26,y+52);ctx.textAlign="left";}
+function card(ctx,x,y,w,h,title){ctx.fillStyle="rgba(255,255,255,.05)";rr(ctx,x,y,w,h,18);ctx.fill();
+ctx.strokeStyle="rgba(255,255,255,.12)";ctx.lineWidth=2;rr(ctx,x,y,w,h,18);ctx.stroke();
+ctx.fillStyle="#f7e2a8";ctx.font="bold 30px sans-serif";ctx.fillText(title,x+24,y+44);}
+
+function shot1(city,s){return(ctx)=>{brand(ctx,"按太阳位置\n定今日作息","真太阳时才是身体的时钟\n时辰与作息不踩空");
+const px=(W-760)/2+34,py=560+34,pw=760-68;
+ctx.fillStyle="rgba(232,195,106,.12)";rr(ctx,px,py,pw,240,20);ctx.fill();
+ctx.strokeStyle="rgba(232,195,106,.5)";ctx.lineWidth=2;rr(ctx,px,py,pw,240,20);ctx.stroke();
+ctx.fillStyle="#f7e2a8";ctx.font="bold 44px sans-serif";ctx.fillText(city[0],px+26,py+60);
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";ctx.fillText(termOf(s.sun.lambda)+" · "+s.sc.z+"时",px+26,py+100);
+ctx.fillStyle="#e8c36a";ctx.font="bold 60px sans-serif";ctx.fillText(ASTRO.fmtHMS(s.tst),px+26,py+175);
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";ctx.fillText("北京时间 "+String(s.bj.h).padStart(2,"0")+":"+String(s.bj.mi).padStart(2,"0"),px+26,py+215);
+let y=py+290;row(ctx,px,y,pw,"☀ 日出",s.ev.polar||ASTRO.fmtHM(s.ev.riseMin));y+=104;
+row(ctx,px,y,pw,"☀ 日中",ASTRO.fmtHM(s.ev.noonMin));y+=104;
+row(ctx,px,y,pw,"☀ 日落",s.ev.polar||ASTRO.fmtHM(s.ev.setMin));y+=104;
+row(ctx,px,y,pw,"昼长",s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+" 小时");y+=104;
+row(ctx,px,y,pw,s.sc.m,"当令",true);
+foot(ctx);};}
+
+function shot2(city,s){return(ctx)=>{brand(ctx,"全国 340 城\n真太阳时总表","省会秒开 · 搜索排序 · 一键导出\n西部与北京最多差 3 小时");
+const px=(W-760)/2+34,py=560+34,pw=760-68;let y=py;
+card(ctx,px,y,pw,300,"◈ 实时总表");
+const caps=["北京","上海","广州","成都","拉萨","乌鲁木齐"];
+y+=70;
+caps.forEach((n,i)=>{const c=cityByName(n),sn=snapshot(c,new Date());
+ctx.fillStyle=i%2?"rgba(255,255,255,.04)":"rgba(255,255,255,.07)";rr(ctx,px+16,y,pw-32,54,10);ctx.fill();
+ctx.fillStyle="#eef2ff";ctx.font="bold 26px sans-serif";ctx.fillText(n,px+34,y+36);
+ctx.fillStyle="#f7e2a8";ctx.font="bold 28px sans-serif";ctx.textAlign="right";ctx.fillText(ASTRO.fmtHMS(sn.tst),px+pw-34,y+36);ctx.textAlign="left";y+=60;});
+y+=16;card(ctx,px,y,pw,220,"◈ 位置差异");
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";
+const lz=cityByName("拉萨"),ls=snapshot(lz,new Date());
+ctx.fillText("拉萨真太阳 "+ASTRO.fmtHMS(ls.tst),px+30,y+90);
+ctx.fillText("比北京慢 "+Math.abs(ls.diff/60).toFixed(1)+" 小时",px+30,y+140);
+ctx.fillStyle="#5eead4";ctx.font="bold 26px sans-serif";ctx.fillText("挂钟同一刻,时辰不同",px+30,y+190);
+foot(ctx);};}
+
+function shot3(city,s){return(ctx)=>{brand(ctx,"二十四节气\n精确到分钟","交节时刻 · 倒计时 · 72 候\n换季作息有据可依");
+const px=(W-760)/2+34,py=560+34,pw=760-68;let y=py;
+const cur=termOf(s.sun.lambda);
+card(ctx,px,y,pw,300,"◈ 当前节气");
+ctx.fillStyle="#e8c36a";ctx.font="bold 120px serif";ctx.fillText(cur[0],px+40,y+220);
+ctx.fillStyle="#f7e2a8";ctx.font="bold 60px serif";ctx.fillText(cur.slice(1),px+180,y+200);
+ctx.fillStyle="#b6c1dd";ctx.font="24px sans-serif";wrap(ctx,JINJU[cur]||"",px+180,y+250,pw-220,34,false);
+y+=330;card(ctx,px,y,pw,260,"◈ 下一节气");
+ctx.fillStyle="#5eead4";ctx.font="bold 40px sans-serif";ctx.fillText("秋分",px+30,y+90);
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";ctx.fillText("2026-09-23 08:09 · 周三",px+30,y+150);
+ctx.fillText("倒计时 2 天 20 时",px+30,y+200);
+y+=290;card(ctx,px,y,pw,300,"◈ 七十二候");
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";
+["鸿雁来","玄鸟归","◉ 群鸟养羞"].forEach((t,i)=>{ctx.fillStyle=i===2?"#e8c36a":"#b6c1dd";ctx.fillText(t,px+40,y+80+i*60);});
+foot(ctx);};}
+
+function shot4(city,s){return(ctx)=>{brand(ctx,"摄影黄金时刻\n与晒太阳时段","日出日落前后光线最佳\n按太阳高度角科学分档");
+const px=(W-760)/2+34,py=560+34,pw=760-68;let y=py;
+const g=window.TST.goldenOf(city,s);
+card(ctx,px,y,pw,340,"◈ 黄金 · 蓝调时刻");
+if(!s.ev.polar){
+row(ctx,px+20,y+70,pw-40,"晨·黄金",ASTRO.fmtHM(g.dawnGold[0])+"–"+ASTRO.fmtHM(g.dawnGold[1]),true);y+=100;
+row(ctx,px+20,y+70,pw-40,"昏·黄金",ASTRO.fmtHM(g.duskGold[0])+"–"+ASTRO.fmtHM(g.duskGold[1]),true);y+=100;
+row(ctx,px+20,y+70,pw-40,"晨·蓝调",ASTRO.fmtHM(g.dawnBlue[0])+"–"+ASTRO.fmtHM(g.dawnBlue[1]));y+=100;}
+y+=20;const sb=window.TST.sunbathOf(city,s);
+card(ctx,px,y,pw,300,"◈ 宝宝晒太阳(20°–50°)");
+ctx.fillStyle="#f7e2a8";ctx.font="bold 34px sans-serif";
+wrap(ctx,sb.best.map(r=>ASTRO.fmtHM(r[0])+"–"+ASTRO.fmtHM(r[1])).join("、")||"今日无",px+30,y+110,pw-60,44,false);
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";wrap(ctx,"每次10–20分钟,露手臂小腿,避开强紫外线",px+30,y+220,pw-60,38,false);
+foot(ctx);};}
+
+function shot5(city,s){return(ctx)=>{brand(ctx,"节气海报\n一键分享朋友圈","实用不失文化之魂\n把今日天时分享给家人");
+const px=(W-760)/2+34,py=560+34,pw=760-68;let y=py;
+const cur=termOf(s.sun.lambda);
+ctx.fillStyle="rgba(232,195,106,.1)";rr(ctx,px,y,pw,760,24);ctx.fill();
+ctx.strokeStyle="rgba(232,195,106,.5)";ctx.lineWidth=3;rr(ctx,px,y,pw,760,24);ctx.stroke();
+ctx.fillStyle="#e8c36a";ctx.font="bold 130px serif";ctx.fillText(cur[0],px+40,y+200);
+ctx.fillStyle="#f7e2a8";ctx.font="bold 66px serif";ctx.fillText(cur.slice(1),px+190,y+180);
+ctx.fillStyle="#b6c1dd";ctx.font="26px sans-serif";ctx.fillText(city[0]+" · "+city[1],px+40,y+270);
+ctx.fillStyle="#e8c36a";ctx.font="italic 30px serif";wrap(ctx,JINJU[cur]||"顺天时,养正气。",px+40,y+360,pw-80,44,false);
+const rows=[["真太阳时",ASTRO.fmtHMS(s.tst)],["当令",s.sc.z+"时 · "+s.sc.m],["日出/日落",(s.ev.polar||ASTRO.fmtHM(s.ev.riseMin))+" / "+(s.ev.polar||ASTRO.fmtHM(s.ev.setMin))],["昼长",(s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+" 小时")]];
+let ry=y+440;ctx.font="26px sans-serif";
+rows.forEach(([k,v],i)=>{ctx.fillStyle=i%2?"rgba(255,255,255,.05)":"rgba(232,195,106,.1)";rr(ctx,px+30,ry,pw-60,66,12);ctx.fill();
+ctx.fillStyle="#b6c1dd";ctx.fillText(k,px+54,ry+44);ctx.fillStyle="#f7e2a8";ctx.font="bold 28px sans-serif";ctx.textAlign="right";ctx.fillText(v,px+pw-54,ry+44);ctx.textAlign="left";ctx.font="26px sans-serif";ry+=78;});
+ctx.fillStyle="#9aa6c7";ctx.font="22px sans-serif";ctx.fillText("按太阳位置判定时辰",px+40,y+730);
+foot(ctx);};}
+
+const SHOTS=[
+["① 行动卡 · 今日几点睡",shot1],
+["② 全国总表 · 340 城",shot2],
+["③ 节气 · 精确交节",shot3],
+["④ 黄金时刻 · 晒太阳",shot4],
+["⑤ 节气海报 · 一键分享",shot5]
+];
+let canvases=[];
+function renderAll(){const city=cityByName(citySel.value),s=snapshot(city,new Date());
+const grid=$("grid");grid.innerHTML="";canvases=[];
+SHOTS.forEach(([cap,fn],i)=>{const cell=document.createElement("div");cell.className="cell";
+cell.innerHTML='<div class="cap">'+cap+'</div>';
+const cv=document.createElement("canvas");cv.width=W;cv.height=H;cell.appendChild(cv);
+const btn=document.createElement("button");btn.className="btn";btn.type="button";btn.textContent="下载第 "+(i+1)+" 张";btn.style.marginTop="8px";
+btn.onclick=()=>dl(cv,cap);
+cell.appendChild(btn);grid.appendChild(cell);
+const ctx=cv.getContext("2d");bg(ctx);fn(city,s)(ctx);canvases.push({cv,cap});});}
+function dl(cv,cap){const a=document.createElement("a");a.href=cv.toDataURL("image/png");a.download="真太阳时_"+cap.replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,"")+".png";a.click();}
+$("all").onclick=()=>{canvases.forEach((o,i)=>setTimeout(()=>dl(o.cv,o.cap),i*400));};
+$("refresh").onclick=renderAll;citySel.onchange=renderAll;
+renderAll();
+})();
+</script>
+</body>
+</html>

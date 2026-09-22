@@ -1,0 +1,8 @@
+# 安卓签名配置示例
+# 复制本文件为 android/key.properties 并填入真实值。
+# 该文件含密码,不要提交到公开仓库(已加入 .gitignore)。
+
+storeFile=../truesolar.jks
+storePassword=在此填你的keystore密码
+keyAlias=truesolar
+keyPassword=在此填你的key密码

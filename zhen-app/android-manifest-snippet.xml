@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 真太阳时 · AndroidManifest.xml 关键配置模板
+     将下列节点合并进 android/app/src/main/AndroidManifest.xml。
+     Capacitor 生成的默认清单已含大部分权限,这里只列需要改动的部分。 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 权限:只申请最小必要集合 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 粗略定位:用于匹配最近城市。不申请 ACCESS_FINE_LOCATION 与后台定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 本地通知:时辰提醒。Android 13+ 需运行时申请 POST_NOTIFICATIONS -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:allowBackup="false"
+        android:label="真太阳时"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="false"
+        android:supportsRtl="false">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="真太阳时"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTask">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- 应用链接:可选,用于从网页深链打开 App -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ole983.github.io" android:pathPrefix="/true-solar-time" />
+            </intent-filter>
+        </activity>
+
+        <!-- 通知小图标:需为纯白剪影图,置于 res/drawable/ic_stat_sun.png -->
+    </application>
+
+    <!-- 硬件与兼容性 -->
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <!-- 目标 API:华为要求 targetSdk 34(Android 14)及以上 -->
+    <!-- 在 android/variables.gradle 设置: targetSdkVersion = 34 -->
+
+</manifest>

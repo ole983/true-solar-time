@@ -81,6 +81,7 @@
 <div class="actionbtns">
 <a class="btn gold" href="liuzhu.html" style="text-decoration:none">查看今日12时辰</a>
 <a class="btn" href="tools.html" style="text-decoration:none">换算/黄金时刻</a>
+<button class="btn" id="notifyBtn" type="button">开启时辰提醒</button>
 <a class="btn" href="cities.html" style="text-decoration:none">全国总表</a>
 </div>
 <div class="jinju" id="jinju">—</div>
@@ -145,11 +146,11 @@
 </section>
 </div>
 
-<footer class="site">算法 Meeus Ch.25 · 章动IAU1980 · WGS84 · 折射−0.833° · 传统文化作息参考,不作医疗依据 · <a href="science.html">精度验证</a> · <a href="sitemap.xml">站点地图</a></footer>
+<footer class="site">算法 Meeus Ch.25 · 章动IAU1980 · WGS84 · 折射−0.833° · 传统文化作息参考,不作医疗依据 · <a href="science.html">精度验证</a> · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a> · <a href="sitemap.xml">站点地图</a></footer>
 </div>
 <script src="cities.js"></script>
 <script src="astro.js"></script>
-<script src="app.js"></script>
+<script src="app.js"></script><script src="bridge.js"></script>
 <script>
 (function(){const{$,termOf,store,cityByName,snapshot,fmtSigned,actionsOf,goldenOf,JINJU}=window.TST;
 TST.setNav();
@@ -161,11 +162,23 @@ function setSel(n){sel=n;store.sel=n;$("navCity").textContent=n;try{history.repl
 setSel(sel);q.value=sel;
 function applyCity(v){const f=window.CITIES.find(c=>c[0]===v);if(f){setSel(f[0]);q.value=f[0];renderCaps();tick(true);}}
 q.onchange=()=>applyCity(q.value.trim());
-$("shareBtn").onclick=async()=>{try{await navigator.clipboard.writeText(TST.shareURL(sel));$("shareBtn").textContent="已复制";setTimeout(()=>$("shareBtn").textContent="分享",1500);}catch(e){prompt("复制此链接分享:",TST.shareURL(sel));}};
-$("gpsBtn").onclick=()=>{if(!navigator.geolocation){alert("浏览器不支持定位");return;}$("gpsBtn").textContent="定位中…";
-navigator.geolocation.getCurrentPosition(pos=>{const{latitude:la,longitude:lo}=pos.coords;let best=null,bd=1e9;
-window.CITIES.forEach(c=>{const d=(c[2]-lo)**2+(c[3]-la)**2;if(d<bd){bd=d;best=c;}});
-$("gpsBtn").textContent="◎ 定位我";if(best)applyCity(best[0]);},()=>{$("gpsBtn").textContent="◎ 定位我";alert("定位失败,请手动搜索城市");},{timeout:8000});};
+$("shareBtn").onclick=()=>{const city=cityByName(sel),s=snapshot(city,new Date());
+const text=`${city[0]} 真太阳时 ${ASTRO.fmtHMS(s.tst)} · ${s.sc.z}时${s.sc.m} · 日出${s.ev.polar||ASTRO.fmtHM(s.ev.riseMin)} 日落${s.ev.polar||ASTRO.fmtHM(s.ev.setMin)}`;
+const url=TST.shareURL(sel);
+if(window.TSTApp&&TSTApp.share){TSTApp.share({title:"真太阳时 · 子午流注",text,url});}
+else{navigator.clipboard&&navigator.clipboard.writeText(url).then(()=>{$("shareBtn").textContent="已复制";setTimeout(()=>$("shareBtn").textContent="分享",1500);}).catch(()=>prompt("复制此链接分享:",url));}};
+function useCoords(la,lo){let best=null,bd=1e9;window.CITIES.forEach(c=>{const d=(c[2]-lo)**2+(c[3]-la)**2;if(d<bd){bd=d;best=c;}});if(best)applyCity(best[0]);}
+$("gpsBtn").onclick=()=>{$("gpsBtn").textContent="定位中…";
+const p=(window.TSTApp&&TSTApp.locate)?TSTApp.locate():new Promise((res,rej)=>{if(!navigator.geolocation)return rej();navigator.geolocation.getCurrentPosition(x=>res({latitude:x.coords.latitude,longitude:x.coords.longitude}),rej,{timeout:8000});});
+p.then(c=>{$("gpsBtn").textContent="◎ 定位我";useCoords(c.latitude,c.longitude);}).catch(()=>{$("gpsBtn").textContent="◎ 定位我";alert("定位失败,请手动搜索城市");});};
+$("notifyBtn")&&($("notifyBtn").onclick=async()=>{const btn=$("notifyBtn");const city=cityByName(sel);const s=snapshot(city,new Date());
+const now=new Date();const list=[];const ids=[];
+TST.LIU.forEach((L,i)=>{const st=L.range[0];const bjMin=st-s.diff;let target=new Date();target.setHours(0,0,0,0);
+const bm=((bjMin%1440)+1440)%1440;target.setTime(target.getTime()+(bm-5)*60000);
+if(target<=now)target.setTime(target.getTime()+86400000);
+const id=1000+i;ids.push(id);list.push({id,title:`${L.z}时将至 · ${L.m}`,body:L.y,smallIcon:"ic_stat_sun",schedule:{at:target}});});
+const ok=await TSTApp.scheduleShichen(list);
+btn.textContent=ok?"✓ 已开启时辰提醒":"开启时辰提醒";if(!ok)alert("当前环境不支持本地通知(需在 App 内并授予通知权限)");});
 document.querySelectorAll(".tabs2 button").forEach(b=>b.onclick=()=>{
 document.querySelectorAll(".tabs2 button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
 document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));$("p-"+b.dataset.p).classList.add("on");});
