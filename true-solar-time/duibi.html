@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>双排盘对比 · 北京时间 vs 真太阳时 | 真太阳时 · 子午流注</title>
+<meta name="description" content="同一出生时刻,按北京时间排盘与按真太阳时排盘,时辰差几个?全国只有这里默认算对。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script>
+<style>
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:640px){.vs{grid-template-columns:1fr}}
+.vscard{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--shade)}
+.vscard.win{border-color:var(--gold);background:rgba(var(--gold-rgb),.08)}
+.vscard h3{margin:0 0 8px;font-size:14px;letter-spacing:.1em;font-family:var(--serif)}
+.vscard .p4{font-family:var(--serif);font-size:24px;font-weight:800;letter-spacing:.06em}
+.vscard .p4 small{font-size:12px;color:var(--mut);font-family:var(--sans);display:block;margin-top:6px;letter-spacing:0}
+.vscard .t{font-size:13px;margin-top:8px}
+.verdict{margin-top:14px;border:1px solid rgba(var(--gold-rgb),.5);background:linear-gradient(180deg,rgba(var(--gold-rgb),.14),rgba(var(--gold-rgb),.03));border-radius:14px;padding:14px 16px;font-size:14.5px;line-height:1.9}
+.verdict b{color:var(--gold2)}
+.diffmark{color:var(--red);font-weight:800}
+.samemark{color:var(--green);font-weight:800}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="zeri.html">择时</a><a href="yueli.html">月历</a><a href="duibi.html">对比</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
+<div class="top-right"><span class="pill" id="vipPill">—</span></div>
+</div></div>
+<div class="wrap">
+<header class="hero"><h1>双排盘对比 <span class="g">· 同一时刻,两个时辰?</span></h1>
+<div class="sub">左边是普通排盘(按北京时间直接定时辰),右边是本页方法(先换算<b>真太阳时</b>再定时辰)。输入西部城市的出生时间,亲眼看时辰差几个——<b>全国只有这里默认算对</b>。</div>
+<div class="badges"><span class="badge">挂钟排盘 vs 太阳排盘</span><span class="badge">西部差异最大</span></div></header>
+<section class="card">
+<h2>◈ 输入出生北京时间与城市</h2>
+<div class="desc">示例:拉萨 2000-01-01 08:30,挂钟已是辰时,太阳才卯时初。</div>
+<div class="inrow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+<input id="bDate" type="date" value="2000-01-01" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px">
+<input id="bTime" type="text" value="08:30" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:90px">
+<input id="bCity" list="cityList" value="拉萨" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:120px">
+<datalist id="cityList"></datalist>
+<button class="btn gold" id="calcBtn" type="button">对比</button>
+</div>
+<div class="vs">
+<div class="vscard" id="cardBJ"><h3>❌ 普通排盘 · 按挂钟</h3><div class="p4" id="pBJ">—</div><div class="t" id="tBJ"></div></div>
+<div class="vscard win" id="cardTST"><h3>✓ 太阳排盘 · 按真太阳时</h3><div class="p4" id="pTST">—</div><div class="t" id="tTST"></div></div>
+</div>
+<div class="verdict" id="verdict">点「对比」查看结果。</div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+<a class="btn gold" href="zeri.html" style="text-decoration:none">去排四柱大运 →</a>
+<button class="btn" id="shareBtn" type="button">分享这个对比</button>
+</div>
+</section>
+<footer class="site">同一时刻,两种算法 · 真太阳时 = 北京时 + 经度差 + 时差方程 · <a href="science.html">精度验证</a> · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a></footer>
+</div>
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script><script src="lunar.js"></script>
+<script>
+(function(){
+const {$,cityByName,store}=window.TST;
+TST.setNav();
+const GAN=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+function jdn(y,m,d){const a=Math.floor((14-m)/12),yy=y+4800-a,mm=m+12*a-3;
+  return d+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045;}
+function gz(i){i=((i%60)+60)%60;return GAN[i%10]+ZHI[i%12];}
+function pillars(y,mo,d,tstMin,lonDiff){
+  /* tstMin:用于定日/时的分钟数(挂钟分钟 或 真太阳分钟) */
+  let shift=0,t=((tstMin%1440)+1440)%1440;
+  if(tstMin<0)shift=-1;if(tstMin>=1440)shift=1;
+  if(t>=1380)shift+=1;
+  const day=gz(jdn(y,mo,d)+shift+49);
+  const hz=ZHI[Math.floor((t+60)/120)%12];
+  const dayIdx=((jdn(y,mo,d)+shift+49)%60+60)%60;
+  const hg=GAN[((dayIdx%10%5)*2+ZHI.indexOf(hz))%10];
+  return {day:day,hour:hg+hz,hourZhi:hz};
+}
+window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];$("cityList").appendChild(o);});
+function calc(){
+  const dv=$("bDate").value;if(!dv)return;
+  const p=dv.split("-").map(Number);
+  const tp=$("bTime").value.split(":");if(tp.length<2)return;
+  const bjMin=(+tp[0])*60+(+tp[1]);
+  const c=cityByName($("bCity").value.trim());if(!c)return;
+  const sun=ASTRO.sunApparent(new Date(Date.UTC(p[0],p[1]-1,p[2],4)));
+  const lonDiff=(c[2]-120)*4;
+  const tstMin=bjMin+lonDiff+sun.eq;
+  const a=pillars(p[0],p[1],p[2],bjMin,0);
+  const b=pillars(p[0],p[1],p[2],tstMin,0);
+  const same=a.day===b.day&&a.hour===b.hour;
+  const fmtT=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(Math.floor(m%60)).padStart(2,"0");};
+  $("pBJ").innerHTML=a.day+" "+a.hour+"<small>日柱 "+a.day+" · 时柱 "+a.hour+"</small>";
+  $("tBJ").textContent="挂钟 "+$("bTime").value+" 直接定时辰:"+(Math.floor((bjMin+60)/120)%12)+"支";
+  $("pTST").innerHTML=b.day+" "+b.hour+"<small>日柱 "+b.day+" · 时柱 "+b.hour+"</small>";
+  $("tTST").textContent="真太阳 "+fmtT(tstMin)+" 定时辰(经度差"+lonDiff.toFixed(1)+"分+EoT"+sun.eq.toFixed(1)+"分)";
+  $("verdict").innerHTML=same
+    ?'<span class="samemark">✓ 同城同时辰。</span>'+c[0]+'经度差仅 '+lonDiff.toFixed(1)+' 分,两法一致。换<b>拉萨/乌鲁木齐</b>再试,差异立现。'
+    :'<span class="diffmark">✗ 时辰错了!</span>'+c[0]+' '+$("bTime").value+' 出生:挂钟排成<b>'+a.hour+'时</b>,太阳实际是<b>'+b.hour+'时</b>,'+(a.day!==b.day?'连<b>日柱</b>都不同('+a.day+'→'+b.day+')!':'日柱同为'+b.day+'。')+'总差 '+Math.abs(tstMin-bjMin).toFixed(1)+' 分钟。普通排盘从第一步就是错的。';
+  try{history.replaceState(null,"","duibi.html?city="+encodeURIComponent(c[0]));}catch(e){}
+}
+$("calcBtn").onclick=calc;
+$("shareBtn").onclick=()=>{
+  const t=$("verdict").innerText;
+  const url=TST.shareURL($("bCity").value.trim());
+  if(window.TSTApp&&TSTApp.share)TSTApp.share({title:"双排盘对比",text:t,url});
+  else if(navigator.clipboard)navigator.clipboard.writeText(t+" "+url).then(()=>{$("shareBtn").textContent="已复制";setTimeout(()=>$("shareBtn").textContent="分享这个对比",1500);});
+};
+const q=new URLSearchParams(location.search).get("city");
+if(q&&cityByName(q))$("bCity").value=q;
+calc();
+})();
+</script>
+</body>
+</html>

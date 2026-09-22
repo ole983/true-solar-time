@@ -109,6 +109,11 @@
 </div>
 <div class="todo" id="todo"></div>
 <div class="jinju" id="jinju">—</div>
+<section class="card" style="margin-top:14px;text-align:left" aria-label="今日打卡">
+<h2>◈ 今日作息打卡</h2>
+<div class="desc">子时睡、卯时起、午时休——做到即点,攒连续天数与节气勋章(仅存本机)。</div>
+<div id="dakaBox"></div>
+</section>
 <details class="more" id="heroMore">
 <summary>更多数据(日出日落 · 时差 · 黄历)</summary>
 <div class="kvrow" id="quickKV"></div>
@@ -185,6 +190,8 @@
 <script src="astro.js"></script>
 <script src="app.js"></script><script src="bridge.js"></script>
 <script src="huangli.js"></script>
+<script src="lunar.js"></script>
+<script src="daka.js"></script>
 <script>
 (function(){const{$,termOf,store,cityByName,snapshot,fmtSigned,actionsOf,goldenOf,JINJU}=window.TST;
 TST.setNav();
@@ -332,6 +339,12 @@ tr.innerHTML=`<td><b>${L.z}</b></td><td>${L.t}</td><td style="color:var(--gold2)
 renderPersona(s,city);
 if(force||!tick._n||Date.now()-tick._n>30000){tick._n=Date.now();renderCaps();}}
 renderCaps();tick(true);setInterval(()=>tick(false),100);
+/* 打卡(按当前节气记勋章) */
+try{
+  const _s0=new Date();
+  const _term=termOf(snapshot(cityByName(sel),_s0).sun.lambda);
+  window.TSTDaka&&window.TSTDaka.render("dakaBox",_term);
+}catch(e){}
 /* 主题切换后重绘 canvas */
 if(window.TSTTheme){const _s=window.TSTTheme.set.bind(window.TSTTheme);window.TSTTheme.set=function(v){_s(v);try{tick(true);}catch(e){}};}
 if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}

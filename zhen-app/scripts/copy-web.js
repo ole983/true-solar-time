@@ -9,8 +9,8 @@ const DST = path.resolve(__dirname, "../www");
 // 仅拷贝运行时文件;app-shell 类文件不进包
 const INCLUDE = [
   "index.html", "cities.html", "jieqi.html", "liuzhu.html",
-  "sun.html", "science.html", "tools.html", "zeri.html", "privacy.html", "terms.html", "vip.html",
-  "styles.css", "astro.js", "app.js", "cities.js", "bridge.js", "theme.js", "a11y.js", "huangli.js",
+  "sun.html", "science.html", "tools.html", "zeri.html", "yueli.html", "duibi.html", "privacy.html", "terms.html", "vip.html",
+  "styles.css", "astro.js", "app.js", "cities.js", "bridge.js", "theme.js", "a11y.js", "huangli.js", "lunar.js", "daka.js",
   "manifest.webmanifest", "favicon.svg", "icon-512.svg",
   "robots.txt", "sitemap.xml"
 ];

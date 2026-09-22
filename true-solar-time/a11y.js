@@ -31,6 +31,10 @@
   window.TSTStopSpeak=function(){try{window.speechSynthesis.cancel();}catch(e){}};
 
   function mount(){
+    mountElder();
+    mountBottomNav();
+  }
+  function mountElder(){
     var host=document.querySelector(".top-right")||document.querySelector(".topbar-in");
     if(!host||document.getElementById("elderBtn"))return;
     var b=document.createElement("button");
@@ -43,6 +47,22 @@
     var tb=document.getElementById("themeBtn");
     if(tb&&tb.nextSibling)host.insertBefore(b,tb.nextSibling);
     else host.appendChild(b);
+  }
+  /* 移动端底部三 Tab:今日 / 节气 / 我的 */
+  function mountBottomNav(){
+    if(document.querySelector(".bottomnav"))return;
+    var path=(location.pathname.split("/").pop()||"index.html").toLowerCase();
+    function item(href,ic,label,match){
+      var on=match.indexOf(path)>=0?" on":"";
+      return '<a class="'+on+'" href="'+href+'"><span class="ic">'+ic+'</span>'+label+'</a>';
+    }
+    var nav=document.createElement("nav");
+    nav.className="bottomnav";nav.setAttribute("aria-label","底部导航");
+    nav.innerHTML=
+      item("index.html","☉","今日",["index.html","", "duibi.html"])+
+      item("jieqi.html","🌿","节气",["jieqi.html","yueli.html","liuzhu.html"])+
+      item("tools.html","🧰","我的",["tools.html","zeri.html","vip.html","cities.html","sun.html","science.html"]);
+    document.body.appendChild(nav);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount);
   else mount();
