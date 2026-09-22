@@ -26,6 +26,11 @@
 .hg.inausp{border-color:rgba(251,113,133,.4)}
 .hg.inausp .z{color:var(--red)}
 .hg.on{outline:2px solid var(--gold);outline-offset:1px}
+.sstable{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.sstable th,.sstable td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.sstable th{color:var(--gold2);font-size:12px;letter-spacing:.08em}
+.sstable td .ss{font-size:11px;color:var(--mut);display:block;margin-top:2px}
+.sstable td .ny{font-size:11.5px;color:var(--teal)}
 </style>
 </head>
 <body>
@@ -73,6 +78,14 @@
 </div>
 <div class="tblwrap" style="margin-top:12px;max-height:360px"><table><thead><tr><th>大运</th><th>起运岁</th><th>起始年份</th><th>流年区间</th></tr></thead><tbody id="dayunBody"><tr><td colspan="4" style="color:var(--mut)">请输入信息后点「排盘」</td></tr></tbody></table></div>
 <div class="desc" id="liunianNote" style="margin-top:10px"></div>
+</section>
+
+<section class="card">
+<h2>◈ 十神 · 纳音 <span class="pill" id="lockTag4">会员功能</span></h2>
+<div class="desc">以<b>日干</b>为我,定四柱天干十神;纳音按六十甲子取象。十神看关系亲疏与格局,纳音看气质底色,两者皆为传统命理常用维度。</div>
+<table class="sstable"><thead><tr><th>柱</th><th>干支</th><th>十神(对日干)</th><th>纳音</th></tr></thead>
+<tbody id="ssBody"><tr><td colspan="4" style="color:var(--mut)">排盘后显示</td></tr></tbody></table>
+<div class="desc" id="ssNote" style="margin-top:10px"></div>
 </section>
 
 <section class="card">
@@ -162,8 +175,10 @@ function buildPillars(dateBJ,lon,eq){
   const mz=monthZhiIndex(dateBJ);
   const monthZhi=mz.zhi; // 0..11 → 寅..丑
   const monthGan=((yearGZ.idx%10%5)*2+2+monthZhi)%10;
-  return {yearGZ,monthGZ:{g:GAN[monthGan],z:ZHI[(monthZhi+2)%12],idx:0},
-    dayGZ,hourGZ:{g:GAN[hourGan],z:ZHI[hourZhi],idx:0},
+  const monthG=GAN[monthGan],monthZ=ZHI[(monthZhi+2)%12];
+  const hourG=GAN[hourGan],hourZ=ZHI[hourZhi];
+  return {yearGZ,monthGZ:{g:monthG,z:monthZ,idx:gzIndex(monthG,monthZ)},
+    dayGZ,hourGZ:{g:hourG,z:hourZ,idx:gzIndex(hourG,hourZ)},
     tstMin:tst, bjMin, eq, lon, jieName:mz.name};
 }
 
@@ -176,6 +191,41 @@ function startShen(dayZhi){
   return map[dayZhi];
 }
 function hourShen(dayZhi,hourZhi){const s=startShen(dayZhi);const i=((hourZhi-s)%12+12)%12;return SHEN[i];}
+
+/* ---- 十神 / 纳音 ---- */
+const GAN_WX={甲:"木",乙:"木",丙:"火",丁:"火",戊:"土",己:"土",庚:"金",辛:"金",壬:"水",癸:"水"};
+const GAN_YINYANG={甲:1,丙:1,戊:1,庚:1,壬:1,乙:0,丁:0,己:0,辛:0,癸:0};
+const WX_GEN={木:"火",火:"土",土:"金",金:"水",水:"木"};   // 我生
+const WX_KE={木:"土",火:"金",土:"水",金:"木",水:"火"};    // 我克
+const WX_BEKE={木:"金",火:"水",土:"木",金:"火",水:"土"};  // 克我
+const WX_SHENG={木:"水",火:"木",土:"火",金:"土",水:"金"}; // 生我
+const NAYIN=["海中金","炉中火","大林木","路旁土","剑锋金","山头火","涧下水","城头土","白蜡金","杨柳木","泉中水","屋上土","霹雳火","松柏木","长流水","砂石金","山下火","平地木","壁上土","金箔金","覆灯火","天河水","大驿土","钗钏金","桑柘木","大溪水","沙中土","天上火","石榴木","大海水"];
+const NAYIN_WX={金:"金",木:"木",水:"水",火:"火",土:"土"}; // 纳音末字即五行
+function shishen(dayGan,targetGan){
+  if(dayGan===targetGan)return "比肩";
+  const dW=GAN_WX[dayGan],tW=GAN_WX[targetGan];
+  const sameYin=GAN_YINYANG[dayGan]===GAN_YINYANG[targetGan];
+  if(tW===dW)return sameYin?"比肩":"劫财";
+  if(tW===WX_GEN[dW])return sameYin?"食神":"伤官";
+  if(tW===WX_KE[dW])return sameYin?"偏财":"正财";
+  if(tW===WX_BEKE[dW])return sameYin?"七杀":"正官";
+  if(tW===WX_SHENG[dW])return sameYin?"偏印":"正印";
+  return "";
+}
+function nayinOf(g,z){const idx=gzIndex(g,z);return idx<0?"—":NAYIN[Math.floor(idx/2)];}
+function nayinWX(ny){const last=ny.slice(-1);return NAYIN_WX[last]||"";}
+const SS_DESC={比肩:"同类帮身,自主独立",劫财:"争合分夺,宜合伙慎借贷",食神:"才华流露,口福文艺",伤官:"聪颖叛逆,才高宜制化",偏财:"流动之财,人缘广",正财:"稳定之财,勤勉守成",七杀:"压力魄力,宜化为权",正官:"规范名位,守规得贵",偏印:"冷门之学,宜研不宜躁",正印:"庇护学识,贵人相助",日元:"命主自身"};
+function renderSS(r){
+  const dayGan=r.dayGZ.g;
+  const cols=[["年",r.yearGZ],["月",r.monthGZ],["日",r.dayGZ],["时",r.hourGZ]];
+  $("ssBody").innerHTML=cols.map(([lab,p])=>{
+    const ss=(lab==="日")?"日元":shishen(dayGan,p.g),ny=nayinOf(p.g,p.z),wx=nayinWX(ny);
+    return '<tr><td>'+lab+'</td><td><b style="color:var(--gold2)">'+p.g+p.z+'</b></td>'+
+      '<td>'+ss+'<span class="ss">'+(SS_DESC[ss]||"")+'</span></td>'+
+      '<td>'+ny+'<span class="ss ny">'+(wx?"五行属"+wx:"")+'</span></td></tr>';
+  }).join("");
+  $("ssNote").innerHTML='日干 <b style="color:var(--gold2)">'+dayGan+'</b>('+GAN_WX[dayGan]+')为我,其余三干以此定十神。地支藏干未展开,精批请按藏干再分。';
+}
 
 /* ---- 大运 / 流年 ---- */
 function gzIndex(g,z){for(let i=0;i<60;i++)if(GAN[i%10]===g&&ZHI[i%12]===z)return i;return -1;}
@@ -220,7 +270,7 @@ const now=new Date();
 $("bDate").value=now.getUTCFullYear()+"-"+String(now.getUTCMonth()+1).padStart(2,"0")+"-"+String(now.getUTCDate()).padStart(2,"0");
 
 function setLocks(){const on=VIP.isActive();
-  ["lockTag","lockTag2","lockTag3"].forEach(id=>{const e=$(id);if(e&&on){e.textContent="已解锁";e.style.color="var(--green)";e.style.borderColor="rgba(52,211,153,.5)";}});
+  ["lockTag","lockTag2","lockTag3","lockTag4"].forEach(id=>{const e=$(id);if(e&&on){e.textContent="已解锁";e.style.color="var(--green)";e.style.borderColor="rgba(52,211,153,.5)";}});
   const p=$("vipPill");if(on)p.innerHTML='<span class="badge-vip">✦ 会员</span>';else p.textContent="未开通会员";}
 
 function renderPillars(r,dateBJ){
@@ -261,6 +311,7 @@ function calc(){
   const r=buildPillars(dateBJ,c[2],sun.eq);
   renderPillars(r,dateBJ);
   renderHours(r);
+  renderSS(r);
   renderDayun(r,dateBJ,$("gender").value);
 }
 $("calcBtn").onclick=calc;
