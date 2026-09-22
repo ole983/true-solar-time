@@ -27,7 +27,7 @@ canvas#poster{width:100%;max-width:320px;border:1px solid var(--line);border-rad
 <a class="skip" href="#main">跳到正文</a>
 <div class="topbar"><div class="topbar-in">
 <div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
-<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="science.html">天文原理</a></nav>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
 <div class="top-right"><input id="q" list="cityList" placeholder="切换城市…" autocomplete="off" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;width:140px"><datalist id="cityList"></datalist><span class="pill" id="navCity">北京</span></div>
 </div></div>
 <div class="wrap" id="main">
@@ -63,6 +63,16 @@ canvas#poster{width:100%;max-width:320px;border:1px solid var(--line);border-rad
 </div>
 
 <section class="card" style="margin-top:16px">
+<h2>◈ 任意日期查询 <span class="pill" id="dateLock">会员专享</span></h2>
+<div class="desc">查询任意过去或未来日期的真太阳时、日出日落与节气,用于择日、纪念日与长期规划。免费版仅提供今日。</div>
+<div class="toolbox">
+<div class="inrow"><input id="dateIn" type="date"><button class="btn gold" id="dateBtn" type="button">查询该日</button></div>
+<div class="res" id="dateRes"><div class="r"><span>提示</span><span>选择日期后点「查询该日」</span></div></div>
+</div>
+<div class="hint">该功能为会员专享,一次支持长期可用;核心的今日数据永久免费。</div>
+</section>
+
+<section class="card" style="margin-top:16px">
 <h2>◈ 节气海报生成 <span class="pill">一键发朋友圈</span></h2>
 <div class="desc">按当前城市与节气生成竖版海报,下载后可直接分享。文案取二十四节气物候与金句,实用不失文化之魂。</div>
 <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
@@ -79,7 +89,7 @@ canvas#poster{width:100%;max-width:320px;border:1px solid var(--line);border-rad
 </div>
 <script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script><script src="bridge.js"></script>
 <script>
-(function(){const{$,store,cityByName,snapshot,fmtSigned,termOf,goldenOf,sunbathOf,JINJU,LIU,toTrue,toBeijing,parseHM}=window.TST;
+(function(){const{$,store,cityByName,snapshot,fmtSigned,termOf,goldenOf,sunbathOf,JINJU,LIU,toTrue,toBeijing,parseHM,VIP}=window.TST;
 TST.setNav();
 const q=$("q");window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];$("cityList").appendChild(o);});
 let sel=store.sel;if(!window.CITIES.some(c=>c[0]===sel))sel="北京";
@@ -122,6 +132,8 @@ $("sunbath").innerHTML=`<div class="r"><span>☀ 最佳(20°–50°)</span><b cl
 <div class="r"><span>弱光(&lt;20°)</span><span>${fseg(sb.safe)}</span></div>
 <div class="r"><span>今日昼长</span><span>${s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+" 小时"}</span></div>
 <div class="r"><span>建议</span><span>每次10–20分钟,露手臂小腿,避开10–16点强紫外线</span></div>`;
+/* 换算首屏 */
+doConv1();doConv2();
 /* 海报 */
 drawPoster(city,s);}
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
@@ -159,7 +171,32 @@ if(line)ctx.fillText(line,x,yy);}
 $("dlPoster").onclick=()=>{drawPoster(cityByName(sel),snapshot(cityByName(sel),new Date()));
 const a=document.createElement("a");a.href=$("poster").toDataURL("image/png");a.download=sel+"_"+termOf(snapshot(cityByName(sel),new Date()).sun.lambda)+"_节气海报.png";a.click();};
 $("posterText").oninput=()=>drawPoster(cityByName(sel),snapshot(cityByName(sel),new Date()));
-render();doConv1();doConv2();setInterval(render,30000);
+/* 任意日期查询(会员) */
+const dIn=$("dateIn");
+try{dIn.value=new Date().toISOString().slice(0,10);}catch(e){}
+function refreshDateLock(){const el=$("dateLock");if(VIP.isActive()){el.textContent="已解锁";el.style.color="var(--green)";el.style.borderColor="rgba(52,211,153,.5)";}}
+function queryDate(){
+  if(!VIP.need("任意日期查询"))return;
+  const v=dIn.value;if(!v)return;
+  const parts=v.split("-").map(Number);const Y=parts[0],Mo=parts[1],D=parts[2];
+  const city=cityByName(sel);
+  const ev=ASTRO.sunEventsForCity(Y,Mo,D,city[3],city[2]);
+  const sun=ASTRO.sunApparent(new Date(Date.UTC(Y,Mo-1,D,4)));
+  const cur=termOf(sun.lambda);
+  const noonTst=720+(city[2]-120)*4+sun.eq;
+  const L=shichenName(noonTst);
+  const day=ev.polar?0:(ev.setMin-ev.riseMin)/60;
+  $("dateRes").innerHTML=
+    '<div class="r"><span>'+Y+'年'+Mo+'月'+D+'日 · 节气</span><b>'+cur+'</b></div>'+
+    '<div class="r"><span>日出 / 日中 / 日落</span><b>'+(ev.polar||(hm(ev.riseMin)+" / "+hm(ev.noonMin)+" / "+hm(ev.setMin)))+'</b></div>'+
+    '<div class="r"><span>昼长</span><span>'+(ev.polar?"—":day.toFixed(1)+" 小时")+'</span></div>'+
+    '<div class="r"><span>该日 12:00 北京时</span><span>真太阳 '+ASTRO.fmtHMS(noonTst)+' · '+L.z+'时 · '+L.m+'</span></div>'+
+    '<div class="r"><span>时差方程 EoT</span><span>'+fmtSigned(sun.eq,2)+' 分</span></div>';
+}
+$("dateBtn").onclick=queryDate;
+dIn.onchange=()=>{if(VIP.isActive())queryDate();};
+refreshDateLock();
+render();setInterval(render,30000);
 })();
 </script>
 </body>

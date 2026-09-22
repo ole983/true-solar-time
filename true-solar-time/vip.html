@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>会员与赞助 | 真太阳时 · 子午流注</title>
+<meta name="description" content="真太阳时会员:平价支持,核心功能永久免费。月度/季度/年度可选,无广告、不卖数据、随时可退。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
+<div class="top-right"><span class="pill" id="navVip">—</span></div>
+</div></div>
+<div class="wrap">
+
+<header class="hero">
+<h1>会员与赞助 <span class="g">· 平价支持</span></h1>
+<div class="sub">真太阳时是一个人的作品。核心功能<b>永久免费</b>,会员只为让更新走得更远——不割韭菜、不加广告、不卖数据。你的每一分支持,都用在算法校准、城市数据与新的实用功能上。</div>
+<div class="badges">
+<span class="badge">无广告</span><span class="badge">不卖数据</span><span class="badge">核心永久免费</span>
+<span class="badge">7 天可退</span><span class="badge">离线可用</span>
+</div>
+</header>
+
+<section class="card">
+<h2>◈ 我的会员</h2>
+<div class="statusbar" id="myStatus"></div>
+<div class="desc" style="margin-top:12px">已通过微信/支付宝支持?把收到的<b>激活码</b>填在下方即可解锁,一次输入,长期有效,换设备凭码恢复。</div>
+<div class="codebox">
+<input id="codeInput" type="text" placeholder="输入激活码,如 TST-M-31-XXXX-XXXX" autocomplete="off">
+<button class="btn gold" id="activateBtn" type="button">激活</button>
+<button class="btn" id="clearBtn" type="button">清除本机会员</button>
+</div>
+<div class="desc" id="codeMsg" style="min-height:20px"></div>
+</section>
+
+<section class="card">
+<h2>◈ 选择支持方式</h2>
+<div class="desc">按需选择,越长期越划算。<b>连续包月</b>最省心,<b>年度</b>单月最低。</div>
+<div class="plan">
+  <div class="plancard rec">
+    <div class="tag">推荐 · 最省心</div>
+    <div class="pn">连续包月</div>
+    <div class="pp">¥5<small>/月</small></div>
+    <div class="pd">每月自动续,随时可停</div>
+    <div class="per">适合长期使用</div>
+    <button class="btn gold" data-plan="A" type="button">支持 ¥5/月</button>
+  </div>
+  <div class="plancard">
+    <div class="pn">月度会员</div>
+    <div class="pp">¥8<small>/月</small></div>
+    <div class="pd">一个月,想试再续</div>
+    <div class="per">≈ ¥0.27/天</div>
+    <button class="btn" data-plan="M" type="button">支持 ¥8</button>
+  </div>
+  <div class="plancard">
+    <div class="pn">季度会员</div>
+    <div class="pp">¥20<small>/季</small></div>
+    <div class="pd">三个月,覆盖一个季节</div>
+    <div class="per">≈ ¥6.7/月 · 省 ¥4</div>
+    <button class="btn" data-plan="Q" type="button">支持 ¥20</button>
+  </div>
+  <div class="plancard">
+    <div class="pn">年度会员</div>
+    <div class="pp">¥58<small>/年</small></div>
+    <div class="pd">一年,单月最低</div>
+    <div class="per">≈ ¥4.8/月 · 省 ¥38</div>
+    <button class="btn" data-plan="Y" type="button">支持 ¥58</button>
+  </div>
+</div>
+</section>
+
+<section class="card">
+<h2>◈ 扫码支持 · 领取激活码</h2>
+<div class="desc">扫码转账后,请把<b>金额 + 支付截图</b>发到下方邮箱,24 小时内回发激活码。个人收款,无手续费,支持直达开发者。</div>
+<div class="qrbox">
+  <div class="qrc">
+    <div class="qn">支付宝</div>
+    <img src="img/alipay-qr.png" alt="支付宝收款码" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div style="display:none;color:var(--mut);font-size:12.5px;line-height:1.8;padding:30px 10px">请把支付宝收款码图片保存为<br><code>img/alipay-qr.png</code></div>
+    <div class="qh">打开支付宝 · 扫一扫</div>
+  </div>
+  <div class="qrc">
+    <div class="qn">微信支付</div>
+    <img src="img/wechat-qr.png" alt="微信收款码" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div style="display:none;color:var(--mut);font-size:12.5px;line-height:1.8;padding:30px 10px">请把微信收款码图片保存为<br><code>img/wechat-qr.png</code></div>
+    <div class="qh">打开微信 · 扫一扫</div>
+  </div>
+</div>
+<div class="promise">
+<b>领码方式</b>:支付后把「金额 + 截图 + 你的邮箱」发至 <a href="mailto:ole983@example.com">ole983@example.com</a>。<br>
+<b>连续包月说明</b>:个人收款码暂不支持自动续费。连续包月请每期扫码,或在应用市场版内使用平台自动续费。我们绝不静默扣款。
+</div>
+</section>
+
+<section class="card">
+<h2>◈ 会员权益(哪些免费,哪些支持)</h2>
+<div class="benefit">
+  <div class="b free"><b>永久免费</b><br>全国 340 城真太阳时 · 今日日出日落 · 十二时辰对照 · 二十四节气 · 今日行动卡 · 太阳罗盘 · 天文精度验证</div>
+  <div class="b vip"><b>会员回馈</b><br>任意日期查询(过去/未来) · 多城市并排对比 · 时辰提醒自定义 · 作息卡与海报高清无水印导出 · 节气日历 .ics 导出 · 城市收藏置顶 · 新功能优先</div>
+</div>
+</section>
+
+<section class="card">
+<h2>◈ 我们的承诺</h2>
+<div class="promise">
+<b>不割韭菜</b>:核心功能不锁、不阉割、不诱导。会员只加不减。<br>
+<b>不加广告</b>:永远不做开屏广告、弹窗广告、信息流广告。<br>
+<b>不卖数据</b>:全部计算在本机完成,不收集、不上传、不画像。<br>
+<b>随时可退</b>:7 天内无条件退款,发邮件即可,无需理由。<br>
+<b>价格亲民</b>:一杯水的价格,长期可用,不搞虚高原价再打折。
+</div>
+</section>
+
+<section class="card">
+<h2>◈ 常见问题</h2>
+<div class="kv">
+<p><b>激活码会过期吗?</b><br>不会。码本身长期有效,激活后从激活时刻起算时长;已是会员时再激活会顺延叠加。</p>
+<p><b>换手机怎么办?</b><br>用同一个激活码重新输入即可恢复,不绑定设备。</p>
+<p><b>为什么用个人收款码?</b><br>因为这是个人作品,省去平台手续费,让支持更多留在开发上。上架应用市场后会接入平台正规支付。</p>
+<p><b>会员到期后会怎样?</b><br>自动回到免费版,核心功能照常使用,不删数据、不降精度。</p>
+</div>
+</section>
+
+<footer class="site">核心功能永久免费 · 不作医疗依据 · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a> · <a href="index.html">回今日行动</a></footer>
+</div>
+
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script>
+(function(){
+const {$,VIP}=window.TST;
+TST.setNav();
+const PLANS={A:{n:"连续包月",p:5},M:{n:"月度会员",p:8},Q:{n:"季度会员",p:20},Y:{n:"年度会员",p:58}};
+function refreshNav(){
+  const s=VIP.status();
+  const el=$("navVip");
+  if(s.active){el.innerHTML='<span class="badge-vip">✦ 会员</span>';}
+  else{el.textContent="未开通会员";}
+}
+function renderStatus(){
+  const s=VIP.status(),box=$("myStatus");
+  if(s.active){
+    box.innerHTML='<span class="badge-vip">✦ '+VIP.planName(s.plan)+'</span>'+
+      '<span class="st">有效中</span><span class="ss">到期 '+VIP.expireText()+'</span>'+
+      (s.auto?'<span class="ss">（连续包月,到期请续）</span>':'');
+  }else{
+    box.innerHTML='<span class="st">'+(s.expired?"会员已过期":"尚未开通会员")+'</span>'+
+      '<span class="ss">核心功能照常免费使用</span>';
+  }
+  refreshNav();
+}
+function activate(){
+  const v=$("codeInput").value.trim();
+  if(!v){$("codeMsg").innerHTML='<span style="color:var(--orange)">请输入激活码</span>';return;}
+  const r=VIP.activate(v);
+  if(r.ok){
+    $("codeMsg").innerHTML='<span style="color:var(--green)">✓ 激活成功:'+VIP.planName(r.plan)+',到期 '+VIP.expireText()+'</span>';
+    $("codeInput").value="";renderStatus();
+  }else{
+    $("codeMsg").innerHTML='<span style="color:var(--red)">✗ '+r.msg+'</span>';
+  }
+}
+$("activateBtn").onclick=activate;
+$("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter")activate();});
+$("clearBtn").onclick=()=>{if(confirm("确定清除本机会员状态?(激活码仍可再次使用)")){VIP.clear();$("codeMsg").textContent="";renderStatus();}};
+
+// 点“支持”按钮:滚动到收款码并提示金额
+document.querySelectorAll("[data-plan]").forEach(b=>{
+  b.onclick=()=>{
+    const k=b.dataset.plan,p=PLANS[k];
+    const box=document.querySelector(".qrbox");
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+    box.style.transition="box-shadow .3s";
+    box.style.boxShadow="0 0 0 3px var(--gold)";
+    setTimeout(()=>box.style.boxShadow="",1200);
+    $("codeMsg").innerHTML='<span style="color:var(--gold2)">请扫码支付 ¥'+p.p+'( '+p.n+' ),支付后发截图至邮箱领取激活码</span>';
+  };
+});
+renderStatus();
+})();
+</script>
+</body>
+</html>

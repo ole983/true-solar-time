@@ -110,7 +110,7 @@ function page(city, termsRows, todayRow, peers){
 <body>
 <div class="topbar"><div class="topbar-in">
 <div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
-<nav class="tabs"><a href="../index.html">今日行动</a><a href="../cities.html">全国总表</a><a href="../jieqi.html">节气养生</a><a href="../liuzhu.html">时辰流注</a><a href="../tools.html">实用工具</a><a href="../science.html">天文原理</a></nav>
+<nav class="tabs"><a href="../index.html">今日行动</a><a href="../cities.html">全国总表</a><a href="../jieqi.html">节气养生</a><a href="../liuzhu.html">时辰流注</a><a href="../tools.html">实用工具</a><a href="../science.html">天文原理</a><a href="../vip.html">会员</a></nav>
 <div class="top-right"><span class="pill" id="clock">—</span></div>
 </div></div>
 <div class="wrap">
@@ -213,7 +213,7 @@ function build(){
 </head><body>
 <div class="topbar"><div class="topbar-in">
 <div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
-<nav class="tabs"><a href="../index.html">今日行动</a><a href="../cities.html">全国总表</a><a href="../jieqi.html">节气养生</a><a href="../liuzhu.html">时辰流注</a><a href="../tools.html">实用工具</a><a href="../science.html">天文原理</a></nav>
+<nav class="tabs"><a href="../index.html">今日行动</a><a href="../cities.html">全国总表</a><a href="../jieqi.html">节气养生</a><a href="../liuzhu.html">时辰流注</a><a href="../tools.html">实用工具</a><a href="../science.html">天文原理</a><a href="../vip.html">会员</a></nav>
 <div class="top-right"><span class="pill">共 ${CITIES.length} 城</span></div>
 </div></div>
 <div class="wrap">
@@ -225,7 +225,7 @@ function build(){
   fs.writeFileSync(path.join(OUT,"city-index.html"),idx);
 
   // 重写 sitemap
-  const staticUrls=["index.html","cities.html","jieqi.html","tools.html","liuzhu.html","sun.html","science.html","privacy.html","terms.html"];
+  const staticUrls=["index.html","cities.html","jieqi.html","tools.html","liuzhu.html","sun.html","science.html","privacy.html","terms.html","vip.html"];
   let sm='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
   staticUrls.forEach(u=>{sm+=`<url><loc>${SITE}/${u}</loc><changefreq>daily</changefreq><priority>${u==="index.html"?"1.0":"0.8"}</priority></url>\n`;});
   sm+=`<url><loc>${SITE}/city/city-index.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>\n`;

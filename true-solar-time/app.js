@@ -128,6 +128,70 @@ function toBeijing(trueMin,lon,eqMin){return trueMin-(lon-120)*4-eqMin;}
 function parseHM(str){const m=/^\s*(\d{1,2})\s*[:：时]\s*(\d{1,2})?/.exec(str||"");if(!m)return null;
   const h=+m[1],mi=+(m[2]||0);if(h>23||mi>59)return null;return h*60+mi;}
 
+/* ===== 会员与赞助(本地激活,离线可用,不联网不追踪) =====
+   设计原则:平价亲民、不割韭菜、核心功能永久免费。 */
+const VIPPLANS={
+  A:{key:"A",name:"连续包月",price:"¥6",unit:"/月",days:31,auto:true},
+  M:{key:"M",name:"月度会员",price:"¥8",unit:"",days:31,auto:false},
+  Q:{key:"Q",name:"季度会员",price:"¥18",unit:"",days:93,auto:false},
+  Y:{key:"Y",name:"年度会员",price:"¥58",unit:"",days:366,auto:false}
+};
+const VIP_SALT="TST-2026-ziwuliuzhu-ole983";
+function vipSign(p){let h=5381;const s=p+"|"+VIP_SALT;for(let i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))>>>0;}return h.toString(36).toUpperCase().slice(-4).padStart(4,"0");}
+const VIP={
+  KEY:"tst.vip.v1",
+  plans:VIPPLANS,
+  _load(){try{const v=JSON.parse(localStorage.getItem(this.KEY));return v&&typeof v==="object"?v:null;}catch(e){return null;}},
+  status(){const v=this._load();if(!v)return{active:false,plan:null};const exp=v.expire||0;
+    if(exp&&Date.now()>exp)return{active:false,expired:true,plan:v.plan,expire:exp};
+    return{active:true,plan:v.plan,expire:exp,auto:!!v.auto};},
+  isActive(){return this.status().active;},
+  planName(k){return (VIPPLANS[k]&&VIPPLANS[k].name)||"会员";},
+  verify(code){
+    if(!code)return null;
+    const c=String(code).trim().toUpperCase().replace(/\s/g,"");
+    const m=c.match(/^TST-([AMQY])-(\d{1,4})-([0-9A-Z]{2,6})-([0-9A-Z]{4})$/);
+    if(!m)return null;
+    const plan=m[1],days=parseInt(m[2],10),serial=m[3],sig=m[4];
+    if(!VIPPLANS[plan])return null;
+    if(days<1||days>4000)return null;
+    if(vipSign(plan+days+serial)!==sig)return null;
+    return{plan,days,serial};
+  },
+  activate(code){
+    const ok=this.verify(code);
+    if(!ok)return{ok:false,msg:"激活码无效或已损坏"};
+    const cur=this.status();
+    const base=(cur.active&&cur.expire)?cur.expire:Date.now();
+    const expire=base+ok.days*864e5;
+    const rec={plan:ok.plan,days:ok.days,code:String(code).trim().toUpperCase(),expire,auto:!!(VIPPLANS[ok.plan]&&VIPPLANS[ok.plan].auto),at:Date.now()};
+    try{localStorage.setItem(this.KEY,JSON.stringify(rec));}catch(e){}
+    return{ok:true,plan:ok.plan,expire};
+  },
+  clear(){try{localStorage.removeItem(this.KEY);}catch(e){}},
+  expireText(){const s=this.status();if(!s.active)return s.expired?"已过期":"未开通";
+    const d=new Date(s.expire);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");},
+  makeCode(plan,days,serial){
+    const s=(serial||Math.random().toString(36).slice(2,6)).toUpperCase();
+    return "TST-"+plan+"-"+days+"-"+s+"-"+vipSign(plan+days+s);
+  },
+  need(label){
+    if(this.isActive())return true;
+    this._prompt(label);return false;
+  },
+  _prompt(label){
+    try{
+      let o=document.getElementById("vipGate");
+      if(!o){o=document.createElement("div");o.id="vipGate";o.className="vipgate";document.body.appendChild(o);}
+      o.innerHTML='<div class="vgbox"><div class="vgt">✦ 会员功能</div><div class="vgm">「'+(label||"该功能")+'」为会员专享 · 一次支持,长期可用</div>'+
+        '<div class="vgbtns"><a class="btn gold" href="vip.html" style="text-decoration:none">了解会员 · 平价支持</a><button class="btn" id="vgClose" type="button">以后再说</button></div>'+
+        '<div class="vgs">核心功能永久免费,会员只是让更新走得更远</div></div>';
+      o.classList.add("on");
+      const c=document.getElementById("vgClose");if(c)c.onclick=()=>o.classList.remove("on");
+      o.onclick=e=>{if(e.target===o)o.classList.remove("on");};
+    }catch(e){}
+  }
+};
 window.TST={$,LIU,TERMS,termOf,shichenOf,store,evOf,cityByName,snapshot,diffText,fmtSigned,setNav,shareURL,
-  GROUP,actionsOf,goldenOf,sunbathOf,JINJU,toTrue,toBeijing,parseHM};
+  GROUP,actionsOf,goldenOf,sunbathOf,JINJU,toTrue,toBeijing,parseHM,VIP,VIPPLANS};
 })();
