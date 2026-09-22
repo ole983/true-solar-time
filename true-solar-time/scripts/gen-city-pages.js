@@ -72,7 +72,7 @@ function page(city, termsRows, todayRow, peers){
   const diff = (lon-120)*4;
   const title = name+"真太阳时 · 北京时间差"+signed(diff,1)+"分钟 · 日出日落 · 二十四节气";
   const desc = name+"真太阳时比北京时间"+(diff>=0?"快":"慢")+Math.abs(diff).toFixed(1)+"分钟。今日日出"+fmtHM(todayRow.rise)+"、日落"+fmtHM(todayRow.set)+"、昼长"+todayRow.day.toFixed(1)+"小时。"+name+"二十四节气交节时刻与日中表。";
-  const rows = termsRows.map(r=>`<tr><td><b>${r.n}</b></td><td>${r.date}</td><td style="color:#f7e2a8">${r.time}</td><td>${fmtHM(r.rise)}</td><td>${fmtHM(r.noon)}</td><td>${fmtHM(r.set)}</td><td>${r.day.toFixed(1)}h</td><td style="color:#b6c1dd">${JINJU[r.n]||""}</td></tr>`).join("");
+  const rows = termsRows.map(r=>`<tr><td><b>${r.n}</b></td><td>${r.date}</td><td style="color:var(--gold2)">${r.time}</td><td>${fmtHM(r.rise)}</td><td>${fmtHM(r.noon)}</td><td>${fmtHM(r.set)}</td><td>${r.day.toFixed(1)}h</td><td style="color:var(--mut)">${JINJU[r.n]||""}</td></tr>`).join("");
   const peerLinks = peers.map(p=>`<a href="${esc(p[0])}.html">${esc(p[0])}</a>`).join(" · ");
   const ld = JSON.stringify({
     "@context":"https://schema.org","@type":"Place",
@@ -91,20 +91,20 @@ function page(city, termsRows, todayRow, peers){
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:type" content="article">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="../styles.css">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="../styles.css"><script src="../theme.js"></script>
 <script type="application/ld+json">${ld}</script>
 <style>
-.cityhero{border:1px solid rgba(232,195,106,.5);background:linear-gradient(165deg,rgba(232,195,106,.15),rgba(232,195,106,.03));border-radius:16px;padding:16px 18px;margin-top:12px}
+.cityhero{border:1px solid rgba(var(--gold-rgb),.5);background:linear-gradient(165deg,rgba(var(--gold-rgb),.15),rgba(var(--gold-rgb),.03));border-radius:16px;padding:16px 18px;margin-top:12px}
 .cityhero h1{font-size:24px;margin:0 0 8px}
 .cityhero .big{font-size:34px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}
 .cityhero .kv{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.cityhero .kv span{border:1px solid var(--line);border-radius:10px;padding:6px 11px;background:rgba(0,0,0,.3);font-size:12.5px;font-variant-numeric:tabular-nums}
+.cityhero .kv span{border:1px solid var(--line);border-radius:10px;padding:6px 11px;background:var(--shade);font-size:12.5px;font-variant-numeric:tabular-nums}
 .crumb{font-size:12.5px;color:var(--mut);margin:10px 0}
 .crumb a{color:var(--mut)}
 .qa{font-size:13.5px;line-height:2;color:#cdd6f4}
 .qa b{color:var(--gold2)}
 .peers{margin-top:12px;font-size:13px;line-height:2}
-.peers a{color:var(--gold2);text-decoration:none;border-bottom:1px solid rgba(232,195,106,.4);margin-right:4px}
+.peers a{color:var(--gold2);text-decoration:none;border-bottom:1px solid rgba(var(--gold-rgb),.4);margin-right:4px}
 </style>
 </head>
 <body>
@@ -119,18 +119,18 @@ function page(city, termsRows, todayRow, peers){
 <section class="card cityhero">
 <h1>${esc(name)}真太阳时</h1>
 <div class="big" id="live">--:--:--</div>
-<div style="color:#b6c1dd;font-size:13px;margin-top:6px" id="livesub">按 ${esc(name)} 真太阳时判定时辰</div>
+<div style="color:var(--mut);font-size:13px;margin-top:6px" id="livesub">按 ${esc(name)} 真太阳时判定时辰</div>
 <div class="kv">
 <span>经度 ${lon.toFixed(2)}° · 纬度 ${lat.toFixed(2)}°</span>
-<span>比北京时间 <b style="color:#f7e2a8">${signed(diff,1)}</b> 分钟</span>
-<span>今日日出 <b style="color:#f7e2a8">${fmtHM(todayRow.rise)}</b></span>
-<span>日中 <b style="color:#f7e2a8">${fmtHM(todayRow.noon)}</b></span>
-<span>日落 <b style="color:#f7e2a8">${fmtHM(todayRow.set)}</b></span>
-<span>昼长 <b style="color:#f7e2a8">${todayRow.day.toFixed(1)}</b> 小时</span>
+<span>比北京时间 <b style="color:var(--gold2)">${signed(diff,1)}</b> 分钟</span>
+<span>今日日出 <b style="color:var(--gold2)">${fmtHM(todayRow.rise)}</b></span>
+<span>日中 <b style="color:var(--gold2)">${fmtHM(todayRow.noon)}</b></span>
+<span>日落 <b style="color:var(--gold2)">${fmtHM(todayRow.set)}</b></span>
+<span>昼长 <b style="color:var(--gold2)">${todayRow.day.toFixed(1)}</b> 小时</span>
 </div>
-<div style="margin-top:12px;font-size:13px;line-height:1.9;color:#b6c1dd">
+<div style="margin-top:12px;font-size:13px;line-height:1.9;color:var(--mut)">
 真太阳时 = 北京时间 + (经度 − 120°)×4 分钟 + 时差方程 EoT。<br>
-${esc(name)}经度 ${lon.toFixed(2)}°,经度差为 <b style="color:#f7e2a8">${signed(diff,1)}</b> 分钟;再叠加当日时差方程,即得真太阳时。北京时间是全国统一标准时,而太阳并不按北京时间升落,西部城市差异尤为明显。
+${esc(name)}经度 ${lon.toFixed(2)}°,经度差为 <b style="color:var(--gold2)">${signed(diff,1)}</b> 分钟;再叠加当日时差方程,即得真太阳时。北京时间是全国统一标准时,而太阳并不按北京时间升落,西部城市差异尤为明显。
 </div>
 </section>
 
@@ -209,7 +209,7 @@ function build(){
 <link rel="canonical" href="${SITE}/city/city-index.html">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#070b16"><link rel="stylesheet" href="../styles.css">
-<style>.cl{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}.cl a{color:var(--gold2);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:13px;background:rgba(0,0,0,.25)}.cl a:hover{border-color:var(--gold)}</style>
+<style>.cl{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}.cl a{color:var(--gold2);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:13px;background:var(--shade)}.cl a:hover{border-color:var(--gold)}</style>
 </head><body>
 <div class="topbar"><div class="topbar-in">
 <div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>

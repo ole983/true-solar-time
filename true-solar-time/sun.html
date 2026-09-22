@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>太阳轨迹 · 日出日落全年曲线 | 真太阳时</title>
 <meta name="description" content="任意城市全年日出日落、正午、昼长曲线,今日太阳高度方位,二十四节气日中表。">
-<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
 </head>
 <body>
 <div class="topbar"><div class="topbar-in">
@@ -34,10 +34,12 @@
 (function(){const{$,store,cityByName,snapshot,termOf,fmtSigned}=window.TST;TST.setNav();
 window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];$("cl").appendChild(o);});
 let sel=store.sel;$("q").value=sel;
-$("go").onclick=()=>{const f=window.CITIES.find(c=>c[0]===$("q").value.trim());if(f){sel=f[0];store.sel=sel;render();}};
+$("go").onclick=()=>{const f=window.CITIES.find(c=>c[0]===$("q").value.trim());if(f){sel=f[0];store.sel=sel;render();
+if(window.TSTTheme){const _s=window.TSTTheme.set.bind(window.TSTTheme);window.TSTTheme.set=function(v){_s(v);try{render();}catch(e){}};}}};
 function yearSeries(city,y){const out=[];for(let d=0;d<365;d++){const dt=new Date(Date.UTC(y,0,1)+d*864e5);
 const ev=ASTRO.sunEventsForCity(dt.getUTCFullYear(),dt.getUTCMonth()+1,dt.getUTCDate(),city[3],city[2]);
 out.push({ev,eq:ev.eq,dec:ev.dec});}return out;}
+function cssv(n){try{return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";}catch(e){return "#888";}}
 function plot(el,fn){const cv=$(el),ctx=cv.getContext("2d");ctx.clearRect(0,0,cv.width,cv.height);fn(ctx,cv.width,cv.height);}
 function render(){const now=new Date(),city=cityByName(sel),s=snapshot(city,now);
 $("t").textContent=`${city[0]} · 真太阳 ${ASTRO.fmtHMS(s.tst)}`;
@@ -47,24 +49,24 @@ $("b3").textContent=`昼长 ${s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixe
 const y=s.bj.y,S=yearSeries(city,y);
 const doy=Math.floor((Date.UTC(y,s.bj.m-1,s.bj.d)-Date.UTC(y,0,1))/864e5);
 plot("year",(ctx,W,H)=>{const Y=m=>H-8-(m/1440)*(H-16);
-ctx.strokeStyle="rgba(255,255,255,.12)";for(let h=0;h<=24;h+=3){ctx.beginPath();ctx.moveTo(0,Y(h*60));ctx.lineTo(W,Y(h*60));ctx.stroke();
-ctx.fillStyle="#9aa6c7";ctx.font="10px sans-serif";ctx.fillText(h+":00",4,Y(h*60)-3);}
+ctx.strokeStyle=cssv("--line-2");for(let h=0;h<=24;h+=3){ctx.beginPath();ctx.moveTo(0,Y(h*60));ctx.lineTo(W,Y(h*60));ctx.stroke();
+ctx.fillStyle=cssv("--mut");ctx.font="10px sans-serif";ctx.fillText(h+":00",4,Y(h*60)-3);}
 const line=(key,col)=>{ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.beginPath();let started=false;
 S.forEach((o,i)=>{const v=o.ev[key];if(v==null)return;const x=i/364*W;started?ctx.lineTo(x,Y(v)):ctx.moveTo(x,Y(v));started=true;});ctx.stroke();};
-line("riseMin","#5eead4");line("noonMin","#e8c36a");line("setMin","#fb7185");
-const t=S[doy].ev;["riseMin","noonMin","setMin"].forEach(k=>{if(t[k]==null)return;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(doy/364*W,Y(t[k]),4,0,7);ctx.fill();});
-["1月","4月","7月","10月","12月"].forEach((t,i)=>{ctx.fillStyle="#9aa6c7";ctx.fillText(t,[6,W*0.25,W*0.5,W*0.75,W-32][i],H-2);});});
+line("riseMin",cssv("--teal"));line("noonMin",cssv("--gold"));line("setMin",cssv("--red"));
+const t=S[doy].ev;["riseMin","noonMin","setMin"].forEach(k=>{if(t[k]==null)return;ctx.fillStyle=cssv("--txt");ctx.beginPath();ctx.arc(doy/364*W,Y(t[k]),4,0,7);ctx.fill();});
+["1月","4月","7月","10月","12月"].forEach((t,i)=>{ctx.fillStyle=cssv("--mut");ctx.fillText(t,[6,W*0.25,W*0.5,W*0.75,W-32][i],H-2);});});
 let mx=0,mn=99;S.forEach(o=>{if(o.ev.riseMin==null)return;const L=(o.ev.setMin-o.ev.riseMin)/60;mx=Math.max(mx,L);mn=Math.min(mn,L);});
-plot("day",(ctx,W,H)=>{ctx.strokeStyle="#34d399";ctx.lineWidth=2;ctx.beginPath();
+plot("day",(ctx,W,H)=>{ctx.strokeStyle=cssv("--green");ctx.lineWidth=2;ctx.beginPath();
 S.forEach((o,i)=>{if(o.ev.riseMin==null)return;const L=(o.ev.setMin-o.ev.riseMin)/60;const x=i/364*W,yy=H-14-((L-mn)/Math.max(0.1,(mx-mn)))*(H-28);i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);});ctx.stroke();
-ctx.fillStyle="#9aa6c7";ctx.font="11px sans-serif";ctx.fillText("最长 "+mx.toFixed(1)+"h",6,12);ctx.fillText("最短 "+mn.toFixed(1)+"h",6,H-4);});
+ctx.fillStyle=cssv("--mut");ctx.font="11px sans-serif";ctx.fillText("最长 "+mx.toFixed(1)+"h",6,12);ctx.fillText("最短 "+mn.toFixed(1)+"h",6,H-4);});
 $("dayTxt").textContent=`${city[0]}${y}年昼长 ${mn.toFixed(1)} ~ ${mx.toFixed(1)} 小时,年变幅 ${(mx-mn).toFixed(1)} 小时。纬度越高变幅越大,三亚约2小时,哈尔滨约8小时。`;
-plot("alt",(ctx,W,H)=>{const mid=new Date(Date.UTC(y,s.bj.m-1,s.bj.d));ctx.strokeStyle="rgba(255,255,255,.18)";ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
-ctx.strokeStyle="#e8c36a";ctx.lineWidth=2;ctx.beginPath();
+plot("alt",(ctx,W,H)=>{const mid=new Date(Date.UTC(y,s.bj.m-1,s.bj.d));ctx.strokeStyle=cssv("--line-2");ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+ctx.strokeStyle=cssv("--gold");ctx.lineWidth=2;ctx.beginPath();
 for(let m=0;m<1440;m+=5){const utc=mid.getTime()+(m/60-8)*36e5;const a=ASTRO.solarAltAz(new Date(utc),city[3],city[2]).alt;
 const x=m/1440*W,yy=H-10-((a+20)/110)*(H-20);m?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();
-ctx.fillStyle="#5eead4";const bx=s.bmin/1440*W,by=H-10-((s.aa.alt+20)/110)*(H-20);ctx.beginPath();ctx.arc(Math.min(W-4,Math.max(4,bx)),by,5,0,7);ctx.fill();
-ctx.fillStyle="#9aa6c7";ctx.font="11px sans-serif";ctx.fillText("0时",6,H-4);ctx.fillText("12时",W/2,H-4);ctx.fillText("24时",W-30,H-4);});
+ctx.fillStyle=cssv("--teal");const bx=s.bmin/1440*W,by=H-10-((s.aa.alt+20)/110)*(H-20);ctx.beginPath();ctx.arc(Math.min(W-4,Math.max(4,bx)),by,5,0,7);ctx.fill();
+ctx.fillStyle=cssv("--mut");ctx.font="11px sans-serif";ctx.fillText("0时",6,H-4);ctx.fillText("12时",W/2,H-4);ctx.fillText("24时",W-30,H-4);});
 $("altTxt").textContent=`此刻太阳高度 ${s.aa.alt.toFixed(1)}°、方位 ${s.aa.az.toFixed(0)}°。曲线为今日逐分钟高度,0线以上为白昼。`;
 // 节气表:找黄经过 0,15,...345 的日期
 const tb=$("tb");tb.innerHTML="";
@@ -82,7 +84,7 @@ rows.sort((a,b)=>a.k-b.k);
 const today=`${s.bj.m}月${s.bj.d}日`;
 window._rows=rows;
 rows.forEach(r=>{const tr=document.createElement("tr");if(r.date===today)tr.className="hl";
-tr.innerHTML=`<td><b>${names[r.k]}</b></td><td>${r.date}</td><td>${r.target}°</td><td>${fmtSigned(r.ev.eq,1)}分</td><td style="color:#f7e2a8">${ASTRO.fmtHM(r.ev.noonMin)}</td><td>${r.ev.polar||ASTRO.fmtHM(r.ev.riseMin)}</td><td>${r.ev.polar||ASTRO.fmtHM(r.ev.setMin)}</td><td>${r.ev.polar||((r.ev.setMin-r.ev.riseMin)/60).toFixed(1)+"h"}</td>`;tb.appendChild(tr);});}
+tr.innerHTML=`<td><b>${names[r.k]}</b></td><td>${r.date}</td><td>${r.target}°</td><td>${fmtSigned(r.ev.eq,1)}分</td><td style="color:var(--gold2)">${ASTRO.fmtHM(r.ev.noonMin)}</td><td>${r.ev.polar||ASTRO.fmtHM(r.ev.riseMin)}</td><td>${r.ev.polar||ASTRO.fmtHM(r.ev.setMin)}</td><td>${r.ev.polar||((r.ev.setMin-r.ev.riseMin)/60).toFixed(1)+"h"}</td>`;tb.appendChild(tr);});}
 $("dl").onclick=()=>{let s="节气,日期,黄经,时差分,日中,日出,日落\n";(window._rows||[]).forEach(r=>{s+=`${["春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至","小寒","大寒","立春","雨水","惊蛰"][r.k]},${r.date},${r.target},${r.ev.eq.toFixed(1)},${ASTRO.fmtHM(r.ev.noonMin)},${r.ev.polar||ASTRO.fmtHM(r.ev.riseMin)},${r.ev.polar||ASTRO.fmtHM(r.ev.setMin)}\n`;});
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+s],{type:"text/csv"}));a.download="节气日中表.csv";a.click();};
 render();setInterval(render,30000);})();

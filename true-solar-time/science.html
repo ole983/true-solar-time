@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>天文原理与精度验证 | 真太阳时</title>
 <meta name="description" content="本站天文算法、公式、精度指标与验证方法:时差方程、日出日落、章动、节气划分。">
-<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
 </head>
 <body>
 <div class="topbar"><div class="topbar-in">
@@ -29,12 +29,12 @@ EoT = L₀ − 0.0057183° − α + Δψ·cosε,分钟 = 度 × 4<br>
 cosH₀ = [sin(−0.833°) − sinφ·sinδ]/[cosφ·cosδ];日出/落(北京时) = 720 − (经度−120°)×4 − EoT ∓ H₀×4</div></section>
 <section class="card"><h2>◈ 自检结果</h2><div class="desc">断言阈值按算法标称精度设定,任一失败会标红并给出实测值。</div><div id="tests"></div></section>
 <section class="card"><h2>◈ 问答</h2>
-<div style="font-size:13.5px;line-height:2;color:#cdd6f4">
-<b style="color:#e8c36a">Q1 为何不用简化EoT拟合公式?</b> 网传 B=2π(N−81)/364、EoT=9.87sin2B−7.53cosB−1.5sinB 拟合误差可达30秒,且未计时差的长期项。本站逐时刻解算视赤经,含章动,误差&lt;8秒。<br>
-<b style="color:#e8c36a">Q2 日出落为何与天气App差几十秒?</b> 三项来源:①对方多用简化算法;②对方经度取市中心与本站市政府坐标差几公里;③高程与山体遮挡未建模(拉萨、乌鲁木齐山区可差1–3分钟)。平原城市应&lt;1分钟。<br>
-<b style="color:#e8c36a">Q3 节气按黄经还是按日?</b> 天文节气是时刻(黄经整数点),本站 <code>sun.html</code> 节气表取该时刻所在北京时间日期的日出落,与“某日交节”民用表述一致,黄经列给出整数度供核验。<br>
-<b style="color:#e8c36a">Q4 子午流注为何必须用真太阳?</b> 《灵枢》以日出日入为开阖,经脉流注锚定太阳时角。全国统一北京时后,西部同一挂钟时刻太阳时角差可达45°,即3个时辰,经脉完全错位。<br>
-<b style="color:#e8c36a">Q5 如何复算?</b> 打开 <code>astro.js</code>,任意时刻 <code>ASTRO.sunApparent(new Date())</code> 即得 λ/α/δ/EoT,与美国海军天文台 MICA 或紫金山年历对拍正午即可。
+<div style="font-size:13.5px;line-height:2;color:var(--txt-2)">
+<b style="color:var(--gold)">Q1 为何不用简化EoT拟合公式?</b> 网传 B=2π(N−81)/364、EoT=9.87sin2B−7.53cosB−1.5sinB 拟合误差可达30秒,且未计时差的长期项。本站逐时刻解算视赤经,含章动,误差&lt;8秒。<br>
+<b style="color:var(--gold)">Q2 日出落为何与天气App差几十秒?</b> 三项来源:①对方多用简化算法;②对方经度取市中心与本站市政府坐标差几公里;③高程与山体遮挡未建模(拉萨、乌鲁木齐山区可差1–3分钟)。平原城市应&lt;1分钟。<br>
+<b style="color:var(--gold)">Q3 节气按黄经还是按日?</b> 天文节气是时刻(黄经整数点),本站 <code>sun.html</code> 节气表取该时刻所在北京时间日期的日出落,与“某日交节”民用表述一致,黄经列给出整数度供核验。<br>
+<b style="color:var(--gold)">Q4 子午流注为何必须用真太阳?</b> 《灵枢》以日出日入为开阖,经脉流注锚定太阳时角。全国统一北京时后,西部同一挂钟时刻太阳时角差可达45°,即3个时辰,经脉完全错位。<br>
+<b style="color:var(--gold)">Q5 如何复算?</b> 打开 <code>astro.js</code>,任意时刻 <code>ASTRO.sunApparent(new Date())</code> 即得 λ/α/δ/EoT,与美国海军天文台 MICA 或紫金山年历对拍正午即可。
 </div></section>
 <footer class="site"><a href="index.html">← 回首页</a> · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a></footer>
 </div>

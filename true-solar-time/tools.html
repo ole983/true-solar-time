@@ -5,20 +5,20 @@
 <title>实用工具 · 真太阳时换算 / 黄金时刻 / 晒太阳 / 节气海报</title>
 <meta name="description" content="真太阳时与北京时间互转、摄影黄金蓝调时刻、宝宝晒太阳最佳时段、节气海报生成,全国城市天文级计算。">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
 <style>
-.toolbox{border:1px solid var(--line);border-radius:16px;padding:16px;background:rgba(0,0,0,.3);margin-top:12px}
+.toolbox{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--shade);margin-top:12px}
 .toolbox h3{margin:0 0 10px;font-size:15px;color:var(--gold2);letter-spacing:.06em}
 .inrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.inrow input,.inrow select{background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;outline:none;font-variant-numeric:tabular-nums}
+.inrow input,.inrow select{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;outline:none;font-variant-numeric:tabular-nums}
 .inrow input:focus,.inrow select:focus{border-color:var(--gold)}
 .inrow input[type=text]{width:110px}
 .res{margin-top:12px;display:grid;gap:8px}
-.res .r{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:rgba(0,0,0,.28);font-size:13.5px;font-variant-numeric:tabular-nums}
+.res .r{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--shade);font-size:13.5px;font-variant-numeric:tabular-nums}
 .res .r b{color:var(--gold2)}
 .res .big{font-size:22px;font-weight:800;color:var(--gold)}
 .tag{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--mut)}
-canvas#poster{width:100%;max-width:320px;border:1px solid var(--line);border-radius:12px;background:#0a1122}
+canvas#poster{width:100%;max-width:320px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 .hint{color:var(--mut);font-size:12.5px;line-height:1.8;margin-top:8px}
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 </style>
@@ -28,11 +28,11 @@ canvas#poster{width:100%;max-width:320px;border:1px solid var(--line);border-rad
 <div class="topbar"><div class="topbar-in">
 <div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
 <nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="zeri.html">择时</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
-<div class="top-right"><input id="q" list="cityList" placeholder="切换城市…" autocomplete="off" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;width:140px"><datalist id="cityList"></datalist><span class="pill" id="navCity">北京</span></div>
+<div class="top-right"><input id="q" list="cityList" placeholder="切换城市…" autocomplete="off" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;width:140px"><datalist id="cityList"></datalist><span class="pill" id="navCity">北京</span></div>
 </div></div>
 <div class="wrap" id="main">
 <header class="hero"><h1>实用工具 <span class="g">· 换算 / 黄金时刻 / 晒娃</span></h1>
-<div class="sub">四类人群刚需工具,全部本地计算,输入即出结果。当前城市:<b id="curCity" style="color:#f7e2a8">北京</b> <span class="pill" id="curTST">—</span></div></header>
+<div class="sub">四类人群刚需工具,全部本地计算,输入即出结果。当前城市:<b id="curCity" style="color:var(--gold2)">北京</b> <span class="pill" id="curTST">—</span></div></header>
 
 <div class="grid3">
 <section class="card" style="margin-top:16px">

@@ -10,7 +10,7 @@ const DST = path.resolve(__dirname, "../www");
 const INCLUDE = [
   "index.html", "cities.html", "jieqi.html", "liuzhu.html",
   "sun.html", "science.html", "tools.html", "zeri.html", "privacy.html", "terms.html", "vip.html",
-  "styles.css", "astro.js", "app.js", "cities.js", "bridge.js",
+  "styles.css", "astro.js", "app.js", "cities.js", "bridge.js", "theme.js",
   "manifest.webmanifest", "favicon.svg", "icon-512.svg",
   "robots.txt", "sitemap.xml"
 ];

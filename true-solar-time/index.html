@@ -11,7 +11,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#070b16">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"真太阳时 · 子午流注","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","url":"https://ole983.github.io/true-solar-time/index.html","description":"全中国300+城市真太阳时实时显示,当令经脉、今日三件事、日出日落与黄金时刻。","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"inLanguage":"zh-CN"}
 </script>
@@ -19,21 +19,37 @@
 {"@context":"https://schema.org","@type":"Dataset","name":"全中国城市经纬度与真太阳时数据集","description":"340个地级市WGS84经纬度,可推算真太阳时、日出日落、时差方程。算法基于Meeus Astronomical Algorithms Ch.25。","license":"https://opensource.org/licenses/MIT","creator":{"@type":"Person","name":"ole983"},"spatialCoverage":"China","temporalCoverage":"2024/2027","url":"https://ole983.github.io/true-solar-time/cities.html"}
 </script>
 <style>
-.hero-compact{padding:20px 22px}
-.action{border:1px solid rgba(232,195,106,.5);background:linear-gradient(165deg,rgba(232,195,106,.18),rgba(232,195,106,.03));border-radius:16px;padding:16px 18px;margin-top:12px}
-.action .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.action .cityname{font-size:26px;font-weight:900}
-.action .term{font-size:14px;color:var(--gold2)}
-.action .zi{font-size:40px;font-weight:900;color:var(--gold);line-height:1}
-.action .now{font-size:15px;line-height:1.7}
-.todo{margin-top:12px;display:grid;gap:8px}
-.todo .row{display:flex;gap:10px;align-items:flex-start;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.65}
-.todo .row .n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#0a1122;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
-.todo .row.yi .n{background:var(--green);color:#06281c}
-.todo .row.ji .n{background:var(--red);color:#3a0a12}
-.actionbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.kvrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.kvrow .kv{border:1px solid var(--line);border-radius:10px;padding:7px 11px;background:rgba(0,0,0,.3);font-size:12.5px;font-variant-numeric:tabular-nums}
+/* 新首页 Hero「墨夜/宣纸」 */
+.hero2{border:1px solid var(--line);border-radius:22px;padding:36px 26px 26px;margin-top:18px;position:relative;overflow:hidden;text-align:center;
+  background:linear-gradient(180deg,rgba(var(--gold-rgb),.08),rgba(var(--gold-rgb),.01))}
+.glow2{position:absolute;left:50%;top:-70px;width:480px;height:480px;transform:translateX(-50%);
+  background:radial-gradient(circle,rgba(var(--gold-rgb),.17),rgba(var(--gold-rgb),.04) 42%,transparent 68%);
+  pointer-events:none;animation:hbreathe 9s ease-in-out infinite}
+@keyframes hbreathe{0%,100%{opacity:.75;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.06)}}
+.h-date{position:relative;color:var(--mut);font-size:12.5px;letter-spacing:.3em;font-family:var(--serif)}
+.h-city{position:relative;margin-top:6px;font-family:var(--serif);font-size:19px;letter-spacing:.14em}
+.h-city b{color:var(--gold2);font-weight:400}
+.h-term{color:var(--mut);font-size:13px}
+.h-clock{position:relative;font-family:var(--serif);font-size:clamp(52px,12vw,96px);line-height:1;letter-spacing:.04em;
+  font-variant-numeric:tabular-nums;margin:16px 0 4px}
+.h-clock .sec{font-size:.42em;color:var(--gold);letter-spacing:0}
+.h-label{position:relative;color:var(--gold);font-size:12px;letter-spacing:.5em;font-family:var(--serif)}
+.h-vs{position:relative;margin-top:18px;color:var(--mut);font-size:13px}
+.h-vs em{color:var(--txt);font-style:normal;font-variant-numeric:tabular-nums}
+.h-vs .up{color:var(--gold2)}
+.h-sc{position:relative;display:inline-flex;align-items:center;gap:12px;margin-top:20px;border:1px solid var(--line-2);
+  border-radius:999px;padding:8px 18px;background:rgba(var(--gold-rgb),.05)}
+.h-sc .zi{font-family:var(--serif);font-size:24px;color:var(--gold);line-height:1}
+.h-sc .m{font-size:12.5px;color:var(--mut);letter-spacing:.1em}
+.h-actions{position:relative;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+.h-actions .btn{text-decoration:none}
+.todo{margin-top:14px;display:grid;gap:8px;text-align:left}
+.todo .row{display:flex;gap:10px;align-items:flex-start;background:var(--shade);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.7}
+.todo .row .n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--on-gold);font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.todo .row.yi .n{background:var(--green);color:var(--on-gold)}
+.todo .row.ji .n{background:var(--red);color:#fff}
+.kvrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:center}
+.kvrow .kv{border:1px solid var(--line);border-radius:10px;padding:7px 11px;background:var(--shade);font-size:12.5px;font-variant-numeric:tabular-nums}
 .kvrow .kv b{color:var(--gold2)}
 .tabs2{display:flex;gap:4px;flex-wrap:wrap;margin:16px 0 0;border-bottom:1px solid var(--line);padding-bottom:0}
 .tabs2 button{background:transparent;border:1px solid transparent;border-bottom:2px solid transparent;color:var(--mut);font-size:14px;padding:9px 14px;cursor:pointer;border-radius:10px 10px 0 0;font-family:inherit}
@@ -42,14 +58,14 @@
 .panel{display:none}
 .panel.on{display:block}
 .persona{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:12px}
-.persona .p2{border:1px solid var(--line);border-radius:12px;padding:10px;background:rgba(0,0,0,.3);cursor:pointer;font-size:12.5px;line-height:1.6;transition:.15s}
+.persona .p2{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--shade);cursor:pointer;font-size:12.5px;line-height:1.6;transition:.15s}
 .persona .p2:hover{border-color:var(--gold);transform:translateY(-2px)}
-.persona .p2.on{border-color:var(--gold);background:rgba(232,195,106,.12)}
+.persona .p2.on{border-color:var(--gold);background:rgba(var(--gold-rgb),.12)}
 .persona .p2 .t{font-weight:800;font-size:13.5px;color:var(--gold2)}
 .persona .p2 .w{color:var(--mut);font-size:11px}
-.jinju{margin-top:14px;border-left:3px solid var(--gold);padding:8px 14px;background:rgba(0,0,0,.28);border-radius:0 12px 12px 0;font-size:14px;line-height:1.8;color:var(--gold2);letter-spacing:.04em}
-.trust{margin-top:12px;font-size:12.5px;color:var(--mut);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-@media(max-width:600px){.action .zi{font-size:32px}.action .cityname{font-size:22px}}
+.jinju{margin-top:14px;border-left:3px solid var(--gold);padding:8px 14px;background:var(--shade);border-radius:0 12px 12px 0;font-size:14px;line-height:1.8;color:var(--gold2);letter-spacing:.04em;text-align:left}
+.trust{margin-top:12px;font-size:12.5px;color:var(--mut);display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+@media(max-width:600px){.h-clock{font-size:52px}.h-city{font-size:17px}}
 </style>
 </head>
 <body>
@@ -60,7 +76,7 @@
 <a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="zeri.html">择时</a><a href="science.html">天文原理</a>
 </nav>
 <div class="top-right">
-<input id="q" list="cityList" placeholder="切换城市…" autocomplete="off" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;width:150px">
+<input id="q" list="cityList" placeholder="切换城市…" autocomplete="off" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;width:150px">
 <datalist id="cityList"></datalist>
 <span class="pill" id="navCity">北京</span>
 <button class="btn" id="shareBtn" type="button">分享</button>
@@ -68,25 +84,25 @@
 </div></div>
 <div class="wrap" id="main">
 
-<section class="card hero-compact" aria-label="今日行动卡">
-<div class="action" id="actionCard">
-<div class="top"><span class="cityname" id="cName">北京</span><span class="term" id="cTerm">—</span><span class="pill" id="cGeo">—</span>
-<button class="btn" id="gpsBtn" type="button" style="margin-left:auto">◎ 定位我</button></div>
-<div style="display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap">
-<div class="zi" id="scZi">—</div>
-<div class="now" id="scNow">加载中…</div>
+<section class="hero2" aria-label="今日">
+<div class="glow2"></div>
+<div class="h-date" id="hDate">—</div>
+<div class="h-city">此刻 · <b id="cName">北京</b> <span class="h-term" id="cTerm">—</span> <span class="pill" id="cGeo">—</span></div>
+<div class="h-clock" id="hTst">--:--<span class="sec">:--</span></div>
+<div class="h-label">真太阳时</div>
+<div class="h-vs">北京时间 <em id="hBj">--:--:--</em> · 比挂钟 <em class="up" id="hDiff">—</em></div>
+<div class="h-sc"><span class="zi" id="scZi">—</span><span class="m" id="scNow">加载中…</span></div>
+<div class="h-actions">
+<a class="btn gold" href="liuzhu.html">查看今日12时辰</a>
+<a class="btn" href="tools.html">换算/黄金时刻</a>
+<button class="btn" id="notifyBtn" type="button">开启时辰提醒</button>
+<button class="btn" id="gpsBtn" type="button">◎ 定位我</button>
+<a class="btn" href="cities.html">全国总表</a>
 </div>
 <div class="kvrow" id="quickKV"></div>
 <div class="todo" id="todo"></div>
-<div class="actionbtns">
-<a class="btn gold" href="liuzhu.html" style="text-decoration:none">查看今日12时辰</a>
-<a class="btn" href="tools.html" style="text-decoration:none">换算/黄金时刻</a>
-<button class="btn" id="notifyBtn" type="button">开启时辰提醒</button>
-<a class="btn" href="cities.html" style="text-decoration:none">全国总表</a>
-</div>
 <div class="jinju" id="jinju">—</div>
 <div class="trust"><span id="trustTxt">与紫金山年历对拍:正午误差 &lt;30秒</span><a href="science.html">去验证 →</a></div>
-</div>
 </section>
 
 <div class="tabs2" role="tablist" aria-label="首页二级视图">
@@ -187,26 +203,27 @@ if(!localStorage.getItem("tst.geoAsked")&&navigator.geolocation){localStorage.se
 navigator.geolocation.getCurrentPosition(pos=>{const{latitude:la,longitude:lo}=pos.coords;let best=null,bd=1e9;
 window.CITIES.forEach(c=>{const d=(c[2]-lo)**2+(c[3]-la)**2;if(d<bd){bd=d;best=c;}});if(best)applyCity(best[0]);},()=>{}, {timeout:6000});}
 function fmtHM(m){return ASTRO.fmtHM(m);}
+function cssv(n){try{return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";}catch(e){return "#888";}}
 function drawCompass(aa){const cv=$("compass"),ctx=cv.getContext("2d"),W=300,C=150,R=140;ctx.clearRect(0,0,W,W);
-ctx.fillStyle="#0a1122";ctx.beginPath();ctx.arc(C,C,R,0,7);ctx.fill();
-ctx.strokeStyle="rgba(255,255,255,.25)";[1/3,2/3,1].forEach(f=>{ctx.beginPath();ctx.arc(C,C,R*f,0,7);ctx.stroke();});
-ctx.fillStyle="#b6c1dd";ctx.font="16px sans-serif";ctx.textAlign="center";
+ctx.fillStyle=cssv("--panel");ctx.beginPath();ctx.arc(C,C,R,0,7);ctx.fill();
+ctx.strokeStyle=cssv("--line-2");[1/3,2/3,1].forEach(f=>{ctx.beginPath();ctx.arc(C,C,R*f,0,7);ctx.stroke();});
+ctx.fillStyle=cssv("--mut");ctx.font="16px sans-serif";ctx.textAlign="center";
 ctx.fillText("北",C,20);ctx.fillText("南",C,W-8);ctx.fillText("东",W-16,C+6);ctx.fillText("西",16,C+6);
-ctx.fillStyle="rgba(255,255,255,.4)";ctx.font="11px sans-serif";ctx.fillText("30°",C+4,C-R/3);ctx.fillText("60°",C+4,C-2*R/3);
+ctx.fillStyle=cssv("--line-2");ctx.font="11px sans-serif";ctx.fillText("30°",C+4,C-R/3);ctx.fillText("60°",C+4,C-2*R/3);
 const r=Math.max(0,Math.min(1,(90-aa.alt)/90))*R, a=aa.az*Math.PI/180;
 const x=C+r*Math.sin(a), y=C-r*Math.cos(a);
-if(aa.alt>=0){ctx.fillStyle="#e8c36a";ctx.shadowColor="#e8c36a";ctx.shadowBlur=14;}else{ctx.fillStyle="#475069";ctx.shadowBlur=0;}
+if(aa.alt>=0){ctx.fillStyle=cssv("--gold");ctx.shadowColor=cssv("--gold");ctx.shadowBlur=14;}else{ctx.fillStyle=cssv("--mut");ctx.shadowBlur=0;}
 ctx.beginPath();ctx.arc(x,y,11,0,7);ctx.fill();ctx.shadowBlur=0;
-ctx.fillStyle="#0a1122";ctx.font="bold 11px sans-serif";ctx.fillText(aa.alt>=0?"日":"夜",x,y+4);}
+ctx.fillStyle=aa.alt>=0?cssv("--on-gold"):cssv("--bg");ctx.font="bold 11px sans-serif";ctx.fillText(aa.alt>=0?"日":"夜",x,y+4);}
 function drawEOT(){const cv=$("eot"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
 const y=new Date().getFullYear(),pts=[];for(let d=0;d<365;d++)pts.push(ASTRO.sunApparent(new Date(Date.UTC(y,0,1)+d*864e5)).eq);
-ctx.strokeStyle="rgba(255,255,255,.18)";ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
-ctx.strokeStyle="#e8c36a";ctx.lineWidth=2;ctx.beginPath();
+ctx.strokeStyle=cssv("--line-2");ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+ctx.strokeStyle=cssv("--gold");ctx.lineWidth=2;ctx.beginPath();
 pts.forEach((e,i)=>{const x=i/364*W,yy=H/2-e/17*(H/2-10);i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);});ctx.stroke();
 const now=new Date(),doy=Math.floor((Date.UTC(y,now.getMonth(),now.getDate())-Date.UTC(y,0,1))/864e5);
 const x=doy/364*W,yy=H/2-pts[doy]/17*(H/2-10);
-ctx.fillStyle="#5eead4";ctx.beginPath();ctx.arc(x,yy,5,0,7);ctx.fill();
-ctx.fillStyle="#b6c1dd";ctx.font="11px sans-serif";ctx.fillText("1月",6,H-6);ctx.fillText("7月",W/2-8,H-6);ctx.fillText("12月",W-34,H-6);
+ctx.fillStyle=cssv("--teal");ctx.beginPath();ctx.arc(x,yy,5,0,7);ctx.fill();
+ctx.fillStyle=cssv("--mut");ctx.font="11px sans-serif";ctx.fillText("1月",6,H-6);ctx.fillText("7月",W/2-8,H-6);ctx.fillText("12月",W-34,H-6);
 return pts[doy];}
 function renderCaps(){const box=$("caps");box.innerHTML="";const now=new Date();
 ["北京","上海","广州","深圳","成都","杭州","武汉","西安","乌鲁木齐","拉萨","哈尔滨","三亚"].forEach(n=>{
@@ -219,23 +236,23 @@ Object.entries(TST.GROUP).forEach(([k,g])=>{const d=document.createElement("div"
 d.className="p2"+(k===persona?" on":"");d.innerHTML=`<div class="t">${g.icon} ${g.name}</div><div class="w">${g.who}</div>`;
 d.onclick=()=>{persona=k;localStorage.setItem("tst.persona",k);renderPersona(s,city);};box.appendChild(d);});
 const ev=s.ev,g=goldenOf(city,s),body=$("personaBody");
-if(persona==="health"){body.innerHTML=actionsOf(city,s).map((t,i)=>`<div style="margin-bottom:8px"><b style="color:#e8c36a">${i+1}.</b> ${t}</div>`).join("")+
-`<div style="color:#9aa6c7;margin-top:8px">当令:${s.sc.m} · ${JINJU[termOf(s.sun.lambda)]||""}</div>`;}
+if(persona==="health"){body.innerHTML=actionsOf(city,s).map((t,i)=>`<div style="margin-bottom:8px"><b style="color:var(--gold)">${i+1}.</b> ${t}</div>`).join("")+
+`<div style="color:var(--mut);margin-top:8px">当令:${s.sc.m} · ${JINJU[termOf(s.sun.lambda)]||""}</div>`;}
 else if(persona==="baby"){const sb=TST.sunbathOf(city,s);
 const fmt=r=>r.map(([a,b])=>fmtHM(a)+"–"+fmtHM(b)).join("、")||"今日无合适时段";
-body.innerHTML=`<div style="margin-bottom:8px"><b style="color:#e8c36a">☀ 最佳晒太阳(高度20°–50°):</b>${fmt(sb.best)}</div>
-<div style="margin-bottom:8px"><b style="color:#9aa6c7">弱光时段(高度&lt;20°,补钙效率低):</b>${fmt(sb.safe)}</div>
-<div style="margin-bottom:8px"><b style="color:#e8c36a">今日昼长:</b>${ev.polar||((ev.setMin-ev.riseMin)/60).toFixed(1)+" 小时"}</div>
-<div style="color:#9aa6c7">建议:每次10–20分钟,露出手臂小腿,避开10–16点强紫外线。以上为天文时段,云量空气质量请另查天气。</div>`;}
-else if(persona==="outdoor"){body.innerHTML=`<div style="margin-bottom:8px"><b style="color:#e8c36a">🌅 黄金时刻:</b>晨 ${fmtHM(g.dawnGold[0])}–${fmtHM(g.dawnGold[1])} · 昏 ${fmtHM(g.duskGold[0])}–${fmtHM(g.duskGold[1])}</div>
-<div style="margin-bottom:8px"><b style="color:#5eead4">🔵 蓝调时刻:</b>晨 ${fmtHM(g.dawnBlue[0])}–${fmtHM(g.dawnBlue[1])} · 昏 ${fmtHM(g.duskBlue[0])}–${fmtHM(g.duskBlue[1])}</div>
-<div style="margin-bottom:8px"><b style="color:#e8c36a">日出/日中/日落:</b>${ev.polar||fmtHM(ev.riseMin)} / ${fmtHM(ev.noonMin)} / ${ev.polar||fmtHM(ev.setMin)}</div>
-<div style="color:#9aa6c7">日出方位约 ${s.aa.az.toFixed(0)}°,拍摄朝日机位向东微调;昼长${g.dayLen?g.dayLen.toFixed(1):"—"}小时。</div>`;}
+body.innerHTML=`<div style="margin-bottom:8px"><b style="color:var(--gold)">☀ 最佳晒太阳(高度20°–50°):</b>${fmt(sb.best)}</div>
+<div style="margin-bottom:8px"><b style="color:var(--mut)">弱光时段(高度&lt;20°,补钙效率低):</b>${fmt(sb.safe)}</div>
+<div style="margin-bottom:8px"><b style="color:var(--gold)">今日昼长:</b>${ev.polar||((ev.setMin-ev.riseMin)/60).toFixed(1)+" 小时"}</div>
+<div style="color:var(--mut)">建议:每次10–20分钟,露出手臂小腿,避开10–16点强紫外线。以上为天文时段,云量空气质量请另查天气。</div>`;}
+else if(persona==="outdoor"){body.innerHTML=`<div style="margin-bottom:8px"><b style="color:var(--gold)">🌅 黄金时刻:</b>晨 ${fmtHM(g.dawnGold[0])}–${fmtHM(g.dawnGold[1])} · 昏 ${fmtHM(g.duskGold[0])}–${fmtHM(g.duskGold[1])}</div>
+<div style="margin-bottom:8px"><b style="color:var(--teal)">🔵 蓝调时刻:</b>晨 ${fmtHM(g.dawnBlue[0])}–${fmtHM(g.dawnBlue[1])} · 昏 ${fmtHM(g.duskBlue[0])}–${fmtHM(g.duskBlue[1])}</div>
+<div style="margin-bottom:8px"><b style="color:var(--gold)">日出/日中/日落:</b>${ev.polar||fmtHM(ev.riseMin)} / ${fmtHM(ev.noonMin)} / ${ev.polar||fmtHM(ev.setMin)}</div>
+<div style="color:var(--mut)">日出方位约 ${s.aa.az.toFixed(0)}°,拍摄朝日机位向东微调;昼长${g.dayLen?g.dayLen.toFixed(1):"—"}小时。</div>`;}
 else{const cur=termOf(s.sun.lambda);
-body.innerHTML=`<div style="margin-bottom:8px"><b style="color:#e8c36a">📜 当前节气:</b>${cur} · ${JINJU[cur]||""}</div>
-<div style="margin-bottom:8px"><b style="color:#e8c36a">真太阳时:</b>${ASTRO.fmtHMS(s.tst)} · ${s.sc.z}时 · 超前北京 ${fmtSigned(s.diff,1)}分</div>
-<div style="margin-bottom:8px"><b style="color:#e8c36a">择时用真太阳:</b>换柱以节气交节时刻为准,详见<a href="jieqi.html">节气页</a>精确时刻表</div>
-<div style="color:#9aa6c7">换算器:输入北京时间与经度,即得真太阳时辰与对应卦时,见<a href="tools.html">实用工具</a>。</div>`;}}
+body.innerHTML=`<div style="margin-bottom:8px"><b style="color:var(--gold)">📜 当前节气:</b>${cur} · ${JINJU[cur]||""}</div>
+<div style="margin-bottom:8px"><b style="color:var(--gold)">真太阳时:</b>${ASTRO.fmtHMS(s.tst)} · ${s.sc.z}时 · 超前北京 ${fmtSigned(s.diff,1)}分</div>
+<div style="margin-bottom:8px"><b style="color:var(--gold)">择时用真太阳:</b>换柱以节气交节时刻为准,详见<a href="jieqi.html">节气页</a>精确时刻表</div>
+<div style="color:var(--mut)">换算器:输入北京时间与经度,即得真太阳时辰与对应卦时,见<a href="tools.html">实用工具</a>。</div>`;}}
 function tick(force){const now=new Date(),city=cityByName(sel),s=snapshot(city,now);
 $("navCity").textContent=sel;$("cName").textContent=city[0];
 $("cTerm").textContent=`${termOf(s.sun.lambda)} · ${s.sc.z}时`;
@@ -247,18 +264,24 @@ $("tst").textContent=ASTRO.fmtHMS(s.tst);
 const ke=Math.floor((((s.tst%120)+120)%120)/15)+1;
 $("tstSub").textContent=`${s.sc.z}时第${ke}刻 · ${termOf(s.sun.lambda)}前后 · EoT ${fmtSigned(s.sun.eq,2)}分`;
 $("scZi").textContent=s.sc.z;
-$("scNow").innerHTML=`<b style="color:#f7e2a8">真太阳 ${ASTRO.fmtHMS(s.tst)}</b> · 北京时间 ${String(s.bj.h).padStart(2,"0")}:${String(s.bj.mi).padStart(2,"0")}<br><b>${s.sc.m}</b> 当令 · ${s.sc.y.split("忌")[0].replace(/[。；]$/,"")}`;
+$("scNow").textContent=s.sc.m+" 当令";
+/* 新 Hero 大字钟 */
+$("hDate").textContent=`${s.bj.y}年${s.bj.m}月${s.bj.d}日 · 星期${"日一二三四五六"[s.bj.week]}`;
+const tstStr=ASTRO.fmtHMS(s.tst);
+$("hTst").innerHTML=tstStr.slice(0,5)+'<span class="sec">'+tstStr.slice(5)+'</span>';
+$("hBj").textContent=`${String(s.bj.h).padStart(2,"0")}:${String(s.bj.mi).padStart(2,"0")}:${String(s.bj.s).padStart(2,"0")}`;
+$("hDiff").textContent=`${s.diff>=0?"超前":"落后"} ${Math.abs(s.diff).toFixed(1)} 分`;
 $("quickKV").innerHTML=`<span class="kv">真太阳 <b>${ASTRO.fmtHMS(s.tst)}</b></span><span class="kv">北京时 <b>${String(s.bj.h).padStart(2,"0")}:${String(s.bj.mi).padStart(2,"0")}</b></span><span class="kv">☀出 <b>${s.ev.polar||fmtHM(s.ev.riseMin)}</b></span><span class="kv">☀中 <b>${fmtHM(s.ev.noonMin)}</b></span><span class="kv">☀落 <b>${s.ev.polar||fmtHM(s.ev.setMin)}</b></span><span class="kv">昼长 <b>${s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+"h"}</b></span>`;
 $("jinju").textContent=JINJU[termOf(s.sun.lambda)]||"顺天时,养正气。";
 $("todo").innerHTML=actionsOf(city,s).map((t,i)=>`<div class="row"><span class="n">${i+1}</span><span>${t}</span></div>`).join("");
 $("diffBadge").textContent=`真太阳${s.diff>=0?"超前":"落后"}北京 ${Math.abs(s.diff).toFixed(1)}分 = 经度差 ${fmtSigned((city[2]-120)*4,1)}分 + 时差 ${fmtSigned(s.sun.eq,2)}分`;
-$("jingInfo").innerHTML=`<b style="color:#e8c36a">◈ ${s.sc.m}:</b>${s.sc.j} <span style="color:#9aa6c7">[按${city[0]}真太阳 ${ASTRO.fmtHMS(s.tst)}判定]</span>`;
+$("jingInfo").innerHTML=`<b style="color:var(--gold)">◈ ${s.sc.m}:</b>${s.sc.j} <span style="color:var(--mut)">[按${city[0]}真太阳 ${ASTRO.fmtHMS(s.tst)}判定]</span>`;
 const ev=s.ev;
 $("params").innerHTML=[["太阳赤纬 δ",s.sun.Dec.toFixed(3)+"°"],["时差方程",fmtSigned(s.sun.eq,2)+" 分"],["视黄经 λ",s.sun.lambda.toFixed(2)+"°"],["日地距离",s.sun.dist.toFixed(4)+" AU"],["今日日出",ev.polar||fmtHM(ev.riseMin)],["正午日中",fmtHM(ev.noonMin)],["今日日落",ev.polar||fmtHM(ev.setMin)],["昼长",ev.polar||((ev.setMin-ev.riseMin)/60).toFixed(1)+" 小时"],["太阳高度",s.aa.alt.toFixed(1)+"°"]].map(p=>`<div class="p"><div class="k">${p[0]}</div><div class="v">${p[1]}</div></div>`).join("");
 $("bar").style.setProperty("--sr",(ev.riseMin/1440*100||0)+"%");$("bar").style.setProperty("--ss",(ev.setMin/1440*100||100)+"%");
 if(ev.riseMin!=null){$("mRise").style.left=ev.riseMin/1440*100+"%";$("mSet").style.left=ev.setMin/1440*100+"%";}
 $("mNoon").style.left=ev.noonMin/1440*100+"%";$("mNow").style.left=s.bmin/1440*100+"%";
-$("tlbl").innerHTML=`<span>☀出 ${ev.polar||fmtHM(ev.riseMin)}</span><span>☀中 ${fmtHM(ev.noonMin)}</span><span>☀落 ${ev.polar||fmtHM(ev.setMin)}</span><span style="color:#5eead4">▼现在 ${fmtHM(s.bmin)}</span>`;
+$("tlbl").innerHTML=`<span>☀出 ${ev.polar||fmtHM(ev.riseMin)}</span><span>☀中 ${fmtHM(ev.noonMin)}</span><span>☀落 ${ev.polar||fmtHM(ev.setMin)}</span><span style="color:var(--teal)">▼现在 ${fmtHM(s.bmin)}</span>`;
 drawCompass(s.aa);const eot=drawEOT();
 $("eotTxt").textContent=`今日时差方程 ${fmtSigned(eot,1)} 分钟:真太阳时 = 平太阳时 + EoT。EoT 每年在 +16(11月初)~−14(2月中)分钟间摆动。`;
 $("altaz").innerHTML=`高度 <b>${s.aa.alt.toFixed(2)}°</b>${s.aa.alt<0?"(地平以下)":""}<br>方位 <b>${s.aa.az.toFixed(1)}°</b>(北0°顺时针)<br>折射修正 +${(s.aa.refr*60).toFixed(1)}′<br>时角 ${s.aa.H.toFixed(1)}°`;
@@ -266,10 +289,12 @@ const tb=$("sched");tb.innerHTML="";window.TST.LIU.forEach((L,i)=>{const r=L.ran
 if(r.length===4)segs=[[r[0],1440],[0,r[3]]];else segs=[[r[0],r[1]]];
 const bjt=segs.map(([a,b])=>fmtHM(a-s.diff)+"–"+fmtHM(b-s.diff)).join(" / ");
 const tr=document.createElement("tr");if(i===s.sc.i)tr.className="hl";
-tr.innerHTML=`<td><b>${L.z}</b></td><td>${L.t}</td><td style="color:#f7e2a8">${bjt}</td><td style="color:#9aa6c7">${L.m}</td><td>${i===s.sc.i?"◉ 当令":""}</td>`;tb.appendChild(tr);});
+tr.innerHTML=`<td><b>${L.z}</b></td><td>${L.t}</td><td style="color:var(--gold2)">${bjt}</td><td style="color:var(--mut)">${L.m}</td><td>${i===s.sc.i?"◉ 当令":""}</td>`;tb.appendChild(tr);});
 renderPersona(s,city);
 if(force||!tick._n||Date.now()-tick._n>30000){tick._n=Date.now();renderCaps();}}
 renderCaps();tick(true);setInterval(()=>tick(false),100);
+/* 主题切换后重绘 canvas */
+if(window.TSTTheme){const _s=window.TSTTheme.set.bind(window.TSTTheme);window.TSTTheme.set=function(v){_s(v);try{tick(true);}catch(e){}};}
 if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
 })();
 </script>

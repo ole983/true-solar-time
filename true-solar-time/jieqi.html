@@ -4,20 +4,20 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>二十四节气 · 精确交节时刻与养生 | 真太阳时</title>
 <meta name="description" content="二十四节气精确交节时刻(分钟级)、倒计时、72候物候、节气养生与子午流注对照,按视黄经逐年推算。">
-<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
 <style>
-.term-big{display:flex;gap:16px;align-items:center;border:1px solid rgba(232,195,106,.45);background:linear-gradient(180deg,rgba(232,195,106,.15),rgba(232,195,106,.03));border-radius:14px;padding:16px 18px;margin-top:12px}
+.term-big{display:flex;gap:16px;align-items:center;border:1px solid rgba(var(--gold-rgb),.45);background:linear-gradient(180deg,rgba(var(--gold-rgb),.15),rgba(var(--gold-rgb),.03));border-radius:14px;padding:16px 18px;margin-top:12px}
 .term-big .zi{font-size:52px;font-weight:900;color:var(--gold);line-height:1.1}
 .count{font-variant-numeric:tabular-nums;font-size:clamp(22px,3.5vw,34px);font-weight:800;color:var(--teal)}
 .progress{height:12px;border-radius:999px;background:#0b1e4b;border:1px solid var(--line);position:relative;overflow:hidden;margin-top:10px}
-.progress i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#e8c36a,#f7e2a8);border-radius:999px}
+.progress i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:999px}
 .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.tgrid .it{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(0,0,0,.3);font-size:13px;line-height:1.75}
-.tgrid .it.cur{border-color:var(--gold);background:rgba(232,195,106,.12)}
+.tgrid .it{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--shade);font-size:13px;line-height:1.75}
+.tgrid .it.cur{border-color:var(--gold);background:rgba(var(--gold-rgb),.12)}
 .tgrid .it.next{border-color:var(--teal)}
 .tgrid .t{font-size:17px;font-weight:800;color:var(--gold2)}
 .hou{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
-.hou .h{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.7;background:rgba(0,0,0,.28)}
+.hou .h{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.7;background:var(--shade)}
 .hou .h b{color:var(--gold2)}
 .yearsel{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .yearsel button.nav{width:38px;text-align:center}
@@ -32,13 +32,13 @@
 </div></div>
 <div class="wrap">
 <header class="hero"><h1>二十四节气 <span class="g">· 精确交节</span></h1>
-<div class="sub">节气是太阳视黄经每 15° 的精确时刻,全球同一瞬间,此处换算为<b style="color:#f7e2a8">北京时间</b>显示到分钟。本页时刻由本站 <code>astro.js</code>(Meeus Ch.25 + IAU1980 章动)逐年二分推算,与紫金山天文台年历误差 &lt;2 分钟。时辰养生仍请按真太阳时辰判定,节气时刻用于换季作息。</div>
+<div class="sub">节气是太阳视黄经每 15° 的精确时刻,全球同一瞬间,此处换算为<b style="color:var(--gold2)">北京时间</b>显示到分钟。本页时刻由本站 <code>astro.js</code>(Meeus Ch.25 + IAU1980 章动)逐年二分推算,与紫金山天文台年历误差 &lt;2 分钟。时辰养生仍请按真太阳时辰判定,节气时刻用于换季作息。</div>
 <div class="badges"><span class="badge" id="bCur">—</span><span class="badge" id="bNext">—</span><span class="badge" id="bYear">—</span></div></header>
 
 <section class="card"><h2>◈ 当前节气 · 下一节气倒计时 <span class="pill">每秒刷新</span></h2>
 <div id="errbox"></div>
 <div class="term-big"><div class="zi" id="curZi">—</div><div style="flex:1"><div id="curInfo" style="font-size:14px;line-height:1.8">推算中…</div><div class="progress"><i id="prog"></i></div><div class="desc" id="progTxt" style="margin:6px 0 0"></div></div></div>
-<div style="margin-top:12px">距离 <b id="nextName" style="color:#f7e2a8">—</b> <span class="count" id="count">—</span></div>
+<div style="margin-top:12px">距离 <b id="nextName" style="color:var(--gold2)">—</b> <span class="count" id="count">—</span></div>
 <div class="desc" id="nextInfo"></div>
 </section>
 
@@ -159,7 +159,7 @@ function render(){
   $("bCur").textContent="当令 "+curN+" · "+HOU[curN][houIdx];
   $("bNext").textContent="下节 "+nextN+" "+bjMD(next.d);
   $("curZi").textContent=curN[0];
-  $("curInfo").innerHTML='<b style="color:#f7e2a8;font-size:17px">'+curN+'</b> · 交节 '+bjStr(cur.d)+' 周'+weekStr(cur.d)+'<br>当前处 <b>'+HOU[curN][houIdx]+'</b>(第'+(houIdx+1)+'候) · '+YANG[curN];
+  $("curInfo").innerHTML='<b style="color:var(--gold2);font-size:17px">'+curN+'</b> · 交节 '+bjStr(cur.d)+' 周'+weekStr(cur.d)+'<br>当前处 <b>'+HOU[curN][houIdx]+'</b>(第'+(houIdx+1)+'候) · '+YANG[curN];
   var total=next.d-cur.d, past=now-cur.d;
   $("prog").style.width=Math.max(0,Math.min(100,past/total*100))+"%";
   $("progTxt").textContent="本节气已过 "+Math.floor(past/864e5)+" 天 · 进度 "+(past/total*100).toFixed(1)+"%";

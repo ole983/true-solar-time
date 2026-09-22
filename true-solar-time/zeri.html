@@ -5,20 +5,20 @@
 <title>择时 · 四柱 · 真太阳时 | 真太阳时 · 子午流注</title>
 <meta name="description" content="以真太阳时排四柱、定时辰,黄道黑道择吉时。真太阳时换算、年月日时柱与十二时辰吉凶。">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
 <style>
 .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
-.pill{border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;background:rgba(0,0,0,.3)}
+.pill{border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;background:var(--shade)}
 .pill .lab{font-size:12px;color:var(--mut);letter-spacing:.16em}
 .pill .gz{font-family:"Songti SC",serif;font-size:30px;font-weight:800;margin-top:8px;line-height:1.15}
 .pill .gz .g{color:var(--gold2)}.pill .gz .z{color:var(--paper,var(--txt))}
 .pill .note{font-size:11.5px;color:var(--mut);margin-top:6px}
-.pill.hit{border-color:var(--gold);background:rgba(232,195,106,.1)}
+.pill.hit{border-color:var(--gold);background:rgba(var(--gold-rgb),.1)}
 @media(max-width:560px){.pillars{grid-template-columns:repeat(2,1fr)}}
 .good{color:var(--green)}.bad{color:var(--red)}
 .hourgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
 @media(max-width:640px){.hourgrid{grid-template-columns:repeat(4,1fr)}}
-.hg{border:1px solid var(--line);border-radius:10px;padding:9px 4px;text-align:center;background:rgba(0,0,0,.25);font-size:12px}
+.hg{border:1px solid var(--line);border-radius:10px;padding:9px 4px;text-align:center;background:var(--shade);font-size:12px}
 .hg .z{font-family:"Songti SC",serif;font-size:17px;font-weight:800}
 .hg .s{font-size:10.5px;color:var(--mut);margin-top:2px}
 .hg.ausp{border-color:rgba(52,211,153,.55);background:rgba(52,211,153,.08)}
@@ -43,11 +43,11 @@
 <section class="card">
 <h2>◈ 排盘 · 四柱</h2>
 <div class="desc">输入出生(或待择)的北京时间与城市,自动换算真太阳时并排四柱。<span class="pill" id="lockTag">会员功能</span></div>
-<div class="toolbox" style="border:1px solid var(--line);border-radius:16px;padding:16px;background:rgba(0,0,0,.3);margin-top:12px">
+<div class="toolbox" style="border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--shade);margin-top:12px">
 <div class="inrow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-<input id="bDate" type="date" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px">
-<input id="bTime" type="text" value="12:00" placeholder="12:00" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:90px">
-<input id="bCity" list="cityList" placeholder="城市" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:120px">
+<input id="bDate" type="date" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px">
+<input id="bTime" type="text" value="12:00" placeholder="12:00" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:90px">
+<input id="bCity" list="cityList" placeholder="城市" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:120px">
 <datalist id="cityList"></datalist>
 <button class="btn gold" id="calcBtn" type="button">排盘</button>
 </div>

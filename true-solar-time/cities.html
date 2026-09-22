@@ -5,7 +5,7 @@
 <title>全国城市真太阳时总表 · 省会优先 · 天文级实时</title>
 <meta name="description" content="全中国300+城市真太阳时、时辰、经脉、日出正午日落实时总表,默认省会视图秒开,支持搜索排序与CSV导出。">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">跳到正文</a>
@@ -54,7 +54,7 @@ if(c[0]===store.sel)tr.className="hl";
 tr.style.cursor="pointer";tr.title="进入"+c[0]+"今日行动";
 tr.onclick=()=>{store.sel=c[0];location.href="index.html?city="+encodeURIComponent(c[0]);};
 const day=s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+"h";
-tr.innerHTML=`<td><b>${c[0]}</b></td><td style="color:#b6c1dd">${c[1]}</td><td>${c[2].toFixed(2)}°</td><td>${c[3].toFixed(2)}°</td><td class="tst" style="color:#f7e2a8;font-weight:700">${ASTRO.fmtHMS(s.tst)}</td><td class="zc">${s.sc.z}时</td><td style="color:#b6c1dd">${s.sc.m.slice(3)}</td><td>${fmtSigned(s.diff,1)}分</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.riseMin)}</td><td>${ASTRO.fmtHM(s.ev.noonMin)}</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.setMin)}</td><td>${day}</td>`;
+tr.innerHTML=`<td><b>${c[0]}</b></td><td style="color:var(--mut)">${c[1]}</td><td>${c[2].toFixed(2)}°</td><td>${c[3].toFixed(2)}°</td><td class="tst" style="color:var(--gold2);font-weight:700">${ASTRO.fmtHMS(s.tst)}</td><td class="zc">${s.sc.z}时</td><td style="color:var(--mut)">${s.sc.m.slice(3)}</td><td>${fmtSigned(s.diff,1)}分</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.riseMin)}</td><td>${ASTRO.fmtHM(s.ev.noonMin)}</td><td>${s.ev.polar||ASTRO.fmtHM(s.ev.setMin)}</td><td>${day}</td>`;
 frag.appendChild(tr);
 cells.push({c,tr,tst:tr.querySelector(".tst"),zc:tr.querySelector(".zc")});});
 tb.appendChild(frag);}
