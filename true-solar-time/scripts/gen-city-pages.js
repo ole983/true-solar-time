@@ -225,7 +225,7 @@ function build(){
   fs.writeFileSync(path.join(OUT,"city-index.html"),idx);
 
   // 重写 sitemap
-  const staticUrls=["index.html","cities.html","jieqi.html","tools.html","liuzhu.html","sun.html","science.html","privacy.html","terms.html","vip.html"];
+  const staticUrls=["index.html","cities.html","jieqi.html","tools.html","liuzhu.html","sun.html","science.html","zeri.html","privacy.html","terms.html","vip.html"];
   let sm='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
   staticUrls.forEach(u=>{sm+=`<url><loc>${SITE}/${u}</loc><changefreq>daily</changefreq><priority>${u==="index.html"?"1.0":"0.8"}</priority></url>\n`;});
   sm+=`<url><loc>${SITE}/city/city-index.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>\n`;

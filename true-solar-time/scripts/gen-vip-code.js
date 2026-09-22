@@ -8,7 +8,7 @@
    注意:算法与密钥在前端可被逆向,本方案仅用于低价值场景的防误输。
    若要更强防盗,应改为服务端签发+校验。 */
 const VIP_SALT = "TST-2026-ziwuliuzhu-ole983";
-const PLANS = { A:"连续包月", M:"月度会员", Q:"季度会员", Y:"年度会员" };
+const PLANS = { M:"月度会员", Q:"季度会员", Y:"年度会员" };
 
 function vipSign(p){ let h=5381; const s=p+"|"+VIP_SALT;
   for(let i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))>>>0; }
@@ -22,9 +22,9 @@ function randSerial(){
 }
 
 const [,,plan,daysArg,countArg] = process.argv;
-if(!plan||!daysArg){ console.log("用法: node scripts/gen-vip-code.js <A|M|Q|Y> <天数> [数量]"); process.exit(0); }
+if(!plan||!daysArg){ console.log("用法: node scripts/gen-vip-code.js <M|Q|Y> <天数> [数量]"); process.exit(0); }
 const days = parseInt(daysArg,10);
-if(!PLANS[plan]){ console.error("未知档位:"+plan+"(可选 A/M/Q/Y)"); process.exit(1); }
+if(!PLANS[plan]){ console.error("未知档位:"+plan+"(可选 M/Q/Y)"); process.exit(1); }
 if(!(days>0&&days<=4000)){ console.error("天数需在 1..4000"); process.exit(1); }
 const n = Math.max(1, parseInt(countArg||"1",10));
 

@@ -131,9 +131,8 @@ function parseHM(str){const m=/^\s*(\d{1,2})\s*[:：时]\s*(\d{1,2})?/.exec(str|
 /* ===== 会员与赞助(本地激活,离线可用,不联网不追踪) =====
    设计原则:平价亲民、不割韭菜、核心功能永久免费。 */
 const VIPPLANS={
-  A:{key:"A",name:"连续包月",price:"¥6",unit:"/月",days:31,auto:true},
   M:{key:"M",name:"月度会员",price:"¥8",unit:"",days:31,auto:false},
-  Q:{key:"Q",name:"季度会员",price:"¥18",unit:"",days:93,auto:false},
+  Q:{key:"Q",name:"季度会员",price:"¥20",unit:"",days:93,auto:false},
   Y:{key:"Y",name:"年度会员",price:"¥58",unit:"",days:366,auto:false}
 };
 const VIP_SALT="TST-2026-ziwuliuzhu-ole983";
@@ -150,7 +149,7 @@ const VIP={
   verify(code){
     if(!code)return null;
     const c=String(code).trim().toUpperCase().replace(/\s/g,"");
-    const m=c.match(/^TST-([AMQY])-(\d{1,4})-([0-9A-Z]{2,6})-([0-9A-Z]{4})$/);
+    const m=c.match(/^TST-([MQY])-(\d{1,4})-([0-9A-Z]{2,6})-([0-9A-Z]{4})$/);
     if(!m)return null;
     const plan=m[1],days=parseInt(m[2],10),serial=m[3],sig=m[4];
     if(!VIPPLANS[plan])return null;
@@ -172,7 +171,9 @@ const VIP={
   expireText(){const s=this.status();if(!s.active)return s.expired?"已过期":"未开通";
     const d=new Date(s.expire);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");},
   makeCode(plan,days,serial){
-    const s=(serial||Math.random().toString(36).slice(2,6)).toUpperCase();
+    let s=String(serial||Math.random().toString(36).slice(2,6)).toUpperCase().replace(/[^0-9A-Z]/g,"");
+    if(s.length<2)s=(s+"XX").slice(0,2);
+    if(s.length>6)s=s.slice(0,6);
     return "TST-"+plan+"-"+days+"-"+s+"-"+vipSign(plan+days+s);
   },
   need(label){

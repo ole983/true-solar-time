@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>真太阳时 · 视觉方向预览 (墨夜)</title>
+<meta name="theme-color" content="#0A0B0E">
+<style>
+/* ============================================================
+   真太阳时 · 视觉系统 v2「墨夜」
+   原则:墨底、宣纸白、一点淡金、一点朱砂;衬线标题、极简、留白、呼吸。
+   ============================================================ */
+:root{
+  --ink:#0A0B0E;        /* 墨夜底 */
+  --ink-2:#0E1015;
+  --paper:#E9E4D9;      /* 宣纸白 */
+  --paper-2:#B9B2A4;
+  --paper-3:#6E6A60;
+  --gold:#C8A96A;       /* 淡金 · 唯一强调 */
+  --gold-2:#D9C08A;
+  --cinnabar:#B5442E;   /* 朱砂 · 极少量 */
+  --line:rgba(233,228,217,.10);
+  --line-2:rgba(233,228,217,.18);
+  --serif:"Songti SC","Noto Serif SC","Source Han Serif SC","SimSun",serif;
+  --sans:"PingFang SC","Noto Sans SC","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;line-height:1.7;
+  background-image:radial-gradient(900px 500px at 50% -8%,rgba(200,169,106,.07),transparent 70%);
+  min-height:100vh;
+}
+.wrap{max-width:760px;margin:0 auto;padding:0 28px 100px}
+/* 顶栏 */
+.bar{display:flex;align-items:center;gap:22px;padding:26px 0 18px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:17px;letter-spacing:.22em}
+.brand svg{display:block}
+.bar nav{margin-left:auto;display:flex;gap:22px}
+.bar nav a{color:var(--paper-2);text-decoration:none;font-size:13px;letter-spacing:.12em;transition:color .25s}
+.bar nav a:hover,.bar nav a.on{color:var(--gold)}
+/* Hero */
+.hero{position:relative;text-align:center;padding:72px 0 40px}
+.glow{position:absolute;left:50%;top:34px;width:520px;height:520px;transform:translateX(-50%);
+  background:radial-gradient(circle,rgba(200,169,106,.16),rgba(200,169,106,.05) 42%,transparent 68%);
+  pointer-events:none;animation:breathe 9s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.75;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.06)}}
+.meta{position:relative;color:var(--paper-2);font-size:13px;letter-spacing:.3em;font-family:var(--serif)}
+.cityline{position:relative;margin-top:6px;font-family:var(--serif);font-size:20px;letter-spacing:.16em}
+.cityline b{color:var(--gold-2);font-weight:400}
+.clock{position:relative;font-family:var(--serif);font-size:clamp(64px,15vw,120px);line-height:1;
+  letter-spacing:.04em;font-variant-numeric:tabular-nums;margin:18px 0 4px;color:var(--paper)}
+.clock .sec{font-size:.42em;color:var(--gold);letter-spacing:0}
+.label{position:relative;color:var(--gold);font-size:12px;letter-spacing:.5em;font-family:var(--serif)}
+.vs{position:relative;margin-top:22px;color:var(--paper-2);font-size:13.5px;letter-spacing:.06em}
+.vs em{color:var(--paper);font-style:normal;font-variant-numeric:tabular-nums}
+.vs .up{color:var(--gold-2)}
+.shichen{position:relative;display:inline-flex;align-items:center;gap:12px;margin-top:26px;
+  border:1px solid var(--line-2);border-radius:2px;padding:9px 20px;background:rgba(200,169,106,.05)}
+.shichen .zi{font-family:var(--serif);font-size:26px;color:var(--gold);line-height:1}
+.shichen .m{font-size:12.5px;color:var(--paper-2);letter-spacing:.14em}
+/* 分隔 */
+.rule{height:1px;background:var(--line);margin:56px 0}
+.rule.center{position:relative}
+.rule.center::after{content:"◈";position:absolute;left:50%;top:-11px;transform:translateX(-50%);
+  background:var(--ink);padding:0 14px;color:var(--gold);font-size:12px}
+/* 日轨 */
+.arc-wrap{text-align:center}
+.arc-wrap h2,.sec-title{font-family:var(--serif);font-size:15px;letter-spacing:.34em;color:var(--paper-2);
+  font-weight:400;text-align:center;margin:0 0 26px}
+.arc{width:100%;max-width:560px;height:auto;display:block;margin:0 auto}
+.arc text{font-family:var(--sans);font-size:11px;fill:var(--paper-3);letter-spacing:.08em}
+.arc .val{fill:var(--paper-2);font-variant-numeric:tabular-nums}
+.arc .sun{fill:var(--gold);filter:drop-shadow(0 0 10px rgba(200,169,106,.8))}
+/* 三事 */
+.three{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.three .row{background:var(--ink-2);display:flex;gap:18px;align-items:baseline;padding:20px 22px;transition:background .3s}
+.three .row:hover{background:#12141A}
+.three .k{font-family:var(--serif);color:var(--gold);font-size:13px;letter-spacing:.2em;flex:none;width:56px}
+.three .v{font-size:14.5px;color:var(--paper);line-height:1.8}
+.three .v small{display:block;color:var(--paper-3);font-size:12.5px;margin-top:3px}
+/* 十二时辰 */
+.twelve{display:grid;grid-template-columns:repeat(12,1fr);gap:6px}
+.twelve .c{text-align:center;padding:12px 2px;border:1px solid var(--line);border-radius:2px;transition:.25s}
+.twelve .c .z{font-family:var(--serif);font-size:17px;color:var(--paper-2)}
+.twelve .c .h{font-size:9.5px;color:var(--paper-3);margin-top:3px;font-variant-numeric:tabular-nums}
+.twelve .c.on{border-color:var(--gold);background:rgba(200,169,106,.10)}
+.twelve .c.on .z{color:var(--gold)}
+.twelve .c.on .h{color:var(--gold-2)}
+@media(max-width:640px){
+  .twelve{grid-template-columns:repeat(6,1fr)}
+  .bar nav{gap:14px}
+  .bar nav a:nth-child(n+4){display:none}
+  .wrap{padding:0 20px 80px}
+}
+.foot{text-align:center;color:var(--paper-3);font-size:12px;letter-spacing:.08em;margin-top:60px;line-height:2}
+.foot a{color:var(--paper-2);text-decoration:none;border-bottom:1px solid var(--line-2)}
+.note{text-align:center;color:var(--paper-3);font-size:12px;margin-top:14px;letter-spacing:.06em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="bar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C8A96A" stroke-width="1.2">
+      <circle cx="12" cy="12" r="4.2"/>
+      <g stroke-linecap="round">
+        <path d="M12 1.6v3M12 19.4v3M1.6 12h3M19.4 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1"/>
+      </g>
+    </svg>
+    真太阳时
+  </div>
+  <nav>
+    <a class="on" href="#">今日</a>
+    <a href="jieqi.html">节气</a>
+    <a href="liuzhu.html">时辰</a>
+    <a href="tools.html">工具</a>
+    <a href="vip.html">会员</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="glow"></div>
+  <div class="meta" id="dateLine">—</div>
+  <div class="cityline">此刻 · <b id="cityName">北京</b> <span style="color:var(--paper-3);font-size:13px" id="termName"></span></div>
+  <div class="clock" id="tst">--:--<span class="sec" id="tstSec">:--</span></div>
+  <div class="label">真太阳时</div>
+  <div class="vs">北京时间 <em id="bj">--:--:--</em> · 真太阳时比挂钟 <em class="up" id="diffTxt">—</em></div>
+  <div class="shichen"><span class="zi" id="scZi">—</span><span class="m" id="scM">加载中…</span></div>
+</section>
+
+<div class="rule center"></div>
+
+<section class="arc-wrap">
+  <h2>今日日轨</h2>
+  <svg class="arc" id="arcSvg" viewBox="0 0 560 240" aria-label="今日太阳轨迹"></svg>
+</section>
+
+<div class="rule"></div>
+
+<section>
+  <h2 class="sec-title">今日三事</h2>
+  <div class="three" id="three"></div>
+  <div class="note">按时辰与节气生成 · 仅作作息参考</div>
+</section>
+
+<div class="rule"></div>
+
+<section>
+  <h2 class="sec-title">十二时辰</h2>
+  <div class="twelve" id="twelve"></div>
+</section>
+
+<div class="foot">
+  墨夜 · 视觉方向预览 v2 &nbsp;|&nbsp; 对照旧版:<a href="index.html">现首页</a><br>
+  算法 Meeus Ch.25 · 传统文化作息参考,不作医疗依据
+</div>
+
+</div>
+
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script>
+(function(){
+const {$,LIU,termOf,shichenOf,snapshot,cityByName,store,fmtSigned,actionsOf}=window.TST;
+let sel=store.sel||"北京";
+if(!window.CITIES.some(c=>c[0]===sel))sel="北京";
+const city=cityByName(sel);
+
+function pad(n,w){return String(n).padStart(w||2,"0");}
+function hm(min){return ASTRO.fmtHM(min);}
+
+/* 十二时辰条 */
+const twelveEl=$("twelve");
+LIU.forEach(L=>{
+  const d=document.createElement("div");d.className="c";d.dataset.z=L.z;
+  const r=L.range;const a=r.length===4?(r[0]%1440):r[0], b=r.length===4?r[3]:r[1];
+  d.innerHTML='<div class="z">'+L.z+'</div><div class="h">'+pad(Math.floor(a/60))+'–'+pad(Math.floor(b/60))+'</div>';
+  twelveEl.appendChild(d);
+});
+
+function drawArc(s){
+  const svg=$("arcSvg"),W=560,H=240,pad=44;
+  const rise=s.ev.polar?null:s.ev.riseMin, set=s.ev.polar?null:s.ev.setMin, noon=s.ev.noonMin;
+  let html="";
+  if(s.ev.polar){
+    html='<text x="280" y="120" text-anchor="middle" fill="#6E6A60" font-size="13">'+s.ev.polar+'</text>';
+    svg.innerHTML=html;return;
+  }
+  const x0=pad,x1=W-pad,yb=H-46,yr=yb,peak=54;
+  // 弧线:日出→日中→日落 的抛物线
+  const pts=[];
+  for(let i=0;i<=40;i++){const t=i/40;const x=x0+(x1-x0)*t;const y=yb-(yb-peak)*Math.sin(Math.PI*t);pts.push(x.toFixed(1)+","+y.toFixed(1));}
+  html+='<polyline points="'+pts.join(" ")+'" fill="none" stroke="rgba(233,228,217,.18)" stroke-width="1.2"/>';
+  html+='<line x1="'+x0+'" y1="'+yr+'" x2="'+x1+'" y2="'+yr+'" stroke="rgba(233,228,217,.18)" stroke-width="1"/>';
+  // 日中刻度
+  const xm=x0+(x1-x0)*0.5, ym=yb-(yb-peak);
+  html+='<line x1="'+xm+'" y1="'+ym+'" x2="'+xm+'" y2="'+yb+'" stroke="rgba(200,169,106,.35)" stroke-width="1" stroke-dasharray="2 4"/>';
+  // 太阳位置(按北京时间)
+  const bjm=s.bj.h*60+s.bj.mi;
+  let sx,sy;
+  const t=Math.max(0,Math.min(1,(bjm-rise)/(set-rise)));
+  sx=x0+(x1-x0)*t; sy=yb-(yb-peak)*Math.sin(Math.PI*t);
+  const isDay=bjm>=rise&&bjm<=set;
+  if(isDay){
+    html+='<circle class="sun" cx="'+sx.toFixed(1)+'" cy="'+sy.toFixed(1)+'" r="6"/>';
+  }else{
+    html+='<circle cx="'+sx.toFixed(1)+'" cy="'+sy.toFixed(1)+'" r="4" fill="none" stroke="rgba(233,228,217,.35)" stroke-width="1"/>';
+  }
+  // 标签
+  html+='<text x="'+x0+'" y="'+(yb+22)+'" text-anchor="start">日出</text>';
+  html+='<text x="'+x0+'" y="'+(yb+38)+'" text-anchor="start" class="val">'+hm(rise)+'</text>';
+  html+='<text x="'+xm+'" y="'+(yb+22)+'" text-anchor="middle">日中</text>';
+  html+='<text x="'+xm+'" y="'+(yb+38)+'" text-anchor="middle" class="val">'+hm(noon)+'</text>';
+  html+='<text x="'+x1+'" y="'+(yb+22)+'" text-anchor="end">日落</text>';
+  html+='<text x="'+x1+'" y="'+(yb+38)+'" text-anchor="end" class="val">'+hm(set)+'</text>';
+  // 昼长
+  const day=((set-rise)/60);
+  html+='<text x="280" y="22" text-anchor="middle">昼长 '+day.toFixed(1)+' 小时</text>';
+  svg.innerHTML=html;
+}
+
+function drawThree(s){
+  const el=$("three");
+  const items=actionsOf(city,s);
+  // actionsOf 返回 [{k,v}] 或字符串数组,做兼容
+  let rows=[];
+  if(Array.isArray(items)){ items.slice(0,3).forEach((it,i)=>{
+    if(typeof it==="string") rows.push({k:["一","二","三"][i],v:it});
+    else rows.push({k:it.k||["一","二","三"][i],v:it.v||it.text||it.desc||""});
+  });}
+  if(!rows.length){
+    rows=[
+      {k:"起",v:s.sc.y},
+      {k:"动",v:"日出 "+hm(s.ev.polar?0:s.ev.riseMin)+" · 日中 "+hm(s.ev.noonMin)},
+      {k:"息",v:"日落 "+hm(s.ev.polar?0:s.ev.setMin)+" · 昼长 "+((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+" 小时"}
+    ];
+  }
+  el.innerHTML=rows.map(r=>'<div class="row"><div class="k">'+r.k+'</div><div class="v">'+r.v+'</div></div>').join("");
+}
+
+function tick(){
+  const now=new Date(),s=snapshot(city,now);
+  $("dateLine").textContent=s.bj.y+"年"+s.bj.m+"月"+s.bj.d+"日 · 星期"+"日一二三四五六"[s.bj.week];
+  $("cityName").textContent=city[0];
+  $("termName").textContent="· "+termOf(s.sun.lambda);
+  const tst=ASTRO.fmtHMS(s.tst);
+  $("tst").innerHTML=tst.slice(0,5)+'<span class="sec">'+tst.slice(5)+'</span>';
+  $("bj").textContent=pad(s.bj.h)+":"+pad(s.bj.mi)+":"+pad(s.bj.s);
+  const d=s.diff;
+  $("diffTxt").textContent=(d>=0?"超前 ":"落后 ")+Math.abs(d).toFixed(1)+" 分";
+  $("scZi").textContent=s.sc.z;
+  $("scM").textContent=s.sc.m+" 当令";
+  document.querySelectorAll(".twelve .c").forEach(c=>c.classList.toggle("on",c.dataset.z===s.sc.z));
+  drawArc(s);
+}
+let threeDone=false;
+function full(){const s=snapshot(city,new Date());if(!threeDone){drawThree(s);threeDone=true;}}
+tick();full();setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>

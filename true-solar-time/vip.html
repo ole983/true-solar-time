@@ -10,7 +10,7 @@
 <body>
 <div class="topbar"><div class="topbar-in">
 <div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
-<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="zeri.html">择时</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
 <div class="top-right"><span class="pill" id="navVip">—</span></div>
 </div></div>
 <div class="wrap">
@@ -39,15 +39,7 @@
 <section class="card">
 <h2>◈ 选择支持方式</h2>
 <div class="desc">按需选择,越长期越划算。<b>连续包月</b>最省心,<b>年度</b>单月最低。</div>
-<div class="plan">
-  <div class="plancard rec">
-    <div class="tag">推荐 · 最省心</div>
-    <div class="pn">连续包月</div>
-    <div class="pp">¥5<small>/月</small></div>
-    <div class="pd">每月自动续,随时可停</div>
-    <div class="per">适合长期使用</div>
-    <button class="btn gold" data-plan="A" type="button">支持 ¥5/月</button>
-  </div>
+<div class="plan plan3">
   <div class="plancard">
     <div class="pn">月度会员</div>
     <div class="pp">¥8<small>/月</small></div>
@@ -62,12 +54,13 @@
     <div class="per">≈ ¥6.7/月 · 省 ¥4</div>
     <button class="btn" data-plan="Q" type="button">支持 ¥20</button>
   </div>
-  <div class="plancard">
+  <div class="plancard rec">
+    <div class="tag">推荐 · 单月最低</div>
     <div class="pn">年度会员</div>
     <div class="pp">¥58<small>/年</small></div>
     <div class="pd">一年,单月最低</div>
     <div class="per">≈ ¥4.8/月 · 省 ¥38</div>
-    <button class="btn" data-plan="Y" type="button">支持 ¥58</button>
+    <button class="btn gold" data-plan="Y" type="button">支持 ¥58</button>
   </div>
 </div>
 </section>
@@ -91,7 +84,7 @@
 </div>
 <div class="promise">
 <b>领码方式</b>:支付后把「金额 + 截图 + 你的邮箱」发至 <a href="mailto:ole983@example.com">ole983@example.com</a>。<br>
-<b>连续包月说明</b>:个人收款码暂不支持自动续费。连续包月请每期扫码,或在应用市场版内使用平台自动续费。我们绝不静默扣款。
+<b>说明</b>:本页为个人收款,无自动续费、无静默扣款。会员到期自动回到免费版,绝不代扣。上架应用市场后,将接入平台正规支付。
 </div>
 </section>
 
@@ -132,7 +125,7 @@
 (function(){
 const {$,VIP}=window.TST;
 TST.setNav();
-const PLANS={A:{n:"连续包月",p:5},M:{n:"月度会员",p:8},Q:{n:"季度会员",p:20},Y:{n:"年度会员",p:58}};
+const PLANS={M:{n:"月度会员",p:8},Q:{n:"季度会员",p:20},Y:{n:"年度会员",p:58}};
 function refreshNav(){
   const s=VIP.status();
   const el=$("navVip");

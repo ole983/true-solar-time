@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>择时 · 四柱 · 真太阳时 | 真太阳时 · 子午流注</title>
+<meta name="description" content="以真太阳时排四柱、定时辰,黄道黑道择吉时。真太阳时换算、年月日时柱与十二时辰吉凶。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css">
+<style>
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.pill{border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;background:rgba(0,0,0,.3)}
+.pill .lab{font-size:12px;color:var(--mut);letter-spacing:.16em}
+.pill .gz{font-family:"Songti SC",serif;font-size:30px;font-weight:800;margin-top:8px;line-height:1.15}
+.pill .gz .g{color:var(--gold2)}.pill .gz .z{color:var(--paper,var(--txt))}
+.pill .note{font-size:11.5px;color:var(--mut);margin-top:6px}
+.pill.hit{border-color:var(--gold);background:rgba(232,195,106,.1)}
+@media(max-width:560px){.pillars{grid-template-columns:repeat(2,1fr)}}
+.good{color:var(--green)}.bad{color:var(--red)}
+.hourgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
+@media(max-width:640px){.hourgrid{grid-template-columns:repeat(4,1fr)}}
+.hg{border:1px solid var(--line);border-radius:10px;padding:9px 4px;text-align:center;background:rgba(0,0,0,.25);font-size:12px}
+.hg .z{font-family:"Songti SC",serif;font-size:17px;font-weight:800}
+.hg .s{font-size:10.5px;color:var(--mut);margin-top:2px}
+.hg.ausp{border-color:rgba(52,211,153,.55);background:rgba(52,211,153,.08)}
+.hg.ausp .z{color:var(--green)}
+.hg.inausp{border-color:rgba(251,113,133,.4)}
+.hg.inausp .z{color:var(--red)}
+.hg.on{outline:2px solid var(--gold);outline-offset:1px}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="zeri.html">择时</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
+<div class="top-right"><span class="pill" id="vipPill">—</span></div>
+</div></div>
+<div class="wrap">
+
+<header class="hero"><h1>择时 · 四柱 <span class="g">· 以真太阳时定时辰</span></h1>
+<div class="sub">命理与择时的关键前提是<b>真太阳时</b>:全国统一北京时间后,挂钟时刻与太阳时角不再一致,时辰会错。本页以真太阳时落定时辰,再按节气定月柱、按立春定年柱,给出四柱与当日吉时。</div>
+<div class="badges"><span class="badge">真太阳时定时辰</span><span class="badge">节气定月柱</span><span class="badge">黄道黑道择吉时</span></div></header>
+
+<section class="card">
+<h2>◈ 排盘 · 四柱</h2>
+<div class="desc">输入出生(或待择)的北京时间与城市,自动换算真太阳时并排四柱。<span class="pill" id="lockTag">会员功能</span></div>
+<div class="toolbox" style="border:1px solid var(--line);border-radius:16px;padding:16px;background:rgba(0,0,0,.3);margin-top:12px">
+<div class="inrow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+<input id="bDate" type="date" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px">
+<input id="bTime" type="text" value="12:00" placeholder="12:00" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:90px">
+<input id="bCity" list="cityList" placeholder="城市" style="background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:120px">
+<datalist id="cityList"></datalist>
+<button class="btn gold" id="calcBtn" type="button">排盘</button>
+</div>
+<div class="pillars" id="pillars"></div>
+<div class="desc" id="pillarNote" style="margin-top:12px">请输入信息后点「排盘」。</div>
+</div>
+</section>
+
+<section class="card">
+<h2>◈ 当日吉时 · 黄道黑道</h2>
+<div class="desc">以日支起十二神,黄道为吉(青龙·明堂·金匮·天德·玉堂·司命),黑道为凶(天刑·朱雀·白虎·天牢·玄武·勾陈)。<span class="pill" id="lockTag2">会员功能</span></div>
+<div class="hourgrid" id="hourgrid"></div>
+<div class="desc" id="hourNote" style="margin-top:10px">排盘后显示该日吉时。</div>
+</section>
+
+<section class="card">
+<h2>◈ 说明</h2>
+<div class="kv">
+<p><b>为什么必须用真太阳时?</b><br>时辰按太阳时角划分。拉萨比北京慢约 1 小时 55 分,若按北京时间定时辰,常会错一个时辰。排盘前先换算真太阳时,是本页与普通排盘的区别。</p>
+<p><b>日柱如何定?</b><br>以真太阳时的子初(23:00)为日界;真太阳时跨过 23:00 即进下一日,与部分流派一致。若你的流派以 00:00 为界,请在结果中自行微调。</p>
+<p><b>月柱与年柱?</b><br>月柱以「节」(立春/惊蛰/清明…共十二节)为界,非农历初一;年柱以立春为界,非正月初一。</p>
+<p><b>吉时只是参考。</b><br>黄道黑道为传统择时法之一,仅供文化参考,不作任何决策依据。</p>
+</div>
+</section>
+
+<footer class="site">真太阳时定时辰 · 节气定月柱 · 传统文化参考,不作医疗或决策依据 · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a></footer>
+</div>
+
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script>
+(function(){
+const {$,VIP,cityByName,store,toTrue,toBeijing,parseHM}=window.TST;
+TST.setNav();
+
+/* ---- 干支工具 ---- */
+const GAN=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const JIE_NAME=["立春","惊蛰","清明","立夏","芒种","小暑","立秋","白露","寒露","立冬","大雪","小寒"]; // 对应寅..丑
+const LAM=[0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300,315,330,345];
+const NAMES=["春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至","小寒","大寒","立春","雨水","惊蛰"];
+
+function jdn(y,m,d){const a=Math.floor((14-m)/12),yy=y+4800-a,mm=m+12*a-3;
+  return d+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045;}
+function gz(idx){idx=((idx%60)+60)%60;return {g:GAN[idx%10],z:ZHI[idx%12],idx};}
+
+/* 节气交节时刻(该年),返回 {k:Date} */
+function termMoments(year){
+  const t0=Date.UTC(year,0,1),t1=Date.UTC(year+1,0,1),step=12*36e5;
+  const N=Math.ceil((t1-t0)/step);let prevT=t0,prevL=ASTRO.sunApparent(new Date(t0)).lambda;const found={};
+  for(let i=1;i<=N;i++){const curT=Math.min(t1,t0+i*step),curL=ASTRO.sunApparent(new Date(curT)).lambda;
+    const mv=((curL-prevL+360)%360);
+    for(let k=0;k<24;k++){if(found[k]!=null)continue;const ahead=((LAM[k]-prevL+360)%360);
+      if(mv>0&&mv<2&&ahead<mv){let lo=prevT,hi=curT;
+        for(let j=0;j<30;j++){const mid=(lo+hi)/2,lm=ASTRO.sunApparent(new Date(mid)).lambda;
+          if((((lm-prevL+360)%360))>=ahead)hi=mid;else lo=mid;}
+        found[k]=new Date((lo+hi)/2);}}
+    prevT=curT;prevL=curL;}
+  return found;
+}
+/* 节气索引 k 对应黄经 LAM[k];节(奇数节气点 立春=315 等) */
+const JIE_LAM=[315,345,15,45,75,105,135,165,195,225,255,285]; // 立春..小寒 对应 寅..丑月
+
+function monthZhiIndex(dateBJ){ // 返回 0..11 对应寅..丑
+  const y=dateBJ.getUTCFullYear();
+  const M=termMoments(y);const M2=termMoments(y+1);
+  // 收集该年前后各节时刻(黄经为 JIE_LAM)
+  const marks=[];
+  const yearList=[y-1,y,y+1];
+  const all={};
+  yearList.forEach(yy=>{const mm=termMoments(yy);JIE_LAM.forEach(L=>{if(mm[LAM.indexOf(L)])all[yy+"_"+L]=mm[LAM.indexOf(L)];});});
+  const arr=Object.keys(all).map(k=>({t:all[k],L:parseInt(k.split("_")[1],10)})).sort((a,b)=>a.t-b.t);
+  let cur=arr[0];
+  for(const a of arr){if(a.t<=dateBJ)cur=a;else break;}
+  return {zhi:JIE_LAM.indexOf(cur.L), t:cur.t, name:JIE_NAME[JIE_LAM.indexOf(cur.L)]};
+}
+
+function buildPillars(dateBJ,lon,eq){
+  // dateBJ: Date (UTC ms 表示北京墙钟)
+  const y=dateBJ.getUTCFullYear(),mo=dateBJ.getUTCMonth()+1,d=dateBJ.getUTCDate();
+  const bjMin=dateBJ.getUTCHours()*60+dateBJ.getUTCMinutes();
+  const tstMin=bjMin+(lon-120)*4+eq;
+  // 真太阳时决定日与时
+  let dayShift=0, tst=((tstMin%1440)+1440)%1440;
+  if(tstMin<0){dayShift=-1;}
+  if(tstMin>=1440){dayShift=1;}
+  if(tst>=1380){ /* 子时跨日 */ dayShift+=1; }
+  // 日柱
+  const baseJdn=jdn(y,mo,d)+dayShift;
+  const dayGZ=gz(baseJdn+49);
+  // 时辰支
+  const hourZhi=Math.floor((((tst%1440)+1440)%1440+60)/120)%12;
+  // 时干:五鼠遁
+  const hourGan=(dayGZ.idx%10%5*2+hourZhi)%10;
+  // 年柱:立春为界
+  const M=termMoments(y);const lichun=M[LAM.indexOf(315)];
+  let ganzhiYear=y;
+  if(lichun && dateBJ<lichun) ganzhiYear=y-1;
+  const yearGZ=gz(ganzhiYear-4);
+  // 月柱:以节为界
+  const mz=monthZhiIndex(dateBJ);
+  const monthZhi=mz.zhi; // 0..11 → 寅..丑
+  const monthGan=((yearGZ.idx%10%5)*2+2+monthZhi)%10;
+  return {yearGZ,monthGZ:{g:GAN[monthGan],z:ZHI[(monthZhi+2)%12],idx:0},
+    dayGZ,hourGZ:{g:GAN[hourGan],z:ZHI[hourZhi],idx:0},
+    tstMin:tst, bjMin, eq, lon, jieName:mz.name};
+}
+
+/* 黄道黑道十二神 */
+const SHEN=["青龙","明堂","天刑","朱雀","金匮","天德","白虎","玉堂","天牢","玄武","司命","勾陈"];
+const AUSP=["青龙","明堂","金匮","天德","玉堂","司命"];
+function startShen(dayZhi){
+  const map={0:8,1:10,2:0,3:2,4:4,5:6,6:8,7:10,8:0,9:2,10:4,11:6};
+  // 子→申(8),丑→戌(10),寅→子(0),卯→寅(2),辰→辰(4),巳→午(6),午→申(8)...
+  return map[dayZhi];
+}
+function hourShen(dayZhi,hourZhi){const s=startShen(dayZhi);const i=((hourZhi-s)%12+12)%12;return SHEN[i];}
+
+/* ---- UI ---- */
+const cityList=$("cityList");
+window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];cityList.appendChild(o);});
+let sel=store.sel||"北京";if(!window.CITIES.some(c=>c[0]===sel))sel="北京";
+$("bCity").value=sel;
+const now=new Date();
+$("bDate").value=now.getUTCFullYear()+"-"+String(now.getUTCMonth()+1).padStart(2,"0")+"-"+String(now.getUTCDate()).padStart(2,"0");
+
+function setLocks(){const on=VIP.isActive();
+  ["lockTag","lockTag2"].forEach(id=>{const e=$(id);if(on){e.textContent="已解锁";e.style.color="var(--green)";e.style.borderColor="rgba(52,211,153,.5)";}});
+  const p=$("vipPill");if(on)p.innerHTML='<span class="badge-vip">✦ 会员</span>';else p.textContent="未开通会员";}
+
+function renderPillars(r,dateBJ){
+  const el=$("pillars");
+  const P=[["年柱",r.yearGZ,"立春为界"],["月柱",r.monthGZ,"节:"+r.jieName],["日柱",r.dayGZ,"真太阳日界"],["时柱",r.hourGZ,"真太阳定时"]];
+  el.innerHTML=P.map(([lab,gz,note])=>'<div class="pill"><div class="lab">'+lab+'</div><div class="gz"><span class="g">'+gz.g+'</span><span class="z">'+gz.z+'</span></div><div class="note">'+note+'</div></div>').join("");
+  const tstTxt=ASTRO.fmtHMS(r.tstMin);
+  const bjTxt=String(Math.floor(r.bjMin/60)).padStart(2,"0")+":"+String(Math.round(r.bjMin%60)).padStart(2,"0");
+  $("pillarNote").innerHTML='北京时间 <b>'+bjTxt+'</b> → 真太阳时 <b style="color:var(--gold2)">'+tstTxt+'</b>(经度差 '+((r.lon-120)*4).toFixed(1)+' 分 + EoT '+r.eq.toFixed(2)+' 分)。'+
+    '时柱地支为 <b>'+r.hourGZ.z+'</b> 时。';
+}
+
+function renderHours(r){
+  const el=$("hourgrid");
+  const curZhi=ZHI.indexOf(r.hourGZ.z);
+  let html="",good=[],bad=[];
+  for(let i=0;i<12;i++){
+    const s=hourShen(r.dayGZ.idx%12,i);
+    const ok=AUSP.indexOf(s)>=0;
+    if(ok)good.push(ZHI[i]);else bad.push(ZHI[i]);
+    html+='<div class="hg '+(ok?"ausp":"inausp")+(i===curZhi?" on":"")+'"><div class="z">'+ZHI[i]+'</div><div class="s">'+s+'</div></div>';
+  }
+  el.innerHTML=html;
+  $("hourNote").innerHTML='当日吉时(黄道):<b class="good">'+good.join("、")+'</b>;其余为黑道,宜避。<br>'+
+    '当令时辰 <b>'+r.hourGZ.z+'</b> 时 '+(AUSP.indexOf(hourShen(r.dayGZ.idx%12,curZhi))>=0?'<span class="good">为吉</span>':'<span class="bad">宜慎</span>')+'。';
+}
+
+function calc(){
+  if(!VIP.need("四柱排盘与择时"))return;
+  const dv=$("bDate").value;if(!dv)return;
+  const p=dv.split("-").map(Number);
+  const tm=parseHM($("bTime").value);if(tm==null){$("pillarNote").textContent="时间格式如 12:00";return;}
+  const c=cityByName($("bCity").value.trim());
+  if(!c){$("pillarNote").textContent="未找到该城市";return;}
+  sel=c[0];store.sel=sel;
+  const dateBJ=new Date(Date.UTC(p[0],p[1]-1,p[2],Math.floor(tm/60),tm%60,0));
+  const sun=ASTRO.sunApparent(new Date(Date.UTC(p[0],p[1]-1,p[2],4)));
+  const r=buildPillars(dateBJ,c[2],sun.eq);
+  renderPillars(r,dateBJ);
+  renderHours(r);
+}
+$("calcBtn").onclick=calc;
+setLocks();
+})();
+</script>
+</body>
+</html>
