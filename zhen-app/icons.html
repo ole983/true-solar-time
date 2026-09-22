@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>应用图标生成器 | 真太阳时</title>
+<style>
+:root{--bg:#070b16;--gold:#e8c36a;--gold2:#f7e2a8;--line:rgba(255,255,255,.14);--mut:#b6c1dd;--txt:#eef2ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;padding:20px}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:20px}h1 b{color:var(--gold)}
+.sub{color:var(--mut);font-size:13px;line-height:1.9;max-width:940px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0;align-items:center}
+.btn{background:#0a1122;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn:hover{border-color:var(--gold)}
+.btn.gold{background:var(--gold);color:#0a1122;font-weight:800;border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.cell{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.cell .cap{font-size:12.5px;color:var(--gold2);margin-bottom:8px;font-weight:700;line-height:1.6}
+.cell canvas{max-width:100%;border-radius:12px;display:block;margin:0 auto}
+.checker{background:
+  linear-gradient(45deg,#1a2138 25%,transparent 25%),
+  linear-gradient(-45deg,#1a2138 25%,transparent 25%),
+  linear-gradient(45deg,transparent 75%,#1a2138 75%),
+  linear-gradient(-45deg,transparent 75%,#1a2138 75%);
+  background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+th,td{padding:8px;border:1px solid var(--line);text-align:left}
+th{background:rgba(232,195,106,.1);color:var(--gold2)}
+.hint{color:var(--mut);font-size:12.5px;line-height:1.9;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>应用图标生成器 <b>· 自适应图标 + 全密度</b></h1>
+<div class="sub">一键生成安卓自适应图标(前景/背景分层)、传统方形/圆形图标、通知小图标。配色与网站一致(深底 #070b16 + 金色太阳)。生成后按下方密度表放入 android/app/src/main/res/ 对应目录。建议桌面浏览器打开。</div>
+<div class="bar">
+<button class="btn gold" id="all" type="button">全部下载 PNG</button>
+<label style="font-size:13px;color:var(--mut)">主色 <input type="color" id="gold" value="#e8c36a" style="vertical-align:middle;border:none;background:none;width:36px;height:24px"></label>
+<label style="font-size:13px;color:var(--mut)">底色 <input type="color" id="bgc" value="#070b16" style="vertical-align:middle;border:none;background:none;width:36px;height:24px"></label>
+</div>
+<div class="grid" id="grid"></div>
+<div class="hint" id="tableBox"></div>
+</div>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+let GOLD="#e8c36a", BG="#070b16";
+const grid=$("grid");
+
+/* 圆角矩形 */
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+/* 绘制太阳符号,size 为画布边长,scale 控制符号占画布比例(自适应前景取 0.62 安全区) */
+function drawSun(ctx,S,scale,opts){
+  const cx=S/2, cy=S/2, R=S*scale/2;
+  const rays=12;
+  ctx.save();
+  ctx.strokeStyle=opts.color; ctx.lineWidth=S*scale*0.075; ctx.lineCap="round";
+  for(let i=0;i<rays;i++){
+    const a=i/rays*Math.PI*2;
+    const r1=R*0.72, r2=R*1.0;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(a)*r1, cy+Math.sin(a)*r1);
+    ctx.lineTo(cx+Math.cos(a)*r2, cy+Math.sin(a)*r2);
+    ctx.stroke();
+  }
+  ctx.fillStyle=opts.color;
+  ctx.beginPath(); ctx.arc(cx,cy,R*0.5,0,7); ctx.fill();
+  if(opts.hole){
+    ctx.globalCompositeOperation="destination-out";
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.2,0,7); ctx.fill();
+    ctx.globalCompositeOperation="source-over";
+  }
+  ctx.restore();
+}
+
+function mkCanvas(S){const c=document.createElement("canvas");c.width=S;c.height=S;return c;}
+
+/* ① 传统方形图标(深底 + 金太阳) */
+function square(S){
+  const c=mkCanvas(S),ctx=c.getContext("2d");
+  const g=ctx.createLinearGradient(0,0,0,S);g.addColorStop(0,"#0d1832");g.addColorStop(1,BG);
+  ctx.fillStyle=g;rr(ctx,0,0,S,S,S*0.2);ctx.fill();
+  drawSun(ctx,S,0.74,{color:GOLD});
+  return c;
+}
+/* ② 圆形图标 */
+function round(S){
+  const c=mkCanvas(S),ctx=c.getContext("2d");
+  const g=ctx.createLinearGradient(0,0,0,S);g.addColorStop(0,"#0d1832");g.addColorStop(1,BG);
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(S/2,S/2,S/2,0,7);ctx.fill();
+  drawSun(ctx,S,0.72,{color:GOLD});
+  return c;
+}
+/* ③ 自适应前景:透明底,符号居安全区(约 66%) */
+function adaptiveFg(S){
+  const c=mkCanvas(S),ctx=c.getContext("2d");
+  drawSun(ctx,S,0.6,{color:GOLD});
+  return c;
+}
+/* ④ 自适应背景:纯渐变 */
+function adaptiveBg(S){
+  const c=mkCanvas(S),ctx=c.getContext("2d");
+  const g=ctx.createLinearGradient(0,0,0,S);g.addColorStop(0,"#0d1832");g.addColorStop(.6,BG);g.addColorStop(1,"#140b22");
+  ctx.fillStyle=g;ctx.fillRect(0,0,S,S);
+  return c;
+}
+/* ⑤ 通知小图标:纯白剪影,透明底 */
+function notif(S){
+  const c=mkCanvas(S),ctx=c.getContext("2d");
+  drawSun(ctx,S,0.9,{color:"#ffffff",hole:true});
+  return c;
+}
+/* ⑥ 圆形遮罩预览(自适应合成效果) */
+function maskPreview(S){
+  const c=mkCanvas(S),ctx=c.getContext("2d");
+  ctx.drawImage(adaptiveBg(S),0,0);
+  ctx.drawImage(adaptiveFg(S),0,0);
+  ctx.globalCompositeOperation="destination-in";
+  ctx.beginPath();ctx.arc(S/2,S/2,S/2,0,7);ctx.fill();
+  return c;
+}
+
+const ITEMS=[
+  ["方形图标 legacy 512×512", ()=>square(512), "ic_launcher-playstore.png"],
+  ["圆形图标 512×512", ()=>round(512), "ic_launcher_round.png"],
+  ["自适应前景 foreground 432×432", ()=>adaptiveFg(432), "ic_launcher_foreground.png"],
+  ["自适应背景 background 432×432", ()=>adaptiveBg(432), "ic_launcher_background.png"],
+  ["圆形遮罩预览(系统裁切效果)", ()=>maskPreview(432), "preview_round.png"],
+  ["通知小图标 white 96×96", ()=>notif(96), "ic_stat_sun.png"]
+];
+
+function render(){
+  grid.innerHTML="";
+  ITEMS.forEach(([cap,make,file])=>{
+    const cell=document.createElement("div");cell.className="cell";
+    cell.innerHTML='<div class="cap">'+cap+'</div>';
+    const cv=make();
+    // 前景/通知为透明底,加棋盘格背景便于查看
+    if(/foreground|ic_stat/.test(file)) cv.classList.add("checker");
+    cv.style.width="150px";cv.style.height="150px";
+    cell.appendChild(cv);
+    const b=document.createElement("button");b.className="btn";b.type="button";b.textContent="下载";b.style.marginTop="8px";
+    b.onclick=()=>dl(cv,file);
+    cell.appendChild(b);
+    grid.appendChild(cell);
+  });
+  renderTable();
+}
+function dl(cv,name){
+  const a=document.createElement("a");
+  a.href=cv.toDataURL("image/png");
+  a.download=name;a.click();
+}
+$("all").onclick=()=>{
+  const cells=[...grid.querySelectorAll("canvas")];
+  ITEMS.forEach(([cap,make,file],i)=>setTimeout(()=>dl(cells[i],file),i*350));
+};
+$("gold").oninput=e=>{GOLD=e.target.value;render();};
+$("bgc").oninput=e=>{BG=e.target.value;render();};
+
+function renderTable(){
+  const rows=[
+    ["mipmap-mdpi","48×48","108×108"],
+    ["mipmap-hdpi","72×72","162×162"],
+    ["mipmap-xhdpi","96×96","216×216"],
+    ["mipmap-xxhdpi","144×144","324×324"],
+    ["mipmap-xxxhdpi","192×192","432×432"]
+  ];
+  $("tableBox").innerHTML=
+  '<b style="color:#f7e2a8">放置路径与尺寸</b>'+
+  '<table><thead><tr><th>目录(android/app/src/main/res/)</th><th>传统图标 ic_launcher.png</th><th>自适应 ic_launcher_foreground.png</th></tr></thead><tbody>'+
+  rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>').join("")+
+  '</tbody></table>'+
+  '<div style="margin-top:10px">自适应图标还需在 <b>mipmap-anydpi-v26/ic_launcher.xml</b> 引用前景与背景;通知小图标 ic_stat_sun.png 放入 <b>drawable-*/</b>。'+
+  '<br>也可直接运行 <b>npx capacitor-assets generate --android</b> 由 1024×1024 源图一键生成全套。</div>';
+}
+render();
+})();
+</script>
+</body>
+</html>

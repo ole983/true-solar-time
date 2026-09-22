@@ -29,20 +29,6 @@ size = Vector3(40, 0.4, 40)
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(40, 0.4, 40)
 
-[sub_resource type="StandardMaterial3D" id="Mat_player"]
-albedo_color = Color(0.85, 0.92, 0.88, 1)
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_player"]
-radius = 0.4
-height = 1.8
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
-radius = 0.4
-height = 1.8
-
-[sub_resource type="SphereShape3D" id="Shape_spring"]
-radius = 0.15
-
 [sub_resource type="StandardMaterial3D" id="Mat_well"]
 albedo_color = Color(0.38, 0.5, 0.56, 1)
 
@@ -58,14 +44,11 @@ radius = 0.78
 [sub_resource type="StandardMaterial3D" id="Mat_table"]
 albedo_color = Color(0.62, 0.56, 0.46, 1)
 
-[sub_resource type="CylinderMesh" id="Mesh_table"]
-top_radius = 1.8
-bottom_radius = 1.8
-height = 0.32
+[sub_resource type="BoxMesh" id="Mesh_table"]
+size = Vector3(3.6, 0.32, 3.6)
 
-[sub_resource type="CylinderShape3D" id="Shape_table"]
-height = 0.32
-radius = 1.8
+[sub_resource type="BoxShape3D" id="Shape_table"]
+size = Vector3(3.6, 0.32, 3.6)
 
 [sub_resource type="StandardMaterial3D" id="Mat_gate"]
 albedo_color = Color(0.4, 0.38, 0.46, 1)
@@ -85,9 +68,6 @@ size = Vector3(4.7, 0.5, 0.7)
 [sub_resource type="StandardMaterial3D" id="Mat_workshop"]
 albedo_color = Color(0.54, 0.46, 0.38, 1)
 
-[sub_resource type="StandardMaterial3D" id="Mat_workshop_roof"]
-albedo_color = Color(0.42, 0.36, 0.32, 1)
-
 [sub_resource type="BoxMesh" id="Mesh_ws_floor"]
 size = Vector3(5.2, 0.08, 4.4)
 
@@ -102,6 +82,9 @@ size = Vector3(5.2, 2.4, 0.2)
 
 [sub_resource type="BoxShape3D" id="Shape_ws_side"]
 size = Vector3(5.2, 2.4, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_workshop_roof"]
+albedo_color = Color(0.42, 0.36, 0.32, 1)
 
 [sub_resource type="BoxMesh" id="Mesh_ws_roof"]
 size = Vector3(5.5, 0.16, 4.7)
@@ -139,6 +122,20 @@ size = Vector3(0.14, 0.7, 1.15)
 [sub_resource type="BoxShape3D" id="Shape_sleep_head"]
 size = Vector3(0.14, 0.7, 1.15)
 
+[sub_resource type="StandardMaterial3D" id="Mat_player"]
+albedo_color = Color(0.85, 0.92, 0.88, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_player"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="SphereShape3D" id="Shape_spring"]
+radius = 0.15
+
 [node name="World" type="Node3D" unique_id=1358662288]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=228993629]
@@ -162,7 +159,6 @@ shape = SubResource("BoxShape3D_ground")
 
 [node name="Well" type="StaticBody3D" parent="Harbor" unique_id=2100000001]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.575, -8)
-groups = ["well"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Harbor/Well" unique_id=2100000101]
 material_override = SubResource("Mat_well")
@@ -173,7 +169,6 @@ shape = SubResource("Shape_well")
 
 [node name="Table" type="StaticBody3D" parent="Harbor" unique_id=2100000002]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -3)
-groups = ["table"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Harbor/Table" unique_id=2100000201]
 material_override = SubResource("Mat_table")
@@ -184,7 +179,6 @@ shape = SubResource("Shape_table")
 
 [node name="Gate" type="StaticBody3D" parent="Harbor" unique_id=2100000003]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
-groups = ["gate"]
 
 [node name="PostLeft" type="MeshInstance3D" parent="Harbor/Gate" unique_id=2100000301]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, 0)
@@ -215,7 +209,6 @@ shape = SubResource("Shape_gate_beam")
 
 [node name="Workshop" type="StaticBody3D" parent="Harbor" unique_id=2100000004]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -8)
-groups = ["workshop"]
 
 [node name="Floor" type="MeshInstance3D" parent="Harbor/Workshop" unique_id=2100000401]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
@@ -260,7 +253,6 @@ shape = SubResource("Shape_ws_roof")
 
 [node name="Hearth" type="StaticBody3D" parent="Harbor" unique_id=2100000005]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 10)
-groups = ["hearth"]
 
 [node name="Base" type="MeshInstance3D" parent="Harbor/Hearth" unique_id=2100000501]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
@@ -282,7 +274,6 @@ shape = SubResource("Shape_hearth_chimney")
 
 [node name="Sleep" type="StaticBody3D" parent="Harbor" unique_id=2100000006]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10)
-groups = ["sleep"]
 
 [node name="Bed" type="MeshInstance3D" parent="Harbor/Sleep" unique_id=2100000601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
@@ -302,19 +293,16 @@ mesh = SubResource("Mesh_sleep_head")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27, 0.35, 0)
 shape = SubResource("Shape_sleep_head")
 
-[node name="JingBian" parent="." instance=ExtResource("3_npc")]
+[node name="JingBian" parent="." unique_id=1884348510 instance=ExtResource("3_npc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.2, 1, -6.8)
-npc_id = "井边"
-enable_opening = true
-capsule_color = Color(0.86, 0.58, 0.42, 1)
 
-[node name="ADu" parent="." instance=ExtResource("3_npc")]
+[node name="ADu" parent="." unique_id=827317258 instance=ExtResource("3_npc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -13.2)
 npc_id = "阿渡"
 enable_opening = false
 capsule_color = Color(0.42, 0.52, 0.64, 1)
 
-[node name="ZaoBian" parent="." instance=ExtResource("3_npc")]
+[node name="ZaoBian" parent="." unique_id=918036677 instance=ExtResource("3_npc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, 12.2)
 npc_id = "灶边"
 enable_opening = false
@@ -323,7 +311,6 @@ capsule_color = Color(0.62, 0.38, 0.28, 1)
 [node name="Player" type="CharacterBody3D" parent="." unique_id=1196880683]
 transform = Transform3D(0.642788, 0, 0.766044, 0, 1, 0, -0.766044, 0, 0.642788, 7.5, 1, 8)
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("1_move")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=64695954]
@@ -338,10 +325,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 
 [node name="SpringArm3D" type="SpringArm3D" parent="Player/CamPivot" unique_id=1882001002]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.85, 0, 0)
-spring_length = 3.9
-margin = 0.2
 collision_mask = 0
 shape = SubResource("Shape_spring")
+spring_length = 3.9
+margin = 0.2
 
 [node name="Camera3D" type="Camera3D" parent="Player/CamPivot/SpringArm3D" unique_id=533545224]
 current = true

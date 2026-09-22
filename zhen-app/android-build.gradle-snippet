@@ -1,0 +1,114 @@
+// ============================================================
+// 真太阳时 · android/app/build.gradle 关键段模板
+// 将下列片段合并进 Capacitor 生成的 android/app/build.gradle。
+// 目标:读取 key.properties 签名 + 开启混淆压缩 + 锁 64 位。
+// ============================================================
+
+apply plugin: 'com.android.application'
+
+// ① 读取签名配置(文件位于 android/key.properties,已在 .gitignore)
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    namespace "com.ole983.truesolar"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.ole983.truesolar"   // 包名:终身不可改
+        minSdkVersion 24
+        targetSdkVersion 34                     // 华为要求 34+
+        versionCode 1
+        versionName "1.0.0"                     // 与商店三处一致
+        // 只保留 64 位与主流 32 位,去掉 x86 减小包体
+        ndk {
+            abiFilters "arm64-v8a", "armeabi-v7a"
+        }
+        resConfigs "zh", "en"                   // 仅保留中英文资源
+    }
+
+    // ② 签名配置
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true                  // 开启代码压缩
+            shrinkResources true                // 移除无用资源
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                          'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/*.kotlin_module', 'META-INF/LICENSE*']
+        }
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    implementation project(':capacitor-app')
+    implementation project(':capacitor-geolocation')
+    implementation project(':capacitor-local-notifications')
+    implementation project(':capacitor-share')
+    implementation project(':capacitor-splash-screen')
+    implementation project(':capacitor-status-bar')
+}
+
+// ============================================================
+// android/app/proguard-rules.pro 建议内容(追加)
+// ------------------------------------------------------------
+// # 保留 WebView 与 JS 接口
+// -keepclassmembers class * {
+//     @android.webkit.JavascriptInterface <methods>;
+// }
+// -keep class com.getcapacitor.** { *; }
+// -keep @com.getcapacitor.annotation.CapacitorPlugin class * { *; }
+// -keep class * extends com.getcapacitor.Plugin { *; }
+// # 保留 JSON 序列化相关
+// -keepattributes *Annotation*, JavascriptInterface
+// ============================================================
+
+// ============================================================
+// android/variables.gradle 建议值
+// ------------------------------------------------------------
+// ext {
+//     minSdkVersion = 24
+//     compileSdkVersion = 34
+//     targetSdkVersion = 34
+//     androidxActivityVersion = '1.9.2'
+//     androidxAppCompatVersion = '1.7.0'
+//     androidxCoordinatorLayoutVersion = '1.2.0'
+//     coreSplashScreenVersion = '1.0.1'
+// }
+// ============================================================

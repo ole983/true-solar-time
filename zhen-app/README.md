@@ -16,6 +16,10 @@ zhen-app/
 ├── package.json                  # 依赖与构建脚本
 ├── key.properties.example        # 签名配置示例(复制为 android/key.properties)
 ├── android-manifest-snippet.xml  # 清单关键节点模板
+├── android-build.gradle-snippet  # build.gradle 签名与混淆段模板
+├── store-listing.md              # 各市场提审文案定稿(直接复制粘贴)
+├── screenshots.html              # 上架截图生成器(1080×1920 ×5)
+├── icons.html                    # 应用图标生成器(自适应图标+全密度)
 ├── scripts/
 │   ├── copy-web.js               # 把 true-solar-time/ 拷进 www/
 │   └── gen-keystore.ps1          # 生成签名密钥
@@ -126,6 +130,15 @@ keyPassword=你的密码
 
 ---
 
-## 八、声明
+## 八、图标与截图
+
+```text
+应用图标:用浏览器打开 zhen-app/icons.html,一键下载全套
+          自适应前景/背景 + 传统方形/圆形 + 通知小图标
+上架截图:用浏览器打开 zhen-app/screenshots.html,一键下载 5 张 1080×1920
+提审文案:见 zhen-app/store-listing.md,简介/权限/隐私问卷直接复制
+```
+
+## 九、声明
 
 本应用为天文计算与传统文化作息参考工具,不构成医疗建议。上架文案避免出现“治疗/疗效/诊断/处方”等词。
