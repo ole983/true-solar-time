@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>日期择吉 · 嫁娶开市动土 | 真太阳时 · 子午流注</title>
+<meta name="description" content="按建除十二神与黄道黑道,为嫁娶、开市、动土、安葬、出行、入宅筛选吉日。传统民俗参考。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script><script src="fan.js"></script>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+<div class="logo">☉ 真太阳时 <b>· 子午流注</b></div>
+<nav class="tabs"><a href="index.html">今日行动</a><a href="cities.html">全国总表</a><a href="jieqi.html">节气养生</a><a href="liuzhu.html">时辰流注</a><a href="tools.html">实用工具</a><a href="zeri.html">择时</a><a href="yueli.html">月历</a><a href="zeji.html">择吉</a><a href="science.html">天文原理</a><a href="vip.html">会员</a></nav>
+<div class="top-right"><span class="pill" id="vipPill">—</span></div>
+</div></div>
+<div class="wrap">
+<header class="hero"><h1>日期择吉 <span class="g">·大事看日子</span></h1>
+<div class="sub">选场景、选月份,按<b>建除宜项 + 黄道日(青龙明堂等当值)</b>筛出候选吉日,再按个人八字与长辈意见定夺。<b>本页只做初筛,不做断语</b>，传统民俗参考。</div></header>
+<section class="card">
+<h2>◈ 筛选 <span class="pill" id="lockTag">会员功能</span></h2>
+<div class="inrow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+<label style="font-size:13px;color:var(--mut)">场景</label>
+<select id="scene" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px">
+<option value="嫁娶">嫁娶</option><option value="开市">开市/开业</option><option value="动土">动土/装修</option><option value="安葬">安葬</option><option value="出行">出行/搬家</option><option value="入宅">入宅</option><option value="祈福">祈福/祭祀</option>
+</select>
+<label style="font-size:13px;color:var(--mut)">月份</label>
+<input id="ym" type="month" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px">
+<button class="btn gold" id="calcBtn" type="button">筛选吉日</button>
+</div>
+<div class="tblwrap" style="margin-top:12px"><table><thead><tr><th>日期</th><th>农历</th><th>干支</th><th>建除</th><th>值日神</th><th>评级</th></tr></thead><tbody id="zejiBody"><tr><td colspan="6" style="color:var(--mut)">选择场景与月份后筛选</td></tr></tbody></table></div>
+<div class="desc" id="zejiNote" style="margin-top:10px"></div>
+</section>
+<footer class="site">建除 + 值日神初筛 · 大事请结合八字与长辈意见 · 传统文化参考,不作决策依据 · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a></footer>
+</div>
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script><script src="huangli.js"></script><script src="lunar.js"></script>
+<script>
+(function(){
+const {$,VIP}=window.TST;
+TST.setNav();
+const SHEN=["青龙","明堂","天刑","朱雀","金匮","天德","白虎","玉堂","天牢","玄武","司命","勾陈"];
+const AUSP={青龙:1,明堂:1,金匮:1,天德:1,玉堂:1,司命:1};
+const p=$("vipPill"),on=VIP.isActive();
+if(on){p.innerHTML='<span class="badge-vip">✦ 会员</span>';const l=$("lockTag");if(l){l.textContent="已解锁";l.style.color="var(--green)";}}
+else p.textContent="未开通会员";
+const now=new Date(),bj=ASTRO.bjtParts(now);
+$("ym").value=bj.y+"-"+String(bj.m).padStart(2,"0");
+function dayShen(dayZhiIdx){
+  const map=[8,10,0,2,4,6,8,10,0,2,4,6];
+  const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+  const s=map[dayZhiIdx];
+  const out=[];
+  for(let h=0;h<12;h++)out.push(SHEN[((h-s)%12+12)%12]);
+  return {zhi:ZHI[dayZhiIdx],first:SHEN[0],all:out};
+}
+function startShen(dayZhi){
+  const map={0:8,1:10,2:0,3:2,4:4,5:6,6:8,7:10,8:0,9:2,10:4,11:6};
+  const SH={8:"申",10:"戌",0:"子",2:"寅",4:"辰",6:"午"};
+  return SHEN[map[dayZhi]];
+}
+$("calcBtn").onclick=()=>{
+  if(!VIP.need("日期择吉"))return;
+  const scene=$("scene").value;
+  const [y,m]=$("ym").value.split("-").map(Number);
+  const days=new Date(Date.UTC(y,m,0)).getUTCDate();
+  const rows=[];
+  for(let d=1;d<=days;d++){
+    const g=TSTLunar.dayGZ(y,m,d);
+    const lam=ASTRO.sunApparent(new Date(Date.UTC(y,m-1,Math.min(d,28)))).lambda;
+    const mz=TST.jieZhi?TST.jieZhi(lam):"寅";
+    let hl=null;try{hl=TSTHuangli.huangli(g,mz);}catch(e){continue;}
+    if(hl.yi.indexOf(scene.replace(/\/.*/,""))<0&&hl.yi.join("").indexOf(scene.slice(0,2))<0)continue;
+    const dzIdx=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"].indexOf(g.z);
+    const shen=startShen(dzIdx);
+    const good=AUSP[shen]?1:0;
+    const l=TSTLunar.solar2lunar(y,m,d);
+    rows.push({d,l,g,hl,shen,good,score:(good?2:0)+(hl.ji.length<=3?1:0)});
+  }
+  rows.sort((a,b)=>b.score-a.score);
+  $("zejiBody").innerHTML=rows.length?rows.map(r=>
+    '<tr><td><b>'+m+'月'+r.d+'日</b></td><td style="color:var(--mut)">'+TSTLunar.fmtLunar(r.l)+'</td>'+
+    '<td style="color:var(--gold2)">'+r.g.g+r.g.z+'</td><td>'+r.hl.jianchu+'</td>'+
+    '<td>'+(r.good?'<b style="color:var(--green)">'+r.shen+'</b>':'<span style="color:var(--mut)">'+r.shen+'</span>')+'</td>'+
+    '<td>'+(r.score>=3?'<b style="color:var(--gold2)">上吉</b>':r.score>=2?'中吉':'可用')+'</td></tr>').join("")
+    :'<tr><td colspan="6" style="color:var(--mut)">该月无含「'+scene+'」宜项的日子,换场景或月份试试</td></tr>';
+  $("zejiNote").innerHTML='共筛出 <b>'+rows.length+'</b> 天 · 「上吉」= 宜项含'+scene+'且值黄道日。最终请结合新人/事主八字与长辈意见,本页不做断语。';
+};
+})();
+</script>
+</body>
+</html>

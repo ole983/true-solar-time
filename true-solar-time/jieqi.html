@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>二十四节气 · 精确交节时刻与养生 | 真太阳时</title>
 <meta name="description" content="二十四节气精确交节时刻(分钟级)、倒计时、72候物候、节气养生与子午流注对照,按视黄经逐年推算。">
-<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script><script src="fan.js"></script>
 <style>
 .term-big{display:flex;gap:16px;align-items:center;border:1px solid rgba(var(--gold-rgb),.45);background:linear-gradient(180deg,rgba(var(--gold-rgb),.15),rgba(var(--gold-rgb),.03));border-radius:14px;padding:16px 18px;margin-top:12px}
 .term-big .zi{font-size:52px;font-weight:900;color:var(--gold);line-height:1.1}
@@ -54,6 +54,11 @@
 
 <section class="card"><h2>◈ 节气养生 × 子午流注</h2>
 <div class="tgrid" id="yang"></div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+<button class="btn gold" id="yangCardBtn" type="button">生成本节气养生卡 → 分享</button>
+<span class="desc" style="margin:0">一节气一张卡(起居/饮食/情志),可发朋友圈。</span>
+</div>
+<canvas id="yangCard" width="1080" height="1350" style="display:none"></canvas>
 <div class="desc" style="margin-top:10px">使用方法:节气日仍按真太阳时辰作息(如冬至日北京午时11:07–13:07才是真午时,见<a href="liuzhu.html">流注页</a>对照表);换季衣食按本页节气时刻前后3天调整。内容为传统文化参考,不作医疗依据。</div>
 </section>
 
@@ -110,7 +115,34 @@ var YANG={
 "冬至":"一阳生,大补不如好睡。宜饺子汤圆,忌熬夜;子时入睡胜人参。",
 "小寒":"最冷之一,宜护腰保暖。忌早起冒寒,宜腊八粥;巳时再剧烈活动。",
 "大寒":"冬末春始,宜减咸增苦、调作息。宜睡足,立春前不减衣。"};
-/* 精确交节:全年12h步进找穿越 + 二分到分钟 */
+/* 节气养生卡:1080×1350 分享海报(canvas 手绘,双主题通用) */
+function wrapText(ctx,text,x,y,maxW,lh){var chars=text.split(""),line="",yy=y;chars.forEach(function(ch){var t=line+ch;if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,x,yy);line=ch;yy+=lh;}else line=t;});ctx.fillText(line,x,yy);return yy+lh;}
+$("yangCardBtn").onclick=function(){
+  var T=(window._curTerm||{name:"白露",date:new Date()}),curN=T.name,cur=T.date;
+  var cv=$("yangCard"),ctx=cv.getContext("2d"),W=1080,H=1350;
+  var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#101731");g.addColorStop(1,"#070b16");
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="#A8894E";ctx.lineWidth=3;ctx.strokeRect(36,36,W-72,H-72);
+  ctx.strokeStyle="rgba(168,137,78,.4)";ctx.lineWidth=1;ctx.strokeRect(52,52,W-104,H-104);
+  ctx.textAlign="center";ctx.fillStyle="#A8894E";
+  ctx.font="90px serif";ctx.fillText(curN,540,220);
+  ctx.fillStyle="#8f96ac";ctx.font="34px sans-serif";
+  ctx.fillText(bjStr(cur.d)+" 交节 · "+HOU[curN].join(" / "),540,280);
+  ctx.fillStyle="#e8e2d4";ctx.font="40px sans-serif";ctx.textAlign="left";
+  var y=wrapText(ctx,"三候:"+HOU[curN].join(";")+"。",120,400,840,64);
+  y=wrapText(ctx,"养生:"+YANG[curN],120,y+30,840,64);
+  y=wrapText(ctx,"作息:仍按真太阳时辰(子时23点前后入睡,午时小憩)。换季衣食按交节前后3天调整。",120,y+30,840,64);
+  ctx.textAlign="center";ctx.fillStyle="#A8894E";ctx.font="36px sans-serif";
+  ctx.fillText("☉ 真太阳时 · 子午流注",540,H-160);
+  ctx.fillStyle="#8f96ac";ctx.font="28px sans-serif";
+  ctx.fillText("传统文化参考,不作医疗依据",540,H-110);
+  cv.toBlob(function(blob){
+    var file=new File([blob],"yangsheng-"+curN+".png",{type:"image/png"});
+    if(window.TSTApp&&TSTApp.shareFile){TSTApp.shareFile(file,"节气养生卡 · "+curN);}
+    else if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:"节气养生卡"}).catch(function(){});}
+    else{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="yangsheng-"+curN+".png";a.click();}
+  },"image/png");
+};
 function termMoments(year){
   var t0=Date.UTC(year,0,1,0,0), t1=Date.UTC(year+1,0,1,0,0), step=12*36e5;
   var N=Math.ceil((t1-t0)/step), prevT=t0, prevL=ASTRO.sunApparent(new Date(t0)).lambda;
@@ -152,7 +184,7 @@ function render(){
   var arr=Object.entries(mall).map(function(en){return {kk:en[0],d:en[1],k:+en[0].split("-")[1]};}).sort(function(a,b){return a.d-b.d;});
   var cur=arr[0],next=arr[arr.length-1];
   for(var i=0;i<arr.length-1;i++){if(arr[i].d<=now&&arr[i+1].d>now){cur=arr[i];next=arr[i+1];break;}}
-  var curN=NAMES[cur.k],nextN=NAMES[next.k];
+  var curN=NAMES[cur.k],nextN=NAMES[next.k];window._curTerm={name:curN,date:cur.d};
   var lam=ASTRO.sunApparent(now).lambda;
   var houIdx=Math.min(2,Math.floor((((lam-LAM[cur.k]+360)%360)/5)));
   if(houIdx<0||!isFinite(houIdx))houIdx=0;

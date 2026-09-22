@@ -91,7 +91,7 @@ function page(city, termsRows, todayRow, peers){
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:type" content="article">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="../styles.css"><script src="../theme.js"></script>
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="../styles.css"><script src="../theme.js"></script><script src="../a11y.js"></script><script src="../fan.js"></script>
 <script type="application/ld+json">${ld}</script>
 <style>
 .cityhero{border:1px solid rgba(var(--gold-rgb),.5);background:linear-gradient(165deg,rgba(var(--gold-rgb),.15),rgba(var(--gold-rgb),.03));border-radius:16px;padding:16px 18px;margin-top:12px}

@@ -5,7 +5,7 @@
 <title>会员与赞助 | 真太阳时 · 子午流注</title>
 <meta name="description" content="真太阳时会员:平价支持,核心功能永久免费。月度/季度/年度可选,无广告、不卖数据、随时可退。">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script>
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script><script src="fan.js"></script>
 </head>
 <body>
 <div class="topbar"><div class="topbar-in">
@@ -88,6 +88,20 @@
 </div>
 </section>
 
+<section class="card" style="border-color:rgba(var(--gold-rgb),.5)">
+<h2>◈ 为父母开通 · 一份孝心三步到</h2>
+<div class="desc">激活码<b>不绑定设备</b>,天生就是"代付神器":你买码,父母输码,两边都开通。下面三步,照着做就行。</div>
+<div class="promise" style="margin-top:10px">
+<b>第一步 · 你买码</b>:扫码支持后,邮件里多写一句「为父母买,再要一个码」,一次拿两个。<br>
+<b>第二步 · 发给父母</b>:点下面按钮,复制一段带教程的话,微信发给爸妈。<br>
+<b>第三步 · 父母输码</b>:爸妈打开本页 → 顶上输入框粘贴 → 点「激活」,再点右上角「👴 大字」,字立刻变大。
+</div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn gold" id="giftBtn" type="button">复制给父母的话</button>
+</div>
+<div class="desc" id="giftTip" style="margin-top:8px"></div>
+</section>
+
 <section class="card">
 <h2>◈ 会员权益(哪些免费,哪些支持)</h2>
 <div class="benefit">
@@ -156,6 +170,12 @@ function activate(){
   }
 }
 $("activateBtn").onclick=activate;
+$("giftBtn")&&($("giftBtn").onclick=()=>{
+  const t="爸/妈,我给你买了「真太阳时」会员:\n1. 打开这个页面(我发你的链接)\n2. 把这串码复制到顶上输入框,点「激活」\n3. 再点右上角「👴 大字」,字就变大了\n4. 每天点「🔊 朗读今日」,它会念给你听\n以后几点睡、今天宜啥忌啥,都听它的。";
+  const done=()=>{$("giftTip").textContent="已复制,去微信粘贴发给父母吧。记得把激活码也一起发过去。";};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done).catch(()=>prompt("复制这段话发给父母:",t));
+  else prompt("复制这段话发给父母:",t);
+});
 $("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter")activate();});
 $("clearBtn").onclick=()=>{if(confirm("确定清除本机会员状态?(激活码仍可再次使用)")){VIP.clear();$("codeMsg").textContent="";renderStatus();}};
 
