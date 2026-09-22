@@ -56,6 +56,7 @@ function Run-Build($mode){
   Push-Location $ROOT
   if(-not (Test-Path "node_modules\@capacitor\android")){ npm install }
   npx cap sync android 2>&1 | Out-String | Out-Null
+  if($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne $null){ Write-Host "    (cap sync 返回 $LASTEXITCODE,继续构建)" -ForegroundColor Yellow }
   Pop-Location
 
   # 3) 构建(优先在选择 Gradle 8.7)
