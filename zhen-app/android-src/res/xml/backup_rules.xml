@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- android/app/src/main/res/xml/backup_rules.xml
+     allowBackup=false 时仍建议声明,明确不备份任何数据 -->
+<full-backup-content>
+    <!-- 不备份任何内容:应用不含账号与用户数据 -->
+</full-backup-content>

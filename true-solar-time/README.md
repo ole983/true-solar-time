@@ -30,6 +30,18 @@
 
 真太阳时 = 北京时间 + (经度−120°)×4分 + 时差方程 EoT。
 
+## 长尾 SEO 城市页
+
+`city/` 目录下为 340 个城市的预渲染页,每页含该城市经度差、今日日出日落、当年二十四节气交节时刻与日中表,爬虫无需执行 JS 即可读取。
+
+重新生成(每年或数据更新后):
+
+```powershell
+node scripts/gen-city-pages.js
+```
+
+脚本会重写 `city/*.html`、`city/city-index.html` 与 `sitemap.xml`(含全部城市页)。
+
 ## 本地预览
 
 ```powershell

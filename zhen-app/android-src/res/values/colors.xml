@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- android/app/src/main/res/values/colors.xml -->
+<resources>
+    <color name="appBackground">#070b16</color>
+    <color name="gold">#e8c36a</color>
+    <color name="goldLight">#f7e2a8</color>
+    <color name="teal">#5eead4</color>
+</resources>
