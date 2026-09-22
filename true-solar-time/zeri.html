@@ -5,7 +5,7 @@
 <title>择时 · 四柱 · 真太阳时 | 真太阳时 · 子午流注</title>
 <meta name="description" content="以真太阳时排四柱、定时辰,黄道黑道择吉时。真太阳时换算、年月日时柱与十二时辰吉凶。">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
+<meta name="theme-color" content="#070b16"><link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script>
 <style>
 .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
 .pill{border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;background:var(--shade)}
@@ -54,7 +54,10 @@
 <input id="bTime" type="text" value="12:00" placeholder="12:00" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:90px">
 <input id="bCity" list="cityList" placeholder="城市" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;width:120px">
 <datalist id="cityList"></datalist>
+<label style="font-size:12.5px;color:var(--mut)">子时制</label>
+<select id="ziMode" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:13px"><option value="early">早子/夜子分日(23点换日)</option><option value="late">晚子归次日(00点换日)</option></select>
 <button class="btn gold" id="calcBtn" type="button">排盘</button>
+<button class="btn" id="speakBtn2" type="button">🔊 朗读</button>
 </div>
 <div class="pillars" id="pillars"></div>
 <div class="desc" id="pillarNote" style="margin-top:12px">请输入信息后点「排盘」。</div>
@@ -86,13 +89,19 @@
 <table class="sstable"><thead><tr><th>柱</th><th>干支</th><th>十神(对日干)</th><th>纳音</th></tr></thead>
 <tbody id="ssBody"><tr><td colspan="4" style="color:var(--mut)">排盘后显示</td></tr></tbody></table>
 <div class="desc" id="ssNote" style="margin-top:10px"></div>
+<h2 style="margin:16px 0 4px;font-size:14px">◈ 地支藏干十神</h2>
+<table class="sstable"><thead><tr><th>地支</th><th>所藏天干 · 十神</th></tr></thead>
+<tbody id="cangBody"><tr><td colspan="2" style="color:var(--mut)">排盘后显示</td></tr></tbody></table>
+<h2 style="margin:16px 0 4px;font-size:14px">◈ 胎元 · 命宫</h2>
+<table class="sstable"><thead><tr><th></th><th>干支</th><th>取象</th></tr></thead>
+<tbody id="taimingBody"><tr><td colspan="3" style="color:var(--mut)">排盘后显示</td></tr></tbody></table>
 </section>
 
 <section class="card">
 <h2>◈ 说明</h2>
 <div class="kv">
 <p><b>为什么必须用真太阳时?</b><br>时辰按太阳时角划分。拉萨比北京慢约 1 小时 55 分,若按北京时间定时辰,常会错一个时辰。排盘前先换算真太阳时,是本页与普通排盘的区别。</p>
-<p><b>日柱如何定?</b><br>以真太阳时的子初(23:00)为日界;真太阳时跨过 23:00 即进下一日,与部分流派一致。若你的流派以 00:00 为界,请在结果中自行微调。</p>
+<p><b>日柱如何定?</b><br>默认以真太阳时的子初(23:00)为日界,早子归次日、夜子归当日(早晚子分日);也可在排盘区切换为「晚子归次日」(00点换日)。若你的流派另有主张,请按流派自行微调。</p>
 <p><b>月柱与年柱?</b><br>月柱以「节」(立春/惊蛰/清明…共十二节)为界,非农历初一;年柱以立春为界,非正月初一。</p>
 <p><b>吉时只是参考。</b><br>黄道黑道为传统择时法之一,仅供文化参考,不作任何决策依据。</p>
 </div>
@@ -101,7 +110,7 @@
 <footer class="site">真太阳时定时辰 · 节气定月柱 · 传统文化参考,不作医疗或决策依据 · <a href="privacy.html">隐私政策</a> · <a href="terms.html">用户协议</a></footer>
 </div>
 
-<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script>
+<script src="cities.js"></script><script src="astro.js"></script><script src="app.js"></script><script src="huangli.js"></script>
 <script>
 (function(){
 const {$,VIP,cityByName,store,toTrue,toBeijing,parseHM}=window.TST;
@@ -149,16 +158,17 @@ function monthZhiIndex(dateBJ){ // 返回 0..11 对应寅..丑
   return {zhi:JIE_LAM.indexOf(cur.L), t:cur.t, name:JIE_NAME[JIE_LAM.indexOf(cur.L)]};
 }
 
-function buildPillars(dateBJ,lon,eq){
+function buildPillars(dateBJ,lon,eq,ziMode){
   // dateBJ: Date (UTC ms 表示北京墙钟)
   const y=dateBJ.getUTCFullYear(),mo=dateBJ.getUTCMonth()+1,d=dateBJ.getUTCDate();
   const bjMin=dateBJ.getUTCHours()*60+dateBJ.getUTCMinutes();
   const tstMin=bjMin+(lon-120)*4+eq;
-  // 真太阳时决定日与时
+  // 真太阳时决定日与时;子时制:early=23点换日(早晚子分),late=00点换日
   let dayShift=0, tst=((tstMin%1440)+1440)%1440;
   if(tstMin<0){dayShift=-1;}
   if(tstMin>=1440){dayShift=1;}
-  if(tst>=1380){ /* 子时跨日 */ dayShift+=1; }
+  if(ziMode==="late"){if(tst>=1380){dayShift+=0;}/* 23–24点仍归当日 */}
+  else{if(tst>=1380){dayShift+=1;}}
   // 日柱
   const baseJdn=jdn(y,mo,d)+dayShift;
   const dayGZ=gz(baseJdn+49);
@@ -179,7 +189,7 @@ function buildPillars(dateBJ,lon,eq){
   const hourG=GAN[hourGan],hourZ=ZHI[hourZhi];
   return {yearGZ,monthGZ:{g:monthG,z:monthZ,idx:gzIndex(monthG,monthZ)},
     dayGZ,hourGZ:{g:hourG,z:hourZ,idx:gzIndex(hourG,hourZ)},
-    tstMin:tst, bjMin, eq, lon, jieName:mz.name};
+    tstMin:tst, bjMin, eq, lon, jieName:mz.name, ziMode:ziMode||"early"};
 }
 
 /* 黄道黑道十二神 */
@@ -224,10 +234,45 @@ function renderSS(r){
       '<td>'+ss+'<span class="ss">'+(SS_DESC[ss]||"")+'</span></td>'+
       '<td>'+ny+'<span class="ss ny">'+(wx?"五行属"+wx:"")+'</span></td></tr>';
   }).join("");
-  $("ssNote").innerHTML='日干 <b style="color:var(--gold2)">'+dayGan+'</b>('+GAN_WX[dayGan]+')为我,其余三干以此定十神。地支藏干未展开,精批请按藏干再分。';
+  $("ssNote").innerHTML='日干 <b style="color:var(--gold2)">'+dayGan+'</b>('+GAN_WX[dayGan]+')为我,其余三干以此定十神。地支藏干已展开,本气/中气/余气依次列出。';
+  /* 藏干:地支所藏天干及其对日干十神,精批用 */
+  const CANG=window.TSTHuangli?window.TSTHuangli.CANG:null;
+  if(CANG){
+    $("cangBody").innerHTML=cols.map(([lab,p])=>{
+      const c=(CANG[p.z]||[]).map((g,i)=>'<b style="color:var(--gold2)">'+g+'</b>'+(lab==="日"&&i===0?"(本气·日元)":"·"+shishen(dayGan,g))).join(" ");
+      return '<tr><td>'+lab+p.z+'</td><td>'+c+'</td></tr>';
+    }).join("");
+  }
 }
 
-/* ---- 大运 / 流年 ---- */
+/* ---- 胎元 / 命宫 ---- */
+function taiyuanMonth(mIdx){return {g:GAN[(mIdx+1)%10]||GAN[0],mIdx:mIdx};}
+function taiyuanOf(r){
+  // 胎元:月柱干支各进一位(甲己之年丙作首的进位法,干支分别+1)
+  const GAN=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+  const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+  return {g:GAN[(GAN.indexOf(r.monthGZ.g)+1)%10],z:ZHI[(ZHI.indexOf(r.monthGZ.z)+1)%12]};
+}
+function minggongOf(r,dateBJ){
+  // 命宫:月支顺数至卯为起点、生时逆数;标准口诀:"寅宫起月,顺至卯;卯上起寅,逆至生时"
+  // 即:命宫地支 = (14 + 2 - 月支index - 时支index) mod 12
+  const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+  const GAN=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+  const mz=ZHI.indexOf(r.monthGZ.z),hz=ZHI.indexOf(r.hourGZ.z);
+  const mgZ=ZHI[(((14+2-mz-hz)%12)+12)%12];
+  // 命宫天干:以年干阴阳起遁(阳男阴女顺、否则逆,简化取五虎遁正向,注明简化)
+  const yearStemIdx=GAN.indexOf(r.yearGZ.g);
+  const gIdx=(((yearStemIdx%5)*2+2+ZHI.indexOf(mgZ)-2)%10+10)%10;
+  return {g:GAN[gIdx],z:mgZ};
+}
+function renderTaiMing(r,dateBJ){
+  const ty=taiyuanOf(r),mg=minggongOf(r,dateBJ);
+  $("taimingBody").innerHTML=
+    '<tr><td>胎元</td><td><b style="color:var(--gold2)">'+ty.g+ty.z+'</b></td><td style="color:var(--mut)">受胎之月,禀赋根基</td></tr>'+
+    '<tr><td>命宫</td><td><b style="color:var(--gold2)">'+mg.g+mg.z+'</b></td><td style="color:var(--mut)">立命之宫,一生格局指向(天干按五虎遁顺排简化)</td></tr>';
+}
+
+/* ---- 藏干十神 ---- */
 function gzIndex(g,z){for(let i=0;i<60;i++)if(GAN[i%10]===g&&ZHI[i%12]===z)return i;return -1;}
 function jieList(y){const all=[];[y-1,y,y+1].forEach(yy=>{const M=termMoments(yy);JIE_LAM.forEach(L=>{const k=LAM.indexOf(L);if(M[k])all.push({t:M[k],L});});});return all.sort((a,b)=>a.t-b.t);}
 function computeDayun(r,dateBJ,gender){
@@ -266,6 +311,7 @@ const cityList=$("cityList");
 window.CITIES.forEach(c=>{const o=document.createElement("option");o.value=c[0];cityList.appendChild(o);});
 let sel=store.sel||"北京";if(!window.CITIES.some(c=>c[0]===sel))sel="北京";
 $("bCity").value=sel;
+let lastR=null;
 const now=new Date();
 $("bDate").value=now.getUTCFullYear()+"-"+String(now.getUTCMonth()+1).padStart(2,"0")+"-"+String(now.getUTCDate()).padStart(2,"0");
 
@@ -275,7 +321,7 @@ function setLocks(){const on=VIP.isActive();
 
 function renderPillars(r,dateBJ){
   const el=$("pillars");
-  const P=[["年柱",r.yearGZ,"立春为界"],["月柱",r.monthGZ,"节:"+r.jieName],["日柱",r.dayGZ,"真太阳日界"],["时柱",r.hourGZ,"真太阳定时"]];
+  const P=[["年柱",r.yearGZ,"立春为界"],["月柱",r.monthGZ,"节:"+r.jieName],["日柱",r.dayGZ,r.ziMode==="late"?"00点换日":"真太阳日界23点"],["时柱",r.hourGZ,"真太阳定时"]];
   el.innerHTML=P.map(([lab,gz,note])=>'<div class="pill"><div class="lab">'+lab+'</div><div class="gz"><span class="g">'+gz.g+'</span><span class="z">'+gz.z+'</span></div><div class="note">'+note+'</div></div>').join("");
   const tstTxt=ASTRO.fmtHMS(r.tstMin);
   const bjTxt=String(Math.floor(r.bjMin/60)).padStart(2,"0")+":"+String(Math.round(r.bjMin%60)).padStart(2,"0");
@@ -308,13 +354,21 @@ function calc(){
   sel=c[0];store.sel=sel;
   const dateBJ=new Date(Date.UTC(p[0],p[1]-1,p[2],Math.floor(tm/60),tm%60,0));
   const sun=ASTRO.sunApparent(new Date(Date.UTC(p[0],p[1]-1,p[2],4)));
-  const r=buildPillars(dateBJ,c[2],sun.eq);
+  const r=buildPillars(dateBJ,c[2],sun.eq,$("ziMode").value);
   renderPillars(r,dateBJ);
   renderHours(r);
   renderSS(r);
+  renderTaiMing(r,dateBJ);
   renderDayun(r,dateBJ,$("gender").value);
+  lastR={r:r,city:c[0],tm:tm};
 }
 $("calcBtn").onclick=calc;
+$("speakBtn2")&&($("speakBtn2").onclick=()=>{
+  if(!lastR){alert("请先排盘");return;}
+  const r=lastR.r;
+  const txt=`${lastR.city}出生,四柱${r.yearGZ.g}${r.yearGZ.z},${r.monthGZ.g}${r.monthGZ.z},${r.dayGZ.g}${r.dayGZ.z},${r.hourGZ.g}${r.hourGZ.z}。日干${r.dayGZ.g},${r.hourGZ.z}时生人。`;
+  window.TSTSpeak?window.TSTSpeak(txt):alert("当前环境不支持语音");
+});
 setLocks();
 })();
 </script>

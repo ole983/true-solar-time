@@ -49,6 +49,12 @@ function snapshot(city,now){ // now=Date(绝对时刻)
   return{sun,bmin,bj,tst,sc,ev,diff,aa};
 }
 function diffText(diff){return `真太阳${diff>=0?"超前":"落后"}北京 ${Math.abs(diff).toFixed(1)} 分钟`;}
+/* 黄经→节后月支(寅..丑):黄历建除用 */
+function jieZhi(lam){lam=((lam%360)+360)%360;
+  const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+  const seq=["寅","卯","辰","巳","午","未","申","酉","戌","亥","子","丑"];
+  const idx=Math.floor((((lam-315)%360)+360)%360/30)%12;
+  return seq[idx];}
 function fmtSigned(v,d){return (v>=0?"+":"")+v.toFixed(d==null?1:d);}
 function setNav(){const p=(location.pathname.split("/").pop()||"index.html").toLowerCase();
   document.querySelectorAll("nav.tabs a").forEach(a=>{const h=(a.getAttribute("href")||"").toLowerCase();if(h===p||(p===""&&h==="index.html"))a.classList.add("on");});}
@@ -194,5 +200,5 @@ const VIP={
   }
 };
 window.TST={$,LIU,TERMS,termOf,shichenOf,store,evOf,cityByName,snapshot,diffText,fmtSigned,setNav,shareURL,
-  GROUP,actionsOf,goldenOf,sunbathOf,JINJU,toTrue,toBeijing,parseHM,VIP,VIPPLANS};
+  GROUP,actionsOf,goldenOf,sunbathOf,JINJU,toTrue,toBeijing,parseHM,VIP,VIPPLANS,jieZhi};
 })();

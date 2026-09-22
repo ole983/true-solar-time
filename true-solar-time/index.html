@@ -11,7 +11,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#070b16">
-<link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
+<link rel="stylesheet" href="styles.css"><script src="theme.js"></script><script src="a11y.js"></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"真太阳时 · 子午流注","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","url":"https://ole983.github.io/true-solar-time/index.html","description":"全中国300+城市真太阳时实时显示,当令经脉、今日三件事、日出日落与黄金时刻。","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"inLanguage":"zh-CN"}
 </script>
@@ -43,6 +43,16 @@
 .h-sc .m{font-size:12.5px;color:var(--mut);letter-spacing:.1em}
 .h-actions{position:relative;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:22px}
 .h-actions .btn{text-decoration:none}
+.more{position:relative;margin-top:16px;text-align:left}
+.more>summary{cursor:pointer;list-style:none;text-align:center;color:var(--mut);font-size:13px;padding:10px;border:1px dashed var(--line-2);border-radius:12px}
+.more>summary::-webkit-details-marker{display:none}
+.more>summary:hover{color:var(--gold);border-color:var(--gold)}
+.more[open]>summary{margin-bottom:12px}
+.hl{margin-top:12px;border:1px solid rgba(var(--gold-rgb),.35);background:rgba(var(--gold-rgb),.06);border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.9;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.hl .lbl{color:var(--mut);font-size:12px;letter-spacing:.1em}
+.hl b{color:var(--gold2)}
+.hl .yi{color:var(--green)}.hl .ji{color:var(--red)}
+.hl span{color:var(--txt-2)}
 .todo{margin-top:14px;display:grid;gap:8px;text-align:left}
 .todo .row{display:flex;gap:10px;align-items:flex-start;background:var(--shade);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.7}
 .todo .row .n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--on-gold);font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
@@ -94,14 +104,21 @@
 <div class="h-sc"><span class="zi" id="scZi">—</span><span class="m" id="scNow">加载中…</span></div>
 <div class="h-actions">
 <a class="btn gold" href="liuzhu.html">查看今日12时辰</a>
-<a class="btn" href="tools.html">换算/黄金时刻</a>
-<button class="btn" id="notifyBtn" type="button">开启时辰提醒</button>
+<button class="btn" id="speakBtn" type="button">🔊 朗读今日</button>
 <button class="btn" id="gpsBtn" type="button">◎ 定位我</button>
-<a class="btn" href="cities.html">全国总表</a>
 </div>
-<div class="kvrow" id="quickKV"></div>
 <div class="todo" id="todo"></div>
 <div class="jinju" id="jinju">—</div>
+<details class="more" id="heroMore">
+<summary>更多数据(日出日落 · 时差 · 黄历)</summary>
+<div class="kvrow" id="quickKV"></div>
+<div class="hl" id="hlToday"></div>
+<div class="h-actions" style="margin-top:12px">
+<a class="btn" href="tools.html">换算/黄金时刻</a>
+<button class="btn" id="notifyBtn" type="button">开启时辰提醒</button>
+<a class="btn" href="cities.html">全国总表</a>
+</div>
+</details>
 <div class="trust"><span id="trustTxt">与紫金山年历对拍:正午误差 &lt;30秒</span><a href="science.html">去验证 →</a></div>
 </section>
 
@@ -167,6 +184,7 @@
 <script src="cities.js"></script>
 <script src="astro.js"></script>
 <script src="app.js"></script><script src="bridge.js"></script>
+<script src="huangli.js"></script>
 <script>
 (function(){const{$,termOf,store,cityByName,snapshot,fmtSigned,actionsOf,goldenOf,JINJU}=window.TST;
 TST.setNav();
@@ -272,6 +290,27 @@ $("hTst").innerHTML=tstStr.slice(0,5)+'<span class="sec">'+tstStr.slice(5)+'</sp
 $("hBj").textContent=`${String(s.bj.h).padStart(2,"0")}:${String(s.bj.mi).padStart(2,"0")}:${String(s.bj.s).padStart(2,"0")}`;
 $("hDiff").textContent=`${s.diff>=0?"超前":"落后"} ${Math.abs(s.diff).toFixed(1)} 分`;
 $("quickKV").innerHTML=`<span class="kv">真太阳 <b>${ASTRO.fmtHMS(s.tst)}</b></span><span class="kv">北京时 <b>${String(s.bj.h).padStart(2,"0")}:${String(s.bj.mi).padStart(2,"0")}</b></span><span class="kv">☀出 <b>${s.ev.polar||fmtHM(s.ev.riseMin)}</b></span><span class="kv">☀中 <b>${fmtHM(s.ev.noonMin)}</b></span><span class="kv">☀落 <b>${s.ev.polar||fmtHM(s.ev.setMin)}</b></span><span class="kv">昼长 <b>${s.ev.polar||((s.ev.setMin-s.ev.riseMin)/60).toFixed(1)+"h"}</b></span>`;
+/* 黄历(天文日柱 + 月支定建除),每天刷新一次即可 */
+if(!tick._hld||tick._hld!==s.bj.y+"-"+s.bj.m+"-"+s.bj.d){
+try{
+  const dp=window.TSTHuangli.dayGZ(s.bj.y,s.bj.m,s.bj.d);
+  const mzhi=window.TST.jieZhi?window.TST.jieZhi(s.sun.lambda):null;
+  const hl=window.TSTHuangli.huangli(dp,mzhi||"寅");
+  const el=document.getElementById("hlToday");
+  if(el)el.innerHTML='<span class="lbl">黄历 '+dp.g+dp.z+'日 · '+hl.jianchu+'日</span>'+
+    '<span>宜 <b class="yi">'+hl.yi.join(" ")+'</b></span>'+
+    '<span>忌 <b class="ji">'+hl.ji.join(" ")+'</b></span>'+
+    '<span style="color:var(--mut);font-size:12px">'+hl.chong+' · '+hl.sha+' · 胎神'+hl.taishen+'(传统参考)</span>';
+  tick._hld=s.bj.y+"-"+s.bj.m+"-"+s.bj.d;
+  tick._hl=hl;
+}catch(e){console.warn("hl",e.message);}
+}
+/* 朗读今日:时辰 + 三事 + 黄历 */
+$("speakBtn")&&($("speakBtn").onclick=()=>{
+  const acts=actionsOf(city,s).slice(0,3).join(";");
+  const txt=`${city[0]},${s.bj.m}月${s.bj.d}日。现在${s.sc.z}时,${s.sc.m}当令。今日三件事:${acts}。${JINJU[termOf(s.sun.lambda)]||""}`;
+  window.TSTSpeak?window.TSTSpeak(txt):alert("当前环境不支持语音");
+});
 $("jinju").textContent=JINJU[termOf(s.sun.lambda)]||"顺天时,养正气。";
 $("todo").innerHTML=actionsOf(city,s).map((t,i)=>`<div class="row"><span class="n">${i+1}</span><span>${t}</span></div>`).join("");
 $("diffBadge").textContent=`真太阳${s.diff>=0?"超前":"落后"}北京 ${Math.abs(s.diff).toFixed(1)}分 = 经度差 ${fmtSigned((city[2]-120)*4,1)}分 + 时差 ${fmtSigned(s.sun.eq,2)}分`;
